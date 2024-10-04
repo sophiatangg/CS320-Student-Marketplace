@@ -7,111 +7,213 @@ set separator none
 class User {
   .. Attributes ..
   + id: UserID
-  + name: String
-  + umass_email: String
-  + chatHistory: ChatHistory
+  + loginInfo: UserLoginInfo | UserLoginUMass
+  + name: string
+  + chatHistory: ChatHistory | null
   + profile: Profile
   + wishlist: Wishlist
+  + userMarket: List<MarketItem | null>
+  + boughtItems: List<BoughtItem | null>
   .. Methods ..
-  + login(username: String, password: UserPassword, email: String)
-  + changePassword(old: UserPassword, new: UserPassword)
-  + verifyPassword(password: UserPassword)
+  + login(username: string, password: UserPassword, email: string): boolean
+  + changePassword(old: UserPassword, new: UserPassword): void
+  + verifyPassword(password: UserPassword): boolean
+  + deleteAccount(): void
 }
 
-class Buyer {
-  + wishlist: Wishlist
+class UserLoginInfo {
+  .. Attributes ..
+  username: string
+  password: Password
 }
 
-class Seller {
-  + registered: Boolean
+class UserLoginUMass extends UserLoginInfo {
+  .. Attributes ..
+  + umassEmail: string
+  + name: string
 }
 
-User <|-- Buyer
-User <|-- Seller
+class UserID {
+  .. Attributes ..
+  id: uuidv4
+  .. Methods ..
+  getUserID(): id
+}
+
+class Buyer extends User {
+  .. Attributes ..
+  + id: UserID
+}
+
+
+class Seller extends User {
+  .. Attributes ..
+  + id: UserID
+}
+
+
 
 class Item {
+  .. Attributes ..
+  + id: ItemID
   + description: ItemDescription
-  + seller_id: UserID
-  + url: String
-  + date_posted: Date
+  + url: string
+  + dateAdded: Date
 }
 
+class MarketItem extends Item{
+  .. Attributes ..
+  dateAdded: Date
+  sellerUser: Seller
+  offers: List<Offer>
+}
+
+class BoughtItem extends Item {
+  .. Attributes ..
+  dateTimeBought: Date
+  user: Buyer
+}
+
+
+class ItemID{
+  .. Attributes ..
+  id: uuidv4
+}
+
+
 class Wishlist {
+  .. Attributes ..
   + lovedItems: List<Item>
 }
 
-Item <|-- Wishlist
 
 class ItemDescription {
-  + images: List<Image>
-  + location: String
+  .. Attributes ..
+  + images: List<ItemImage>
+  + location: string
   + price: int
-  + optionsForTrade: Boolean
-  + categories: Categories
+  + optionsForTrade: boolean
+  + categories: List<ItemCategory>
 }
 
-Item --> ItemDescription
 
-class Image{
+class ItemImage{
   .. Description ..
   Limit the size to 100MB
+  image: Image
   .. Methods ..
-  getImage(): Image
+  getImage(): image
+  setImage(img: ItemImage): void
 }
 
-Image ..> ItemDescription
 
-class Category {
+class ItemCategory {
+  .. Attributes ..
   + house_items
   + kitchen
   + cleaning
   + appliances
 }
 
-Category --|> Item
-
 class Profile {
-  + selling_items: List<Item>
+  .. Attributes ..
+  + sellingItems: List<Item>
   + account_creation: Date
   + settings: UserSettings
 }
 
-User --> Profile
 
 class ChatHistory {
+  .. Attributes ..
+  + chatMessages: List<ChatMessage>
+}
+
+class ChatMessage {
+  .. Attributes ..
+  + id: ChatMessageID
   + date: Date
-  + message: String
-  + emotes: List<Emote>
+  + message: string
   + replyThread: ChatHistory
 }
 
-User --> ChatHistory
+
+class ChatMessageID {
+  .. Attributes ..
+  id: uuidv4
+  .. Methods ..
+  getID(): id
+}
+
 
 class UserSettings {
+  .. Attributes ..
   + themeOptions: Theme
 }
 
-Profile --> UserSettings
 
 class Theme {
-  + dark_mode
-  + light_mode
-  + auto
+  .. Attributes ..
+  + dark_mode: Theme
+  + light_mode: Theme
+  + auto: Theme
+  .. Methods ..
   getTheme(): Theme
   setTheme(theme: Theme): void
 }
 
-Theme --> UserSettings
-
-class Offers {
-  + timeLimit: Expiration
-  + counterOffer(): Boolean
-  + setTradeOrPrice(trade: Boolean, price: int)
+class Offer {
+  .. Attributes ..
+  timeLimit: Expiration
+  .. Methods ..
+  + counterOffer(): boolean
+  + setTradeOrPrice(trade: boolean, price: int)
   + most_recent_offer: Offer
 }
 
-Buyer --> Wishlist
-Seller --> Item
-Wishlist --> Item
-Offers --> Item
+
+class Expiration{
+  .. Attributes ..
+  dateTime: Date
+  .. Methods ..
+  getExpiration(): dateTime
+}
+
+
+User::id --> UserID::getUserID
+User::loginInfo ..> UserLoginInfo
+User::loginInfo ..> UserLoginUMass
+User::chatHistory --> ChatHistory
+User::userMarket --> MarketItem: "0..N"
+User::wishlist --> Wishlist: "0..N"
+User::boughtItems --> BoughtItem: "0..N"
+User::profile --> Profile
+
+Buyer::id --> UserID
+Seller::id --> UserID
+
+MarketItem::sellerUser --> Seller
+MarketItem::offers --> Offer: "0..N"
+
+BoughtItem::user --> Buyer
+
+Item::id --> ItemID
+Item::description --> ItemDescription
+
+Wishlist::lovedItems --> Item: "0..N"
+
+ItemDescription::images --> ItemImage: "0..N"
+ItemDescription::categories --> ItemCategory: "0..N"
+
+Profile::sellingItems --> Item: "0..N"
+Profile::settings --> UserSettings
+
+ChatMessage::id --> ChatMessageID
+ChatMessage::replyThread --> ChatHistory
+
+ChatHistory::chatMessages --> ChatMessage: "0..N"
+
+UserSettings::themeOptions --> Theme
+
+Offer::timeLimit --> Expiration::getExpiration
+
 @enduml
