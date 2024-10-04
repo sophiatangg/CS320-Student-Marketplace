@@ -1,0 +1,117 @@
+/"Install PlantUML extension in VSCode for this"/
+
+@startuml "Student Marketplace"
+
+set separator none
+
+class User {
+  .. Attributes ..
+  + id: UserID
+  + name: String
+  + umass_email: String
+  + chatHistory: ChatHistory
+  + profile: Profile
+  + wishlist: Wishlist
+  .. Methods ..
+  + login(username: String, password: UserPassword, email: String)
+  + changePassword(old: UserPassword, new: UserPassword)
+  + verifyPassword(password: UserPassword)
+}
+
+class Buyer {
+  + wishlist: Wishlist
+}
+
+class Seller {
+  + registered: Boolean
+}
+
+User <|-- Buyer
+User <|-- Seller
+
+class Item {
+  + description: ItemDescription
+  + seller_id: UserID
+  + url: String
+  + date_posted: Date
+}
+
+class Wishlist {
+  + lovedItems: List<Item>
+}
+
+Item <|-- Wishlist
+
+class ItemDescription {
+  + images: List<Image>
+  + location: String
+  + price: int
+  + optionsForTrade: Boolean
+  + categories: Categories
+}
+
+Item --> ItemDescription
+
+class Image{
+  .. Description ..
+  Limit the size to 100MB
+  .. Methods ..
+  getImage(): Image
+}
+
+Image ..> ItemDescription
+
+class Category {
+  + house_items
+  + kitchen
+  + cleaning
+  + appliances
+}
+
+Category --|> Item
+
+class Profile {
+  + selling_items: List<Item>
+  + account_creation: Date
+  + settings: UserSettings
+}
+
+User --> Profile
+
+class ChatHistory {
+  + date: Date
+  + message: String
+  + emotes: List<Emote>
+  + replyThread: ChatHistory
+}
+
+User --> ChatHistory
+
+class UserSettings {
+  + themeOptions: Theme
+}
+
+Profile --> UserSettings
+
+class Theme {
+  + dark_mode
+  + light_mode
+  + auto
+  getTheme(): Theme
+  setTheme(theme: Theme): void
+}
+
+Theme --> UserSettings
+
+class Offers {
+  + timeLimit: Expiration
+  + counterOffer(): Boolean
+  + setTradeOrPrice(trade: Boolean, price: int)
+  + most_recent_offer: Offer
+}
+
+Buyer --> Wishlist
+Seller --> Item
+Wishlist --> Item
+Offers --> Item
+@enduml
