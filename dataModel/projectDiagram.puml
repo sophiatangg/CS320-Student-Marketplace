@@ -4,6 +4,15 @@
 
 set separator none
 
+skinparam TitleFontSize 24
+title
+Student Marketplace
+- Group #5
+- Members: Christian Dela Cruz, Xing-Wei Lee, Sophia Tang
+- Manager: Mahika Arora
+end title
+
+
 class User {
   .. Attributes ..
   id: UserID
