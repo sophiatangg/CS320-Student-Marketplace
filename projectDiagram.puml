@@ -6,7 +6,7 @@ set separator none
 
 class User {
   .. Attributes ..
-  + id: UserID
+  id: UserID
   + loginInfo: UserLoginInfo | UserLoginUMass
   + name: string
   + chatHistory: ChatHistory | null
@@ -42,20 +42,20 @@ class UserID {
 
 class Buyer extends User {
   .. Attributes ..
-  + id: UserID
+  id: UserID
 }
 
 
 class Seller extends User {
   .. Attributes ..
-  + id: UserID
+  id: UserID
 }
 
 
 
 class Item {
   .. Attributes ..
-  + id: ItemID
+  id: ItemID
   + description: ItemDescription
   + url: string
   + dateAdded: Date
@@ -107,33 +107,35 @@ class ItemImage{
 }
 
 
-class ItemCategory {
-  .. Attributes ..
-  + house_items
-  + kitchen
-  + cleaning
-  + appliances
+enum ItemCategory {
+  APPLIANCE
+  CLEANING
+  HOUSE
+  KITCHEN
 }
 
 class Profile {
   .. Attributes ..
-  + sellingItems: List<Item>
-  + account_creation: Date
+  + sellingItems: List<MarketItem>
+  + accountCreation: Date
   + settings: UserSettings
 }
 
 
 class ChatHistory {
   .. Attributes ..
+  id: uuidv4
   + chatMessages: List<ChatMessage>
 }
 
 class ChatMessage {
   .. Attributes ..
-  + id: ChatMessageID
-  + date: Date
-  + message: string
-  + replyThread: ChatHistory
+  id: ChatMessageID
+  date: Date
+  message: string
+  replyThread: ChatHistory
+  .. Methods ..
+  getMessage(): string
 }
 
 
@@ -141,7 +143,7 @@ class ChatMessageID {
   .. Attributes ..
   id: uuidv4
   .. Methods ..
-  getID(): id
+  getChatMessageId(): id
 }
 
 
@@ -204,10 +206,10 @@ Wishlist::lovedItems --> Item: "0..N"
 ItemDescription::images --> ItemImage: "0..N"
 ItemDescription::categories --> ItemCategory: "0..N"
 
-Profile::sellingItems --> Item: "0..N"
+Profile::sellingItems --> MarketItem: "0..N"
 Profile::settings --> UserSettings
 
-ChatMessage::id --> ChatMessageID
+ChatMessage::id --> ChatMessageID::getChatMessageId
 ChatMessage::replyThread --> ChatHistory
 
 ChatHistory::chatMessages --> ChatMessage: "0..N"
