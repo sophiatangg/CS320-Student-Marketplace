@@ -1,0 +1,230 @@
+/"Install PlantUML extension in VSCode for this"/
+
+@startuml "Student Marketplace"
+
+set separator none
+
+skinparam TitleFontSize 24
+title
+Student Marketplace
+- Group #5
+- Members: Christian Dela Cruz, Xing-Wei Lee, Sophia Tang
+- Manager: Mahika Arora
+end title
+
+
+class User {
+  .. Attributes ..
+  id: UserID
+  + loginInfo: UserLoginInfo | UserLoginUMass
+  + name: string
+  + chatHistory: ChatHistory | null
+  + profile: Profile
+  + wishlist: Wishlist
+  + userMarket: List<MarketItem | null>
+  + boughtItems: List<BoughtItem | null>
+  .. Methods ..
+  + login(username: string, password: UserPassword, email: string): boolean
+  + changePassword(old: UserPassword, new: UserPassword): void
+  + verifyPassword(password: UserPassword): boolean
+  + deleteAccount(): void
+}
+
+class UserLoginInfo {
+  .. Attributes ..
+  username: string
+  password: Password
+}
+
+class UserLoginUMass extends UserLoginInfo {
+  .. Attributes ..
+  + umassEmail: string
+  + name: string
+}
+
+class UserID {
+  .. Attributes ..
+  id: uuidv4
+  .. Methods ..
+  getUserID(): id
+}
+
+class Buyer extends User {
+  .. Attributes ..
+  id: UserID
+}
+
+
+class Seller extends User {
+  .. Attributes ..
+  id: UserID
+}
+
+
+
+class Item {
+  .. Attributes ..
+  id: ItemID
+  + description: ItemDescription
+  + url: string
+  + dateAdded: Date
+}
+
+class MarketItem extends Item{
+  .. Attributes ..
+  dateAdded: Date
+  sellerUser: Seller
+  offers: List<Offer>
+}
+
+class BoughtItem extends Item {
+  .. Attributes ..
+  dateTimeBought: Date
+  user: Buyer
+}
+
+
+class ItemID{
+  .. Attributes ..
+  id: uuidv4
+}
+
+
+class Wishlist {
+  .. Attributes ..
+  + lovedItems: List<Item>
+}
+
+
+class ItemDescription {
+  .. Attributes ..
+  + images: List<ItemImage>
+  + location: string
+  + price: int
+  + optionsForTrade: boolean
+  + categories: List<ItemCategory>
+}
+
+
+class ItemImage{
+  .. Description ..
+  Limit the size to 100MB
+  image: Image
+  .. Methods ..
+  getImage(): image
+  setImage(img: ItemImage): void
+}
+
+
+enum ItemCategory {
+  APPLIANCE
+  CLEANING
+  HOUSE
+  KITCHEN
+}
+
+class Profile {
+  .. Attributes ..
+  + sellingItems: List<MarketItem>
+  + accountCreation: Date
+  + settings: UserSettings
+}
+
+
+class ChatHistory {
+  .. Attributes ..
+  id: uuidv4
+  + chatMessages: List<ChatMessage>
+}
+
+class ChatMessage {
+  .. Attributes ..
+  id: ChatMessageID
+  date: Date
+  message: string
+  replyThread: ChatHistory
+  .. Methods ..
+  getMessage(): string
+}
+
+
+class ChatMessageID {
+  .. Attributes ..
+  id: uuidv4
+  .. Methods ..
+  getChatMessageId(): id
+}
+
+
+class UserSettings {
+  .. Attributes ..
+  + themeOptions: Theme
+}
+
+
+class Theme {
+  .. Attributes ..
+  + dark_mode: Theme
+  + light_mode: Theme
+  + auto: Theme
+  .. Methods ..
+  getTheme(): Theme
+  setTheme(theme: Theme): void
+}
+
+class Offer {
+  .. Attributes ..
+  timeLimit: Expiration
+  .. Methods ..
+  + counterOffer(): boolean
+  + setTradeOrPrice(trade: boolean, price: int)
+  + most_recent_offer: Offer
+}
+
+
+class Expiration{
+  .. Attributes ..
+  dateTime: Date
+  .. Methods ..
+  getExpiration(): dateTime
+}
+
+
+User::id --> UserID::getUserID
+User::loginInfo ..> UserLoginInfo
+User::loginInfo ..> UserLoginUMass
+User::chatHistory --> ChatHistory
+User::userMarket --> MarketItem: "0..N"
+User::wishlist --> Wishlist: "0..N"
+User::boughtItems --> BoughtItem: "0..N"
+User::profile --> Profile
+
+Buyer::id --> UserID
+Seller::id --> UserID
+
+MarketItem::sellerUser --> Seller
+MarketItem::offers --> Offer: "0..N"
+
+BoughtItem::user --> Buyer
+
+Item::id --> ItemID
+Item::description --> ItemDescription
+
+Wishlist::lovedItems --> Item: "0..N"
+
+ItemDescription::images --> ItemImage: "0..N"
+ItemDescription::categories --> ItemCategory: "0..N"
+
+Profile::sellingItems --> MarketItem: "0..N"
+Profile::settings --> UserSettings
+
+ChatMessage::id --> ChatMessageID::getChatMessageId
+ChatMessage::replyThread --> ChatHistory
+
+ChatHistory::chatMessages --> ChatMessage: "0..N"
+
+UserSettings::themeOptions --> Theme
+
+Offer::timeLimit --> Expiration::getExpiration
+
+@enduml
