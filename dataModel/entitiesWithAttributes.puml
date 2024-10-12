@@ -1,0 +1,123 @@
+@startchen "Student Marketplace"
+
+title
+Student Marketplace
+- Group #5
+- Members: Christian Dela Cruz, Xing-Wei Lee, Sophia Tang
+- Manager: Mahika Arora
+end title
+
+
+entity User{
+    UserId: uuidv4 <<key>>
+    Name: string
+}
+
+relationship "is a" as UserRelationship <<identifying>>{
+
+}
+
+entity Buyer <<weak>>{
+    UserId: uuidv4 <<foreign_key>>
+}
+
+entity Seller <<weak>>{
+    UserId: uuidv4 <<foreign_key>>
+
+}
+
+relationship "has" as USERHAS{
+
+}
+
+entity "UMass Login" as UserLoginUMass{
+    EMail
+    Name
+}
+
+entity Profile{
+    AccountCreation: Date
+    SellingItems
+}
+
+entity UserSettings{
+
+}
+
+entity Theme{
+    AUTO: boolean
+    DARK_MODE: boolean
+    LIGHT_MODE: boolean
+}
+
+entity WishList {
+}
+
+entity Item {
+    PersonalizedURL: string
+    Offer: boolean
+    Trade: boolean
+}
+
+entity ItemDescription{
+    ItemName: string
+    Price: integer
+
+}
+
+entity ItemImage{
+
+}
+
+entity ItemCategory{
+    CategoryName: string
+}
+
+entity TradeOffer{
+    Expiration: Date
+    CounterOffer: boolean
+}
+
+entity ChatHistory{
+    ID: uuidv4 <<key>>
+}
+
+entity ChatMessage{
+    ID: uuidv4 <<key>>
+    Message: string
+    Date: Date
+}
+
+entity ChatThreads{
+
+}
+
+User -1- UserRelationship
+
+UserRelationship =1= Buyer
+UserRelationship =1= Seller
+
+User =1= USERHAS
+
+Buyer =(0, N)= Item
+Seller =(0, N)= Item
+
+USERHAS =1= UserLoginUMass
+USERHAS =1= ChatHistory
+USERHAS =1= WishList
+
+USERHAS =1= Profile
+
+Profile =1= UserSettings
+UserSettings =1= Theme
+
+Item =1= ItemDescription
+ItemDescription =(1, N)= ItemImage
+
+Item =(0, N)= ItemCategory
+Item =1= TradeOffer
+
+ChatHistory =(0, N)= ChatMessage
+ChatHistory =(0, N)= ChatThreads
+
+@endchen
