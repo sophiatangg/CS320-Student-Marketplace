@@ -1,0 +1,34 @@
+@font-face {
+	font-family: "GT Medium";
+	src:
+		local("GT Medium"),
+		url("@media/fonts/walsheim/GTWalsheimPro-Medium.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "GT Regular";
+	src:
+		local("GT Regular"),
+		url("@media/fonts/walsheim/GTWalsheimPro-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "GT Light";
+	src:
+		local("GT Light"),
+		url("@media/fonts/walsheim/GTWalsheimPro-Light.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "GT Bold";
+	src:
+		local("GT Bold"),
+		url("@media/fonts/walsheim/GTWalsheimPro-Bold.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "GT Ultrabold";
+	src:
+		local("GT Ultrabold"),
+		url("@media/fonts/walsheim/GTWalsheimPro-UltraBold.ttf") format("truetype");
+}

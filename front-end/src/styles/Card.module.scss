@@ -1,0 +1,155 @@
+.card {
+	background-color: #202020;
+	padding-bottom: 50%;
+	border: 1px transparent;
+	border-radius: var(--borderRadius);
+	display: flex;
+	flex-flow: column;
+	transition: 0.3s all;
+	position: relative;
+	overflow: hidden;
+
+	&:hover {
+		background-color: #2d2d2d;
+	}
+
+	.thumbnail {
+		width: 100%;
+		height: calc(100% - 75px);
+		flex: 1;
+		display: flex;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		border-top-left-radius: var(--borderRadius);
+		border-top-right-radius: var(--borderRadius);
+		-webkit-user-drag: none;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	.content {
+		--contentHeight: 100px;
+		min-height: var(--contentHeight);
+		max-height: var(--contentHeight);
+		flex: 1;
+		display: flex;
+		flex-flow: column;
+		justify-content: space-between;
+		margin: 15px 0 0 0;
+		padding: 0 15px 15px 15px;
+	}
+
+	.name {
+		color: white;
+		font-family: "GT Bold";
+		cursor: pointer;
+	}
+
+	.name,
+	.img {
+		cursor: pointer;
+	}
+
+	.buttons {
+		display: flex;
+		flex-flow: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.price {
+		color: white;
+		font-family: "GT Medium";
+	}
+
+	.price div {
+		color: #999;
+	}
+}
+
+.price-cart-trade {
+	position: relative;
+}
+
+.divider {
+	width: 1px;
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+.cart-trade {
+	display: flex;
+	gap: 10px;
+}
+
+.like {
+	width: 25px;
+	height: 25px;
+	background-color: transparent;
+	border: none;
+	position: relative;
+	transition: 0.3s;
+	cursor: pointer;
+
+	.likeSVG {
+		width: 100%;
+		height: 100%;
+		transition: 0.2s all;
+
+		&:hover {
+			transform: scale(1.25);
+		}
+	}
+}
+
+@media screen and (max-width: 1700px) {
+	.name {
+		padding-right: 20px;
+	}
+}
+
+@media screen and (max-width: 1240px) {
+	.name {
+		font-size: 30px;
+	}
+}
+
+@media screen and (max-width: 975px) {
+	.name {
+		font-size: 25px;
+	}
+}
+
+@media screen and (max-width: 840px) {
+	.name {
+		font-size: 22px;
+	}
+}
+
+@media screen and (max-width: 770px) {
+	.name {
+		font-size: 30px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.name {
+		font-size: 40px;
+	}
+}
+
+@media screen and (max-width: 475px) {
+	.name {
+		font-size: 34px;
+	}
+}
+
+@media screen and (max-width: 375px) {
+	.name {
+		font-size: 26px;
+	}
+}

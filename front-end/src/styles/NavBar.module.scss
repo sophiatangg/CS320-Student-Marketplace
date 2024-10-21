@@ -1,0 +1,160 @@
+@use "_variables" as v;
+
+.navbar {
+	width: 100%;
+	height: var(--headerHeight);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 40px 0 30px;
+	position: fixed;
+	inset: 0 auto auto 0;
+	z-index: 5;
+	overflow: hidden;
+	backdrop-filter: blur(10px);
+
+	&[id="home"] {
+		background-color: transparent;
+	}
+
+	&:not([id="home"]) {
+		background-color: rgba(v.$bgColor, 0.7);
+	}
+
+	> div {
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.navbar_left {
+		position: relative;
+	}
+
+	.navbar_right {
+		position: relative;
+	}
+
+	@media screen and (max-width: 850px) and (min-width: 770px) {
+		.navbar_left,
+		.navbar_right {
+			gap: 35px;
+		}
+	}
+
+	.logo {
+		width: 170px;
+		height: 40px;
+		margin-right: var(--sidebarSpaceOffset);
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 15px;
+	}
+
+	h3 {
+		color: white;
+		font-family: "GT Bold";
+		display: flex;
+		flex-flow: column;
+		cursor: pointer;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+		fill: #cccccc;
+		transition: 0.3s;
+	}
+
+	.path {
+		position: relative;
+	}
+}
+
+.icon {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	transition: ease-in-out 0.2s;
+	z-index: 9;
+}
+
+.search {
+	height: 40px;
+	border-radius: var(--borderRadius);
+	background-color: #262626;
+
+	form {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.icon {
+		width: 25px;
+		height: 25px;
+		margin: 0 10px 0 5px;
+	}
+
+	input {
+		height: 100%;
+		width: 450px;
+		color: #cccccc;
+		font-size: 1em;
+		font-family: "GT Medium";
+		background-color: transparent !important;
+		border: 1px transparent;
+		outline: none;
+		transition: all 0.3s;
+
+		&:hover {
+			background-color: #2d2d2d;
+		}
+
+		&:focus {
+			background-color: #333;
+		}
+
+		@media screen and (max-width: 1160px) and (min-width: 1021px) {
+			width: 350px;
+			margin-left: 20px;
+		}
+
+		@media screen and (max-width: 1020px) and (min-width: 926px) {
+			width: 250px;
+			margin-left: 20px;
+		}
+
+		@media screen and (max-width: 925px) and (min-width: 851px) {
+			width: 200px;
+			margin-left: 0px;
+		}
+
+		@media screen and (max-width: 850px) and (min-width: 770px) {
+			width: 150px;
+			margin-left: 0px;
+		}
+	}
+}
+
+.component {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	transition: ease-in-out 0.2s;
+	z-index: 9;
+	cursor: pointer;
+
+	&[id="browseStore"] {
+		font-size: 14px;
+	}
+}
