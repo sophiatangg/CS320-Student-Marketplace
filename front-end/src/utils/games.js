@@ -91,7 +91,7 @@ const games = [
 		name: "Broom",
 		surname: "broom",
 		price: "1000.00",
-		desc: "Broom. Been around da block.",
+		desc: "Broom. Very used.",
 		link: "https://www.cyberpunk.net/",
 		catergory: "appliances",
 		size: "NA",
