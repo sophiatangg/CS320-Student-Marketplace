@@ -55,7 +55,7 @@ const Browse = (props) => {
 	}, [currentCategory]);
 
 	const isNotDefaultItemsPage = currentCategory !== "none" && (currentCategory === "Wishlist" || currentCategory === "My Items");
-	const isDefaultItemsPage = currentCategory !== "Wishlist" && currentCategory !== "My Items";
+	const isDefaultItemsPage = currentCategory !== "none" && currentCategory !== "Wishlist" && currentCategory !== "My Items";
 
 	const renderPlaceHolder = () => {
 		return (
