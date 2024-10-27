@@ -43,7 +43,7 @@ const App = () => {
 		let surname = location.pathname.substring(29);
 
 		let currentItem = itemsData.find((item) => item.surname === surname);
-		if (currentItem != undefined) {
+		if (currentItem !== undefined) {
 			setSelectedItem(currentItem);
 		} else {
 			setSelectedItem(templateGame);

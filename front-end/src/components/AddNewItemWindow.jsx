@@ -38,7 +38,7 @@ const AddNewItemWindow = (props) => {
 		const res = {
 			id: itemsData.length + localStorageItems.length, // uses the max length of itemsData and localStorageItems, add real id soon!
 			name: newItemState.name,
-			surName: newItemState.name.replace(" ", ""),
+			surname: newItemState.name.replace(" ", ""),
 			price: newItemState.price,
 			desc: newItemState.description,
 			category: newItemState.category,
