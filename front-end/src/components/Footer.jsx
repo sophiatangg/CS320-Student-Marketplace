@@ -1,7 +1,7 @@
-import cns from "@/utils/classNames";
 import Instagram from "@media/image/instagram.png";
 import Twitter from "@media/image/twitter.png";
 import styles from "@styles/Footer.module.scss";
+import cns from "@utils/classNames";
 import { PiStudentBold } from "react-icons/pi";
 
 const Footer = (props) => {

@@ -1,0 +1,47 @@
+.addToCart {
+	display: flex;
+	gap: 6px;
+	pointer-events: none;
+	user-select: none;
+
+	&.isCard {
+		height: 20px;
+	}
+
+	&:not(.isCard) {
+		height: 25px;
+	}
+
+	h2,
+	h4 {
+		font-family: "GT Light";
+		transition: 100ms linear;
+		pointer-events: all;
+		cursor: pointer;
+	}
+
+	&:active {
+		h2,
+		h4 {
+			transform: translateY(2px);
+		}
+	}
+
+	h2 {
+		font-size: 18px;
+	}
+
+	h4 {
+		font-size: 0.945em;
+	}
+}
+
+.add {
+	transition: 100ms linear;
+	pointer-events: all;
+	cursor: pointer;
+
+	&:active {
+		transform: translateY(2px);
+	}
+}

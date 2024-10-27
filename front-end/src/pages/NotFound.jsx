@@ -1,5 +1,3 @@
-import Cart from "@components/Cart";
-import NavBar from "@components/NavBar";
 import _404 from "@media/image/404.png";
 import styles from "@styles/NotFound.module.scss";
 import { motion } from "framer-motion";
@@ -7,25 +5,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const NotFound = (props) => {
-	const {
-		cartDisplayed,
-		handleCloseCart,
-		handleOpenCart,
-		cartAmount,
-		clearCart,
-		handleHome,
-		handleHover,
-		handleBrowse,
-		cart,
-		browsing,
-		landingPage,
-		search,
-		searching,
-		handleSearch,
-		handleSearchSubmit,
-		handleRemoveFromCart,
-		openGamePage,
-	} = props;
+	const { handleBrowse } = props;
+
 	const location = useLocation();
 
 	const animations = {
@@ -49,34 +30,6 @@ const NotFound = (props) => {
 
 	return (
 		<div className={styles["notFound"]}>
-			{cartDisplayed ? (
-				<Cart
-					cartDisplayed={cartDisplayed}
-					handleOpenCart={handleOpenCart}
-					handleCloseCart={handleCloseCart}
-					cart={cart}
-					cartAmount={cartAmount}
-					handleHover={handleHover}
-					clearCart={clearCart}
-					handleRemoveFromCart={handleRemoveFromCart}
-					openGamePage={openGamePage}
-				/>
-			) : null}
-
-			<NavBar
-				handleHover={handleHover}
-				handleHome={handleHome}
-				browsing={browsing}
-				landingPage={landingPage}
-				cartAmount={cartAmount}
-				search={search}
-				searching={searching}
-				handleSearch={handleSearch}
-				handleSearchSubmit={handleSearchSubmit}
-				handleOpenCart={handleOpenCart}
-				handleCloseCart={handleCloseCart}
-			/>
-
 			<motion.div className={styles["container"]} variants={animations} initial="initial" animate="animate" exit="exit">
 				<div className={styles["notFoundContent"]}>
 					<img className={styles["notFoundImg"]} src={`${_404}`} alt="Not Found Warning" />

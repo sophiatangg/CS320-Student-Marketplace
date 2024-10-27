@@ -1,8 +1,29 @@
 .tradeButton {
+	position: relative;
+	display: flex;
+	gap: 6px;
+	cursor: pointer;
+	user-select: none;
+
+	&:not(.isBig) {
+		height: 20px;
+	}
+
+	&.isBig {
+		height: 25px;
+
+		h4 {
+			font-size: 18px;
+		}
+	}
+
 	h4 {
 		font-family: "GT Light";
 		font-size: 0.945em;
-		color: #999;
-		transition: 0.3s all;
+	}
+
+	h4,
+	span {
+		transition: 100ms linear;
 	}
 }

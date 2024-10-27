@@ -12,10 +12,13 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src/"),
+			"@animations": path.resolve(__dirname, "src/animations"),
 			"@components": path.resolve(__dirname, "src/components"),
-			"@containers": path.resolve(__dirname, "src/containers"),
-			"@styles": path.resolve(__dirname, "src/styles"),
 			"@media": path.resolve(__dirname, "src/media"),
+			"@pages": path.resolve(__dirname, "src/pages"),
+			"@reducers": path.resolve(__dirname, "src/reducers"),
+			"@stores": path.resolve(__dirname, "src/stores"),
+			"@styles": path.resolve(__dirname, "src/styles"),
 			"@utils": path.resolve(__dirname, "src/utils"),
 		},
 		extensions: [".json", ".js", ".jsx", ".css", ".scss", ".svg"],

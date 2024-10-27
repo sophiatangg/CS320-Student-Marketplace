@@ -6,12 +6,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 40px 0 30px;
+	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	position: fixed;
 	inset: 0 auto auto 0;
-	z-index: 5;
 	overflow: hidden;
 	backdrop-filter: blur(10px);
+	z-index: 10;
 
 	&[id="home"] {
 		background-color: transparent;
@@ -36,15 +36,8 @@
 		position: relative;
 	}
 
-	@media screen and (max-width: 850px) and (min-width: 770px) {
-		.navbar_left,
-		.navbar_right {
-			gap: 35px;
-		}
-	}
-
 	.logo {
-		width: 170px;
+		width: var(--logoWidth);
 		height: 40px;
 		margin-right: var(--sidebarSpaceOffset);
 		display: flex;
@@ -65,7 +58,7 @@
 		width: 100%;
 		height: 100%;
 		fill: #cccccc;
-		transition: 0.3s;
+		transition: 100ms;
 	}
 
 	.path {
@@ -104,15 +97,15 @@
 	}
 
 	input {
+		width: 200px;
 		height: 100%;
-		width: 450px;
 		color: #cccccc;
 		font-size: 1em;
 		font-family: "GT Medium";
 		background-color: transparent !important;
 		border: 1px transparent;
 		outline: none;
-		transition: all 0.3s;
+		transition: all 100ms;
 
 		&:hover {
 			background-color: #2d2d2d;
@@ -120,26 +113,6 @@
 
 		&:focus {
 			background-color: #333;
-		}
-
-		@media screen and (max-width: 1160px) and (min-width: 1021px) {
-			width: 350px;
-			margin-left: 20px;
-		}
-
-		@media screen and (max-width: 1020px) and (min-width: 926px) {
-			width: 250px;
-			margin-left: 20px;
-		}
-
-		@media screen and (max-width: 925px) and (min-width: 851px) {
-			width: 200px;
-			margin-left: 0px;
-		}
-
-		@media screen and (max-width: 850px) and (min-width: 770px) {
-			width: 150px;
-			margin-left: 0px;
 		}
 	}
 }

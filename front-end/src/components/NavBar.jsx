@@ -1,3 +1,4 @@
+import { useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -8,23 +9,11 @@ import { PiStudentBold } from "react-icons/pi";
 import { useLocation } from "react-router-dom";
 
 const NavBar = (props) => {
-	const {
-		handleHover,
-		handleHome,
-		handleBrowse,
-		browsing,
-		landingPage,
-		cart,
-		cartAmount,
-		search,
-		searching,
-		handleSearch,
-		handleSearchSubmit,
-		handleOpenCart,
-		handleCloseCart,
-	} = props;
+	const { browsing, handleBrowse, handleHome, handleOpenCart, handleSearch, handleSearchSubmit, search } = props;
 
 	const [isHover, setIsHover] = useState(false);
+
+	const { cartAmount } = useContextSelector("cartStore");
 
 	const variants = {
 		hidden: { opacity: 1, y: 15 },
@@ -43,13 +32,13 @@ const NavBar = (props) => {
 			<motion.div
 				className={styles["navbar"]}
 				id={props.component}
-				animate="visible"
-				initial={landingPage ? "hidden" : "visible"}
+				animate={"visible"}
+				initial={"visible"}
 				variants={variants}
 				transition={{ y: { type: "spring" }, duration: 0.01 }}
 			>
 				<div className={styles["navbar_left"]}>
-					<div className={styles["logo"]} id="0" onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={handleHome}>
+					<div className={styles["logo"]} id="0" onClick={handleHome}>
 						<div className={styles["icon"]}>
 							<PiStudentBold className={styles["svg"]} style={{ fill: "#fff" }} />
 						</div>
@@ -59,12 +48,12 @@ const NavBar = (props) => {
 						</h3>
 					</div>
 
-					<div className={styles["path"]} id="1" onMouseEnter={handleHover} onMouseLeave={handleHover}>
+					<div className={styles["path"]} id="1">
 						{browsing ? (
 							<>
 								<motion.div
 									animate="visible"
-									initial={location.pathname === "/react-ecommerce-store/browse" ? "hidden" : "visible"}
+									initial={location.pathname === "/browse" ? "hidden" : "visible"}
 									variants={searchVariants}
 									transition={{ opacity: { type: "spring" }, duration: 0.01, delay: 0.25 }}
 									className={styles["search"]}
@@ -74,8 +63,6 @@ const NavBar = (props) => {
 											<HiSearch
 												className={styles["svg"]}
 												style={{ fill: isHover ? "#fff" : "#cccccc" }}
-												onMouseEnter={handleHover}
-												onMouseLeave={handleHover}
 												id="7"
 												aria-label="Search"
 											/>
@@ -101,7 +88,7 @@ const NavBar = (props) => {
 				</div>
 
 				<div className={styles["navbar_right"]}>
-					<div className={styles["component"]} id="3" onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={handleOpenCart}>
+					<div className={styles["component"]} id="3" onClick={handleOpenCart}>
 						<div className={styles["icon"]}>
 							<IoCart
 								onClick={handleOpenCart}

@@ -6,7 +6,7 @@ const animations = {
 	exit: { opacity: 0, x: -200, transition: { x: { type: "tween", duration: 0.4, bounce: 0.3 } } },
 };
 
-const AnimatedGamePage = ({ children }) => {
+const AnimatedItemPage = ({ children }) => {
 	return (
 		<motion.div variants={animations} initial="initial" animate="animate" exit="exit">
 			{children}
@@ -14,4 +14,4 @@ const AnimatedGamePage = ({ children }) => {
 	);
 };
 
-export default AnimatedGamePage;
+export default AnimatedItemPage;

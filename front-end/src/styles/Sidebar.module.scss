@@ -1,6 +1,5 @@
 .filters {
-	width: 170px;
-	margin: 10px calc(var(--sidebarSpaceOffset) + 15px) 0px 40px;
+	width: calc(var(--logoWidth) + 30px);
 
 	h2 {
 		font-family: "GT Medium";
@@ -9,21 +8,38 @@
 		letter-spacing: 1px;
 		margin-bottom: 22px;
 	}
+
+	@media screen and (max-width: 600px) {
+		display: none;
+	}
 }
 
 .globalFilters {
 	margin-bottom: 24px;
 }
 
+.categoryFilters {
+	position: relative;
+}
+
 .filterDiv {
 	color: white;
-	display: flex;
-	align-items: center;
-	gap: 10px;
 	font-family: "GT Regular";
 	font-size: 1.2em;
 	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	cursor: pointer;
+	user-select: none;
+
+	&.selected {
+		position: relative;
+
+		svg {
+			fill: #000 !important;
+		}
+	}
 
 	* {
 		pointer-events: none;
@@ -44,11 +60,5 @@
 	.filterSVG {
 		pointer-events: none;
 		transition: 0.2s all;
-	}
-}
-
-@media screen and (max-width: 600px) {
-	.filters {
-		display: none;
 	}
 }

@@ -1,13 +1,20 @@
-.Browse {
+.browse {
 	background-color: var(--bgColor);
+	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	margin-top: var(--headerHeight);
+	position: relative;
 }
 
 .browseContent {
+	width: 100%;
 	min-height: calc(100vh - var(--headerHeight));
 	padding-top: 25px;
 	padding-bottom: 80px;
 	display: flex;
+	flex-flow: row;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: calc(var(--sidebarSpaceOffset) - 30px);
 }
 
 .filterList {
@@ -27,28 +34,77 @@
 }
 
 .list {
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	padding-right: 60px;
-}
 
-.list h1,
-.list p {
-	color: white;
-}
+	h1,
+	p {
+		color: white;
+	}
 
-.list h1 {
-	font-family: "GT Bold";
-	font-size: 4em;
+	h1 {
+		font-family: "GT Bold";
+		font-size: 4em;
+
+		@media screen and (max-width: 770px) {
+			font-size: 40px;
+		}
+
+		@media screen and (max-width: 600px) {
+			font-size: 48px;
+		}
+
+		@media screen and (max-width: 375px) {
+			font-size: 38px;
+		}
+	}
 }
 
 .applied {
 	display: flex;
 	justify-content: space-between;
+
+	.left {
+		position: relative;
+		display: flex;
+	}
+
+	.placeholder {
+		margin-right: 10px;
+
+		.textButton {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		span {
+			color: #fff;
+		}
+
+		.icon {
+			width: max-content;
+			height: max-content;
+			display: flex;
+		}
+	}
+
+	button {
+		span {
+			color: #fff;
+			font-family: "GT Bold";
+		}
+	}
 }
 
-.filterButton {
+.addNewItem {
+	height: 100%;
+	position: relative;
+}
+
+.textButton {
 	padding: 8px 22px;
 	height: 40px;
 	background-color: #262626;
@@ -58,31 +114,34 @@
 	border: 1px transparent;
 	border-radius: var(--borderRadius);
 	cursor: pointer;
-	transition: all 0.3s;
-}
+	transition: all 100ms;
 
-.filterButton:hover {
-	background-color: #2d2d2d;
-}
+	&:hover {
+		background-color: #2d2d2d;
+	}
 
-.filterButton:active {
-	transform: scale(0.9);
-}
+	&:active {
+		transform: scale(0.9);
+	}
 
-.applied button span {
-	color: #fff;
-	font-family: "GT Bold";
+	@at-root .addNewItem & {
+		font-weight: 700;
+	}
 }
 
 .displayStyle {
 	display: flex;
-	gap: 8px;
 	align-items: center;
-}
+	gap: 8px;
 
-.displayStyle p {
-	color: #696969;
-	font-family: "GT Medium";
+	p {
+		color: #696969;
+		font-family: "GT Medium";
+
+		@media screen and (max-width: 850px) {
+			display: none;
+		}
+	}
 }
 
 .displayBtn {
@@ -94,62 +153,25 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: 0.3s all;
-}
+	transition: 100ms linear;
+	cursor: pointer;
 
-.displayBtn * {
-	pointer-events: none;
-}
+	* {
+		pointer-events: none;
+	}
 
-.displayBtn:hover {
-	background-color: #313131;
-}
+	&:hover {
+		background-color: #313131;
+	}
 
-.displayBtn:active {
-	transform: scale(0.9125);
+	&:active {
+		transform: scale(0.9125);
+	}
 }
 
 .displayItem {
 	transform: scale(0.9);
-	transition: 0.3s all;
-}
-
-@media screen and (max-width: 850px) {
-	.displayStyle p {
-		display: none;
-	}
-}
-
-@media screen and (max-width: 770px) {
-	.displayStyle {
-		display: none;
-	}
-
-	.list h1 {
-		font-size: 40px;
-	}
-}
-
-@media screen and (max-width: 600px) {
-	.list {
-		padding-left: 35px;
-		padding-right: 35px;
-	}
-
-	.list h1 {
-		font-size: 48px;
-	}
-}
-
-@media screen and (max-width: 375px) {
-	.list {
-		padding-left: 20px;
-		padding-right: 20px;
-	}
-
-	.list h1 {
-		font-size: 38px;
-	}
+	transition: 100ms linear;
 }
 
 @media screen and (max-width: 320px) {

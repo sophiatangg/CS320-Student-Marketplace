@@ -1,9 +1,7 @@
-import cns from "@/utils/classNames";
-import Cart from "@components/Cart";
-import NavBar from "@components/NavBar";
 import Pyke from "@media/image/pyke.mp4";
 import styles from "@styles/Home.module.scss";
-import games from "@utils/games";
+import cns from "@utils/classNames";
+import itemsData from "@utils/itemsData";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { FaShoppingBasket } from "react-icons/fa";
@@ -11,32 +9,18 @@ import { GiDiceFire } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 
 const Home = (props) => {
-	const {
-		shownGames,
-		cartAmount,
-		cart,
-		cartDisplayed,
-		handleOpenCart,
-		handleCloseCart,
-		clearCart,
-		handleRemoveFromCart,
-		overlap,
-		setOverlap,
-		openGamePage,
-	} = props;
+	const { overlap, setOverlap } = props;
 
 	const [browsing, setBrowsing] = useState(false);
 	const [landingPage, setLandingPage] = useState(true);
 
 	const navigate = useNavigate();
 
-	const handleHover = (e) => {};
-
 	const handleBrowse = () => {
 		setOverlap(true);
 		setTimeout(() => {
 			setBrowsing(true);
-			navigate("/react-ecommerce-store/browse");
+			navigate("/browse");
 		}, 1500);
 	};
 
@@ -45,25 +29,13 @@ const Home = (props) => {
 		navigate("/");
 	};
 
-	const handleNavGamePage = () => {
-		navigate("/react-ecommerce-store/games/riseofthetombraider");
-	};
-
-	const handleNavNotFoundPage = () => {
-		navigate("/react-ecommerce-store/this-page");
-	};
-
-	const handleNavNotFoundQuery = () => {
-		navigate("/react-ecommerce-store/games/404");
-	};
-
 	const handlePlayDice = () => {
 		let randomIndex = Math.floor(Math.random() * 32);
-		let randomSurname = games[randomIndex].surname;
+		let randomSurname = itemsData[randomIndex].surname;
 		setOverlap(true);
 		setTimeout(() => {
 			setBrowsing(true);
-			navigate(`/react-ecommerce-store/games/${randomSurname}`);
+			navigate(`/store/${randomSurname}`);
 		}, 1500);
 	};
 
@@ -80,35 +52,11 @@ const Home = (props) => {
 
 	return (
 		<>
-			<NavBar
-				handleHover={handleHover}
-				browsing={browsing}
-				handleBrowse={handleBrowse}
-				handleHome={handleHome}
-				landingPage={landingPage}
-				cartAmount={cartAmount}
-				handleOpenCart={handleOpenCart}
-				handleCloseCart={handleCloseCart}
-				component={"home"}
-			/>
 			<div className={styles["main"]}>
 				{overlap ? (
 					<motion.div className={styles["overlap"]} variants={buttonVariants} initial="hidden" animate="visible"></motion.div>
 				) : null}
 
-				{cartDisplayed ? (
-					<Cart
-						cartDisplayed={cartDisplayed}
-						handleOpenCart={handleOpenCart}
-						handleCloseCart={handleCloseCart}
-						cart={cart}
-						cartAmount={cartAmount}
-						handleHover={handleHover}
-						clearCart={clearCart}
-						handleRemoveFromCart={handleRemoveFromCart}
-						openGamePage={openGamePage}
-					/>
-				) : null}
 				<div className={styles["home"]}>
 					<video autoPlay muted loop className={styles["video"]}>
 						<source src={`${Pyke}`} type="video/mp4" />
@@ -124,7 +72,7 @@ const Home = (props) => {
 									<FaShoppingBasket className={styles["ctaSVG"]} style={{ width: 25, height: 25 }} />
 									<span>Browse</span>
 								</button>
-								<button className={styles["cta"]} onClick={handlePlayDice} aria-label="Open random game page">
+								<button className={styles["cta"]} onClick={handlePlayDice} aria-label="Open random item page">
 									<GiDiceFire className={styles["ctaSVG"]} style={{ width: 25, height: 25 }} />
 									<span>Random</span>
 								</button>

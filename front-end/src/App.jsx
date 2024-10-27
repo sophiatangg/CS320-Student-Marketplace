@@ -1,56 +1,69 @@
-import Browse from "@containers/Browse";
-import GamePage from "@containers/GamePage";
-import Home from "@containers/Home";
-import NotFound from "@containers/NotFound";
-import cardStyles from "@styles/Card.module.scss";
+import AddNewItemWindow from "@components/AddNewItemWindow";
+import CartWindow from "@components/CartWindow";
+import Footer from "@components/Footer";
+import NavBar from "@components/NavBar";
+import TradeWindow from "@components/TradeWindow";
+import Browse from "@pages/Browse";
+import Home from "@pages/Home";
+import ItemPage from "@pages/ItemPage";
+import NotFound from "@pages/NotFound";
+import { useContextSelector } from "@stores/StoreProvider";
+import appStyles from "@styles/App.module.scss";
+import cns from "@utils/classNames";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import filterNames from "./utils/filterNames";
-import games from "./utils/games";
+import itemsData from "./utils/itemsData";
 import templateGame from "./utils/templateGame";
 
 const App = () => {
-	const [currentFilter, setCurrentFilter] = useState("none");
-	const [allGames, setAllGames] = useState(games);
-	const [cart, setCart] = useState([]);
-	const [cartAmount, setCartAmount] = useState(0);
-	const [shownGames, setShownGames] = useState(allGames);
-	const [cartDisplayed, setCartDisplayed] = useState(false);
-	const [search, setSearch] = useState("");
-	const [overlap, setOverlap] = useState(false);
-	const [searching, setSearching] = useState(false);
+	const localStorageItems = useContextSelector("globalStore").items;
+
+	const [allItems, setAllItems] = useState(itemsData.concat(localStorageItems));
 	const [browsing, setBrowsing] = useState(true);
-	const [selectedGame, setSelectedGame] = useState(false);
+	const [currentCategory, setCurrentCategory] = useState("none");
 	const [extended, setExtended] = useState(false);
+	const [overlap, setOverlap] = useState(false);
+	const [search, setSearch] = useState("");
+	const [searching, setSearching] = useState(false);
+	const [selectedItem, setSelectedItem] = useState(false);
+	const [shownItems, setShownItems] = useState(allItems);
 	const [textExtended, setTextExtended] = useState(false);
+
+	const [addNewItemDisplayed, setAddNewItemDisplayed] = useState(false);
+	const [cartDisplayed, setCartDisplayed] = useState(false);
+	const [tradeDisplayed, setTradeDisplayed] = useState(false);
 
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	if (location.pathname != "/react-ecommerce-store/" && location.pathname != "/react-ecommerce-store/browse" && selectedGame === false) {
+	if (location.pathname !== "/" && location.pathname !== "/browse" && selectedItem === false) {
 		let surname = location.pathname.substring(29);
 
-		let currentGame = games.find((game) => game.surname === surname);
-		if (currentGame != undefined) {
-			setSelectedGame(currentGame);
+		let currentItem = itemsData.find((item) => item.surname === surname);
+		if (currentItem != undefined) {
+			setSelectedItem(currentItem);
 		} else {
-			setSelectedGame(templateGame);
+			setSelectedItem(templateGame);
 		}
 	}
 
-	async function handleBrowse() {
+	const handleBrowse = async () => {
 		setExtended(false);
 		setTextExtended(false);
 		setCartDisplayed(false);
-		navigate("/react-ecommerce-store/browse");
-	}
+		setTradeDisplayed(false);
+		navigate("/browse");
+	};
 
 	const handleHome = () => {
 		setExtended(false);
 		setTextExtended(false);
 		setCartDisplayed(false);
-		navigate("/react-ecommerce-store/");
+		setTradeDisplayed(false);
+		navigate("/");
 	};
 
 	const handleSearch = (e) => {
@@ -59,310 +72,218 @@ const App = () => {
 	};
 
 	const handleSearchSubmit = (e) => {
-		setCurrentFilter("none");
+		setCurrentCategory("none");
 		e.preventDefault();
 		setSearching(true);
 
-		if (location.pathname != "/react-ecommerce-store/browse") {
-			navigate("/react-ecommerce-store/browse");
+		if (location.pathname != "/browse") {
+			navigate("/browse");
 		}
 	};
 
-	const handleFilterSelect = (e) => {
-		const selectedFilterName = filterNames[e.target.id];
-		setCurrentFilter(selectedFilterName);
+	const handleCategorySelect = ({ id }) => {
+		const newCategoryName = filterNames[id];
+		setCurrentCategory(newCategoryName);
 	};
 
-	const handleSelectGame = (e) => {
-		if (e.target.tagName === "BUTTON") {
-			return;
-		} else if (e.target.classList.contains(`${cardStyles["name"]}`) || e.target.classList.contains(`${cardStyles["img"]}`)) {
-			const cardElem = e.target.closest(`.${cardStyles["card"]}`);
-			const clickedGame = games[cardElem.id];
-
-			setSelectedGame(games[e.target.parentNode.id]);
-			navigate(`/react-ecommerce-store/games/${clickedGame.surname}`);
-		}
-	};
-
-	const handleLike = (e) => {
-		let handledLike = allGames.map((game, i) => {
-			if (e.target.id == i) {
-				game.isLiked = !game.isLiked;
-				return game;
-			} else {
-				return game;
-			}
+	const handleSelectItem = (id) => {
+		const clickedItem = allItems.find((_item) => {
+			return _item.id === id;
 		});
 
-		setAllGames(handledLike);
+		setSelectedItem(clickedItem);
+		navigate(`/store/${clickedItem.surname}`);
+	};
+
+	const handleCurrentHoveredItem = (id) => {
+		if (isNaN(id)) {
+			console.error("Check id!");
+			return;
+		}
+
+		const hoveredItem = allItems.find((item) => {
+			return item.id === id;
+		});
+
+		setSelectedItem(hoveredItem);
+	};
+
+	const handleLike = (id) => {
+		if (isNaN(id)) {
+			console.error("Check liked id!");
+			return;
+		}
+
+		const handledLike = allItems.map((item, i) => {
+			if (id === item.id) {
+				item.isLiked = !item.isLiked;
+			}
+
+			return item;
+		});
+
+		setAllItems(handledLike);
 	};
 
 	const clearFilter = () => {
-		setCurrentFilter("none");
+		setCurrentCategory("none");
 		setSearch("");
 	};
 
-	const openGamePage = (e) => {
+	const openItemPage = (e) => {
 		setCartDisplayed(false);
-		let selectedGameSurname = e.target.id;
-		navigate(`/react-ecommerce-store/games/${selectedGameSurname}`);
+		setTradeDisplayed(false);
+
+		let selectedItemSurname = e.target.id;
+		navigate(`/store/${selectedItemSurname}`);
 	};
 
 	const handleHover = (e) => {};
 
-	const handleHoverGame = (e) => {
-		let handledHoveredGame = allGames.map((game, i) => {
-			if (e.target.id == i) {
-				game.isHovered = !game.isHovered;
-				return game;
+	const handleHoverItem = (e) => {
+		let handledHoveredItem = allItems.map((item, i) => {
+			if (e.target.id === i) {
+				item.isHovered = !item.isHovered;
+				return item;
 			} else {
-				return game;
+				return item;
 			}
 		});
 
-		setAllGames(handledHoveredGame);
-	};
-
-	const handleAddToCart = (e) => {
-		let handledAddedGame = allGames.map((game, i) => {
-			if (location.pathname === "/react-ecommerce-store/browse") {
-				if (e.target.id == i) {
-					game.inCart = true;
-					let newCart = cart;
-					newCart.push(game);
-					setCart(newCart);
-					setCartAmount(cartAmount + 1);
-					return game;
-				} else {
-					return game;
-				}
-			} else {
-				if (selectedGame.id == i) {
-					game.inCart = true;
-					let newCart = cart;
-					newCart.push(game);
-					setCart(newCart);
-					setCartAmount(cartAmount + 1);
-					return game;
-				} else {
-					return game;
-				}
-			}
-		});
-
-		setAllGames(handledAddedGame);
-	};
-
-	const clearCart = () => {
-		setCart([]);
-		setCartAmount(0);
-
-		const defaultGames = allGames.map((game, i) => {
-			game.inCart = false;
-			game.isHovered = false;
-			return game;
-		});
-
-		setAllGames(defaultGames);
-	};
-
-	const handleRemoveFromCart = (e) => {
-		let removedIndex = cart.findIndex((game) => game.id == e.target.id);
-		let newAllGames = allGames.map((game, i) => {
-			if (game.id == e.target.id) {
-				game.inCart = false;
-				game.isHovered = false;
-				return game;
-			} else {
-				return game;
-			}
-		});
-		setAllGames(newAllGames);
-		let firstHalf = cart.slice(0, removedIndex);
-		let secondHalf = cart.slice(removedIndex + 1);
-		let addedUp = firstHalf.concat(secondHalf);
-		setCart(addedUp);
-		setCartAmount(cartAmount - 1);
+		setAllItems(handledHoveredItem);
 	};
 
 	useEffect(() => {
 		setOverlap(false);
 
-		if (location.pathname === "/react-ecommerce-store/") {
+		if (location.pathname === "/") {
 			setBrowsing(false);
 		} else {
 			setBrowsing(true);
 		}
 
-		if (location.pathname != "/react-ecommerce-store/browse") {
+		if (location.pathname != "/browse") {
 			document.body.style.overflowX = "hidden";
-		} else if (location.pathname === "/react-ecommerce-store/browse") {
+		} else if (location.pathname === "/browse") {
 			document.body.style.overflowX = "scroll";
 		}
 	}, [location.pathname]);
 
 	const handleOpenCart = () => {
 		setCartDisplayed(true);
+		setTradeDisplayed(false);
 	};
 
 	const handleCloseCart = () => {
 		setCartDisplayed(false);
+		setTradeDisplayed(false);
+	};
+
+	const handleTradeOpen = (bool) => {
+		setTradeDisplayed(bool);
+	};
+
+	const handleAddNewItemOpen = (bool) => {
+		setAddNewItemDisplayed(bool);
 	};
 
 	useEffect(() => {
-		console.log(selectedGame);
-	}, [selectedGame]);
+		// console.log(selectedItem);
+	}, [selectedItem]);
 
-	useEffect(() => {
-		if (cartDisplayed) {
-			document.body.style.overflowX = "hidden !important";
-		} else {
-			document.body.style.overflowX = "scroll !important";
-		}
-	}, [cartDisplayed]);
+	const validPathName = location.pathname.replace("/", "");
 
 	return (
-		<AnimatePresence exitBeforeEnter>
-			<Routes key={location.pathname} location={location}>
-				<Route
-					path="/"
-					element={
-						<Home
-							handleHover={handleHover}
-							shownGames={shownGames}
-							cart={cart}
-							cartAmount={cartAmount}
-							cartDisplayed={cartDisplayed}
-							handleOpenCart={handleOpenCart}
-							handleCloseCart={handleCloseCart}
-							clearCart={clearCart}
-							handleAddToCart={handleAddToCart}
-							handleLike={handleLike}
-							handleHoverGame={handleHoverGame}
-							handleSelectGame={handleSelectGame}
-							handleRemoveFromCart={handleRemoveFromCart}
-							overlap={overlap}
-							setOverlap={setOverlap}
-							openGamePage={openGamePage}
-						/>
-					}
+		<>
+			<div
+				className={cns(appStyles["app"], {
+					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed,
+				})}
+			>
+				<NavBar
+					browsing={browsing}
+					component={validPathName}
+					handleBrowse={handleBrowse}
+					handleHome={handleHome}
+					handleOpenCart={handleOpenCart}
+					handleSearch={handleSearch}
+					handleSearchSubmit={handleSearchSubmit}
+					search={search}
 				/>
-				<Route
-					path="/react-ecommerce-store/"
-					element={
-						<Home
-							handleHover={handleHover}
-							shownGames={shownGames}
-							cart={cart}
-							cartAmount={cartAmount}
-							cartDisplayed={cartDisplayed}
-							handleOpenCart={handleOpenCart}
-							handleCloseCart={handleCloseCart}
-							clearCart={clearCart}
-							handleAddToCart={handleAddToCart}
-							handleLike={handleLike}
-							handleHoverGame={handleHoverGame}
-							handleSelectGame={handleSelectGame}
-							handleRemoveFromCart={handleRemoveFromCart}
-							overlap={overlap}
-							setOverlap={setOverlap}
-							openGamePage={openGamePage}
+				<AnimatePresence exitBeforeEnter>
+					<Routes key={validPathName} location={location}>
+						<Route path="/" element={<Home overlap={overlap} setOverlap={setOverlap} />} />
+						<Route
+							path="/browse"
+							element={
+								<Browse
+									allItems={allItems}
+									clearFilter={clearFilter}
+									currentCategory={currentCategory}
+									handleAddNewItemOpen={handleAddNewItemOpen}
+									handleCurrentHoveredItem={handleCurrentHoveredItem}
+									handleCategorySelect={handleCategorySelect}
+									handleHoverItem={handleHoverItem}
+									handleLike={handleLike}
+									handleSelectItem={handleSelectItem}
+									handleTradeOpen={handleTradeOpen}
+									search={search}
+									searching={searching}
+									setCurrentCategory={setCurrentCategory}
+									setShownItems={setShownItems}
+									shownItems={shownItems}
+								/>
+							}
 						/>
-					}
-				/>
-				<Route
-					path="/react-ecommerce-store/browse"
-					element={
-						<Browse
-							cart={cart}
-							cartAmount={cartAmount}
-							handleHover={handleHover}
-							handleFilterSelect={handleFilterSelect}
-							currentFilter={currentFilter}
-							shownGames={shownGames}
-							setShownGames={setShownGames}
-							clearFilter={clearFilter}
-							allGames={allGames}
-							setAllGames={setAllGames}
-							handleLike={handleLike}
-							handleHoverGame={handleHoverGame}
-							handleAddToCart={handleAddToCart}
-							handleSelectGame={handleSelectGame}
-							handleSearch={handleSearch}
-							handleSearchSubmit={handleSearchSubmit}
-							search={search}
-							searching={searching}
-							browsing={browsing}
-							handleBrowse={handleBrowse}
-							handleHome={handleHome}
-							cartDisplayed={cartDisplayed}
-							handleOpenCart={handleOpenCart}
-							handleCloseCart={handleCloseCart}
-							clearCart={clearCart}
-							handleRemoveFromCart={handleRemoveFromCart}
-							openGamePage={openGamePage}
+						<Route
+							path="/category/:categoryName"
+							element={
+								<Browse
+									allItems={allItems}
+									clearFilter={clearFilter}
+									currentCategory={currentCategory}
+									handleAddNewItemOpen={handleAddNewItemOpen}
+									handleCurrentHoveredItem={handleCurrentHoveredItem}
+									handleCategorySelect={handleCategorySelect}
+									handleHoverItem={handleHoverItem}
+									handleLike={handleLike}
+									handleSelectItem={handleSelectItem}
+									handleTradeOpen={handleTradeOpen}
+									search={search}
+									searching={searching}
+									setCurrentCategory={setCurrentCategory}
+									setShownItems={setShownItems}
+									shownItems={shownItems}
+								/>
+							}
 						/>
-					}
-				/>
-				<Route
-					path="/react-ecommerce-store/games/:gameId"
-					element={
-						<GamePage
-							cart={cart}
-							cartAmount={cartAmount}
-							handleHover={handleHover}
-							handleLike={handleLike}
-							handleAddToCart={handleAddToCart}
-							handleSelectGame={handleSelectGame}
-							selectedGame={selectedGame}
-							setSelectedGame={setSelectedGame}
-							handleSearch={handleSearch}
-							handleSearchSubmit={handleSearchSubmit}
-							search={search}
-							searching={searching}
-							browsing={browsing}
-							handleBrowse={handleBrowse}
-							handleHome={handleHome}
-							allGames={allGames}
-							extended={extended}
-							setExtended={setExtended}
-							textExtended={textExtended}
-							setTextExtended={setTextExtended}
-							cartDisplayed={cartDisplayed}
-							handleOpenCart={handleOpenCart}
-							handleCloseCart={handleCloseCart}
-							clearCart={clearCart}
-							handleRemoveFromCart={handleRemoveFromCart}
-							openGamePage={openGamePage}
+						<Route
+							path="/store/:itemId"
+							element={
+								<ItemPage
+									allItems={allItems}
+									extended={extended}
+									handleBrowse={handleBrowse}
+									handleLike={handleLike}
+									handleTradeOpen={handleTradeOpen}
+									selectedItem={selectedItem}
+									setExtended={setExtended}
+									setSelectedItem={setSelectedItem}
+									setTextExtended={setTextExtended}
+									textExtended={textExtended}
+								/>
+							}
 						/>
-					}
-				/>
-				<Route
-					path="*"
-					element={
-						<NotFound
-							cartDisplayed={cartDisplayed}
-							handleCloseCart={handleCloseCart}
-							handleOpenCart={handleOpenCart}
-							cartAmount={cartAmount}
-							clearCart={clearCart}
-							handleHome={handleHome}
-							handleHover={handleHover}
-							cart={cart}
-							browsing={browsing}
-							search={search}
-							searching={searching}
-							handleSearch={handleSearch}
-							handleSearchSubmit={handleSearchSubmit}
-							handleBrowse={handleBrowse}
-							handleRemoveFromCart={handleRemoveFromCart}
-							openGamePage={openGamePage}
-						/>
-					}
-				/>
-			</Routes>
-		</AnimatePresence>
+						<Route path="*" element={<NotFound handleBrowse={handleBrowse} />} />
+					</Routes>
+				</AnimatePresence>
+				{cartDisplayed && <CartWindow handleCloseCart={handleCloseCart} openItemPage={openItemPage} />}
+				{tradeDisplayed && <TradeWindow handleTradeOpen={handleTradeOpen} selectedItem={selectedItem} />}
+				{addNewItemDisplayed && <AddNewItemWindow handleAddNewItemOpen={handleAddNewItemOpen} />}
+				<Footer />
+			</div>
+			<ToastContainer />
+		</>
 	);
 };
 

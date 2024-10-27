@@ -1,0 +1,230 @@
+.cartWindow {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	inset: 0 auto auto 0;
+	background-color: rgba(0, 0, 0, 0.6);
+	overflow: hidden;
+	z-index: 10;
+
+	.cartWindowBG {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		left: 0%;
+	}
+}
+
+.cart {
+	width: 50%;
+	height: 70%;
+	background-color: var(--popOutBgColor);
+	border-radius: var(--borderRadius);
+	padding: 30px;
+	position: absolute;
+	inset: 50% auto auto 50%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	transform: translate(-50%, -50%);
+	z-index: 12;
+
+	> * {
+		width: 100%;
+		flex: 1;
+	}
+}
+
+.removeButton * {
+	pointer-events: none;
+}
+
+.top {
+	position: relative;
+}
+
+.topHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	h2 {
+		color: white;
+		font-size: 28px;
+		font-family: "GT Ultrabold";
+	}
+
+	h3 {
+		padding-top: 4px;
+		font-size: 16px;
+		font-family: "GT Light";
+		color: #ccc;
+		transform: scale(var(--scaleDownFactor));
+		transition: 100ms linear;
+		cursor: pointer;
+
+		&:hover {
+			color: white;
+		}
+
+		&:active {
+			transform: scale(var(--scaleDownFactor));
+		}
+	}
+}
+
+.topGames {
+	margin-top: 25px;
+}
+
+.right {
+	transition: 100ms linear;
+}
+
+.bottom {
+	width: 100%;
+	max-height: 40px;
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	h3 {
+		color: #999;
+		font-size: 16px;
+	}
+
+	button {
+		background-color: transparent;
+		border: 1px transparent;
+		color: white;
+		font-family: "GT Medium";
+		font-size: 20px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		cursor: pointer;
+		transition: 100ms linear;
+
+		&:active {
+			transform: scale(var(--scaleDownFactor));
+		}
+
+		* {
+			pointer-events: none;
+		}
+
+		h3 {
+			font-family: "GT Bold";
+		}
+	}
+}
+
+.item {
+	background-color: #262626;
+	border-radius: var(--borderRadius);
+	padding: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+
+	&:not(:first-child) {
+		margin-top: 13px;
+	}
+
+	h3 {
+		font-size: 16px;
+		font-family: "GT Regular";
+		transition: 100ms linear;
+		cursor: pointer;
+		color: #ccc;
+
+		&:hover {
+			color: #fff;
+		}
+
+		&:active {
+			transform: scale(var(--scaleDownFactor));
+		}
+	}
+
+	div {
+		display: flex;
+		gap: 16px;
+		color: #999999;
+		font-size: 14px;
+		font-family: "GT Medium";
+		align-items: center;
+
+		button {
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			border: 1px transparent;
+			background-color: #2e2e2e;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			transition: 0.2s all;
+
+			&:hover {
+				background-color: #353535;
+			}
+
+			&:active {
+				transform: scale(var(--scaleDownFactor));
+			}
+		}
+	}
+}
+
+.cross {
+	width: 9px;
+	height: 9px;
+	fill: #fff;
+}
+
+@media screen and (max-width: 800px) {
+	.cart {
+		width: 65%;
+	}
+}
+
+@media screen and (max-width: 650px) {
+	.cart {
+		width: 70%;
+	}
+}
+
+@media screen and (max-width: 620px) {
+	.cart {
+		width: 75%;
+	}
+}
+
+@media screen and (max-width: 550px) {
+	.cart {
+		width: 80%;
+	}
+}
+
+@media screen and (max-width: 450px) {
+	.cart {
+		width: 85%;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.cart {
+		width: 90%;
+	}
+}
+
+@media screen and (max-width: 350px) {
+	.cart {
+		width: 100%;
+	}
+}

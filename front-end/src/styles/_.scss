@@ -25,12 +25,27 @@
 }
 
 :root {
+	--logoWidth: 170px;
 	--headerHeight: 60px;
 	--sidebarSpaceOffset: 50px;
 
 	--borderRadius: 8px;
 
 	--bgColor: #{v.$bgColor};
+	--popOutBgColor: #1a1a1a;
+	--popOutBgColorAlt1: #373333;
+	--popOutBgColorAlt2: #262222;
+
+	--buttonNormal: rgb(10, 95, 10);
+	--buttonNormalHover: rgb(12, 112, 12);
+	--buttonWarning: rgb(177, 177, 60);
+	--buttonDanger: rgb(192, 65, 65);
+	--buttonDangerHover: rgb(210, 79, 79);
+	--buttonBlue: rgb(76, 76, 224);
+	--buttonBlueHover: rgb(89, 89, 207);
+
+	--scaleUpFactor: 1.1;
+	--scaleDownFactor: 0.95;
 }
 
 a {
@@ -62,7 +77,7 @@ form {
 		transition: 0.2s all;
 
 		&:active {
-			transform: scale(0.97);
+			transform: scale(var(--scaleDownFactor));
 		}
 	}
 }
