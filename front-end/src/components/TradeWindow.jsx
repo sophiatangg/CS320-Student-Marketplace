@@ -44,7 +44,7 @@ const TradeWindow = (props) => {
 	const handleOfferSubmit = (e) => {
 		console.log(selectedOfferedItems);
 
-		toast.success("Trade complete!", {
+		toast.success("Trade offer sent!", {
 			position: "top-center",
 			autoClose: 5000,
 			hideProgressBar: false,
