@@ -1,0 +1,10 @@
+body {
+	&:has(.hasWindowDisplay) {
+		overflow: hidden;
+	}
+}
+
+.app {
+	height: 100vh;
+	position: relative;
+}

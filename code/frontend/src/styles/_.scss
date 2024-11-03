@@ -1,0 +1,85 @@
+@use "_variables" as v;
+@use "_fonts";
+
+* {
+	&,
+	&:active,
+	&:focus {
+		outline: 0;
+		outline-style: none;
+		outline-width: 0;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+
+	&,
+	&:before,
+	&:after {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		text-rendering: optimizeLegibility;
+		backface-visibility: hidden;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+:root {
+	--logoWidth: 170px;
+	--cartWidth: 140px;
+	--headerHeight: 70px;
+	--sidebarSpaceOffset: 50px;
+
+	--borderRadius: 8px;
+
+	--bgColor: #{v.$bgColor};
+	--highlightColor: rgb(223, 160, 44);
+	--popOutBgColor: #1a1a1a;
+	--popOutBgColorAlt1: #373333;
+	--popOutBgColorAlt2: #262222;
+
+	--buttonNormal: rgb(10, 95, 10);
+	--buttonNormalHover: rgb(12, 112, 12);
+	--buttonWarning: rgb(177, 177, 60);
+	--buttonDanger: rgb(192, 65, 65);
+	--buttonDangerHover: rgb(210, 79, 79);
+	--buttonBlue: rgb(76, 76, 224);
+	--buttonBlueHover: rgb(89, 89, 207);
+
+	--scaleUpFactor: 1.1;
+	--scaleDownFactor: 0.95;
+}
+
+a {
+	text-decoration: none;
+}
+
+body {
+	background-color: var(--bgColor);
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow-x: hidden !important;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+form {
+	display: flex;
+	align-items: center;
+
+	button {
+		background: transparent;
+		border: 1px transparent;
+		cursor: pointer;
+		transition: 0.2s all;
+
+		&:active {
+			transform: scale(var(--scaleDownFactor));
+		}
+	}
+}

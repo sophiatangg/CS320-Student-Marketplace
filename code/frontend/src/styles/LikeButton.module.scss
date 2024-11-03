@@ -1,0 +1,25 @@
+.like-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.like {
+	width: 25px;
+	height: 25px;
+	background-color: transparent;
+	border: none;
+	position: relative;
+	transition: 100ms;
+	cursor: pointer;
+
+	.likeSVG {
+		width: 100%;
+		height: 100%;
+		transition: 0.2s all;
+
+		&:hover {
+			transform: scale(var(--scaleUpFactor));
+		}
+	}
+}

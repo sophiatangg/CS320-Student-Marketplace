@@ -1,0 +1,247 @@
+.addNewItemWindowContainer {
+	width: 80%;
+	height: 80%;
+	background-color: var(--popOutBgColor);
+	border-radius: var(--borderRadius);
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	position: absolute;
+	inset: 50% auto auto 50%;
+	transform: translate(-50%, -50%);
+	overflow: hidden;
+	--topComponent: 80px;
+	--bottomComponent: 70px;
+
+	> div {
+		flex: 1;
+	}
+}
+
+.header {
+	width: 100%;
+	max-height: var(--topComponent);
+	padding: 0 30px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	h1 {
+		color: #fff;
+		font-family: "GT Ultrabold";
+		font-size: 40px;
+	}
+}
+
+.closeButton {
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	inset: 50% 30px auto auto;
+	display: flex;
+	align-items: center;
+	transform: translate(0, -50%);
+	cursor: pointer;
+
+	svg {
+		color: #fff;
+		transition: transform 100ms linear;
+
+		&:hover {
+			transform: scale(var(--scaleUpFactor));
+		}
+
+		&:active {
+			transform: scale(1);
+		}
+	}
+}
+
+.inner {
+	--height: calc(100% - var(--topComponent) - var(--bottomComponent));
+	width: 100%;
+	min-height: var(--height);
+	max-height: var(--height);
+	padding: 0 30px;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	overflow-y: auto;
+}
+
+.content {
+	flex: 1;
+	height: 100%;
+}
+
+.bottom {
+	width: 100%;
+	height: var(--bottomComponent);
+	background-color: var(--popOutBgColorAlt1);
+	box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
+	position: absolute;
+	inset: auto auto 0 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 25px;
+	z-index: 2;
+}
+
+.button {
+	height: 35px;
+	font-size: 18px;
+	color: #fff;
+	border: none;
+	border-radius: calc(var(--borderRadius) - 2px);
+	padding: 5px 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition:
+		background-color 100ms linear,
+		transform 100ms linear;
+
+	&:hover {
+		transform: scale(var(--scaleUpFactor));
+	}
+
+	&[id="upload"],
+	&[id="post"] {
+		background-color: var(--buttonNormal);
+
+		&:hover {
+			background-color: var(--buttonNormalHover);
+		}
+	}
+
+	&[id="reset"],
+	&[id="cancel"] {
+		background-color: var(--buttonDanger);
+
+		&:hover {
+			background-color: var(--buttonDangerHover);
+		}
+	}
+
+	.icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+.inputs {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	gap: 20px;
+
+	> div {
+		width: 100%;
+		display: flex;
+
+		&:last-child {
+			margin-bottom: 40px;
+		}
+	}
+
+	.label {
+		color: #ccc;
+		font-family: "GT Bold";
+		font-size: 18px;
+		margin-bottom: 5px;
+	}
+}
+
+.single {
+	position: relative;
+
+	&.singleRow {
+		flex-flow: column;
+	}
+}
+
+.imageItem {
+	width: 100%;
+	flex: 1;
+}
+
+.double {
+	position: relative;
+	gap: 20px;
+}
+
+.inputInner {
+	width: 100%;
+}
+
+.inputBox {
+	width: 100%;
+
+	input,
+	textarea {
+		width: 100%;
+		color: #fff;
+		font-family: "GT Light";
+		font-size: 18px;
+		background-color: var(--popOutBgColorAlt1);
+		border: none;
+		border-radius: var(--borderRadius);
+		padding: 5px 10px;
+	}
+
+	input {
+		height: 40px;
+	}
+
+	textarea {
+		height: 120px;
+		min-height: 120px;
+		max-height: 300px;
+		resize: vertical;
+	}
+
+	@at-root [id="images"] & {
+		display: flex;
+		flex-flow: row;
+		gap: 10px;
+		align-items: center;
+
+		.button {
+			font-size: 14px;
+			height: 40px;
+		}
+	}
+}
+
+.addedImages {
+	margin-top: 10px;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	gap: 10px;
+}
+
+.imageItem {
+	color: #fff;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+
+	.removeIMGButton {
+		width: 20px;
+		height: 20px;
+		background-color: transparent !important;
+		padding: 3px;
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
