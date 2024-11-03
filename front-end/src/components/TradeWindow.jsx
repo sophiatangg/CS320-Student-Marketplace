@@ -41,23 +41,51 @@ const TradeWindow = (props) => {
 		console.log("Initiate chat");
 	};
 
-	const handleOfferSubmit = (e) => {
+	const handleOfferSubmit = async (e) => {  // I'm so sorry idk what else to do 
 		console.log(selectedOfferedItems);
 
-		toast.success("Trade offer sent!", {
-			position: "top-center",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "dark",
-			transition: Bounce,
-		});
+		e.preventDefault(); 
+		if (selectedOfferedItems.length === 0) { //prevents nothing from being traded
+		  toast.error("Please select at least one item to offer.");
+		  return;
+		}
+		try {
+		  const response = await fetch('/api/trade', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+			  itemIds: selectedOfferedItems.map(item => item.id), //hope and prayers
+			  userInitiator: "initiatorUserId", 
+			  userReceiver: selectedItem.ownerId, 
+			  timestamp: new Date().toISOString()
+			})
+		  });
+	  
+		  if (response.ok) { //wrapped from previously written code
+			toast.success("Trade offer sent!", {
+			  position: "top-center",
+			  autoClose: 5000,
+			  hideProgressBar: false,
+			  closeOnClick: true,
+			  pauseOnHover: true,
+			  draggable: true,
+			  progress: undefined,
+			  theme: "dark",
+			  transition: Bounce,
+			});
+			handleRemoveWindow(e);
+		  } else {
+			console.error("Failed to store trade");
+			toast.error("Failed to send trade offer. Please try again.");
+		  }
+		} catch (error) { 
+		  console.error("Error initiating trade:", error);
+		  toast.error("An error occurred. Please try again.");
+		}
 
-		handleRemoveWindow(e);
+		//handleRemoveWindow(e);
 	};
+
 
 	return (
 		<AnimatedWindow>

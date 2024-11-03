@@ -1,11 +1,8 @@
-// import express from 'express';
-// import trade from './trade.js';
+import express from 'express';
+import storeTradeInDatabase from './trade.js';
 
-// const app = express();
+const router = express.Router();
 
-// app.use(express.json());
-// app.use(trade);
+router.post('/api/trade', storeTradeInDatabase);
 
-// app.listen(3000, () => { //temp
-//   console.log('Server is running on port 3000');
-// });
+export default router;
