@@ -1,0 +1,62 @@
+.cardMini {
+	width: 300px;
+	height: 120px;
+	font-family: "GT Regular";
+	background-color: var(--colorChange);
+	border: 2px solid var(--colorChange);
+	border-radius: var(--borderRadius);
+	position: relative;
+	display: flex;
+	flex-flow: row;
+	overflow: hidden;
+	gap: 10px;
+	transition:
+		background-color 100ms linear,
+		border-color 100ms linear;
+	cursor: pointer;
+
+	&:not(.cardSelected, .cardHovered) {
+		--colorChange: #{rgba(#fff, 0.1)};
+	}
+
+	&.cardHovered {
+		--colorChange: #{rgba(#fff, 0.2)};
+	}
+
+	&.cardHovered.cardSelected,
+	&.cardSelected,
+	&.cardDefaultSelected {
+		--colorChange: #{rgba(#fff, 0.3)};
+	}
+
+	.thumbnail {
+		width: 120px;
+		height: 120px;
+		background-color: #fff;
+		pointer-events: none;
+		user-select: none;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+	}
+
+	.content {
+		padding: 10px 5px;
+		display: flex;
+		flex-flow: column;
+	}
+
+	span {
+		color: #fff;
+
+		&.primary {
+			font-size: 14px;
+			font-weight: 600;
+			user-select: none;
+			pointer-events: none;
+		}
+	}
+}

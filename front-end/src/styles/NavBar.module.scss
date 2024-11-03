@@ -1,0 +1,133 @@
+@use "_variables" as v;
+
+.navbar {
+	width: 100%;
+	height: var(--headerHeight);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
+	position: fixed;
+	inset: 0 auto auto 0;
+	overflow: hidden;
+	backdrop-filter: blur(10px);
+	z-index: 10;
+
+	&[id="home"] {
+		background-color: transparent;
+	}
+
+	&:not([id="home"]) {
+		background-color: rgba(v.$bgColor, 0.7);
+	}
+
+	> div {
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.navbar_left {
+		position: relative;
+	}
+
+	.navbar_right {
+		position: relative;
+	}
+
+	.logo {
+		width: var(--logoWidth);
+		height: 40px;
+		margin-right: var(--sidebarSpaceOffset);
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 15px;
+	}
+
+	h3 {
+		color: white;
+		font-family: "GT Bold";
+		display: flex;
+		flex-flow: column;
+		cursor: pointer;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+		fill: #cccccc;
+		transition: 100ms;
+	}
+
+	.path {
+		position: relative;
+	}
+}
+
+.icon {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	transition: ease-in-out 0.2s;
+	z-index: 9;
+}
+
+.search {
+	height: 40px;
+	border-radius: var(--borderRadius);
+	background-color: #262626;
+
+	form {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.icon {
+		width: 25px;
+		height: 25px;
+		margin: 0 10px 0 5px;
+	}
+
+	input {
+		width: 200px;
+		height: 100%;
+		color: #cccccc;
+		font-size: 1em;
+		font-family: "GT Medium";
+		background-color: transparent !important;
+		border: 1px transparent;
+		outline: none;
+		transition: all 100ms;
+
+		&:hover {
+			background-color: #2d2d2d;
+		}
+
+		&:focus {
+			background-color: #333;
+		}
+	}
+}
+
+.component {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	transition: ease-in-out 0.2s;
+	z-index: 9;
+	cursor: pointer;
+
+	&[id="browseStore"] {
+		font-size: 14px;
+	}
+}
