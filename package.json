@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "node-modules": "^1.0.1"
-  },
-  "devDependencies": {
-    "terser": "^5.36.0"
-  }
-}
