@@ -1,9 +1,10 @@
 import SearchBar from "@components/SearchBar";
+import Account from "@pages/Account";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
 import { FaShoppingBasket } from "react-icons/fa";
-import { PiStudentBold, PiUserCircleFill } from "react-icons/pi";
+import { PiStudentBold } from "react-icons/pi";
 import { TiShoppingCart } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
 
@@ -112,16 +113,7 @@ const NavBar = (props) => {
 						</div>
 					)}
 				</div>
-				<div className={styles["userComponent"]}>
-					<div className={styles["icon"]}>
-						<PiUserCircleFill
-							className={styles["svg"]}
-							style={{
-								fill: "#fff",
-							}}
-						/>
-					</div>
-				</div>
+				<Account />
 			</div>
 		);
 	};
