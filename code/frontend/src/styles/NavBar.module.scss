@@ -17,7 +17,7 @@
 	}
 
 	&:not([id="home"]) {
-		background-color: rgba(v.$bgColor, 0.7);
+		background-color: #{rgba(v.$bgColor, 0.7)};
 	}
 
 	> div {

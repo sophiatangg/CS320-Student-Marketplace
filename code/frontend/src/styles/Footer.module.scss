@@ -23,7 +23,7 @@
 	}
 
 	span {
-		color: #eee;
+		color: var(--colorSecondaryForeground);
 	}
 }
 
@@ -51,7 +51,7 @@
 		width: 100%;
 		height: 1px;
 		opacity: 0.5;
-		background-color: #999;
+		background-color: var(--colorGrayTertiary);
 		position: absolute;
 		bottom: -50%;
 		pointer-events: none;
@@ -85,7 +85,7 @@
 	}
 
 	h3 {
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 		font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 		font-weight: 500;
 		transition: 100ms linear;
@@ -140,7 +140,7 @@
 
 .infoLeft {
 	p {
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 
 		@media screen and (max-width: 800px) {
 			display: none;
@@ -181,7 +181,7 @@
 }
 
 .endLeft {
-	color: #ccc;
+	color: var(--colorGrayQuaternary);
 	font-family: "GT Light";
 	text-decoration: underline;
 	text-underline-offset: 2px;

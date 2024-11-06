@@ -7,7 +7,7 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-color: #0f1011;
+	background-color: var(--bgColor);
 	z-index: 10;
 }
 
@@ -47,7 +47,7 @@
 
 .left {
 	.buttons .browseBtn {
-		background-color: #45c1bc;
+		background-color: var(--homeColoredButtonColor);
 	}
 }
 
@@ -96,7 +96,7 @@
 }
 
 .cta {
-	background-color: #fff;
+	background-color: var(--colorPrimaryForeground);
 	border: 1px transparent;
 	border-radius: var(--borderRadius);
 	color: black;
@@ -114,7 +114,7 @@
 
 	&:hover {
 		transform: scale(var(--scaleDownFactor));
-		background-color: #45c1bc;
+		background-color: var(--homeColoredButtonColor);
 	}
 
 	span {

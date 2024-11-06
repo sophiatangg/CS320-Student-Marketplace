@@ -1,5 +1,5 @@
 .cardFull {
-	background-color: #202020;
+	background-color: var(--cardFullBackground);
 	padding-bottom: 50%;
 	border: 1px transparent;
 	border-radius: var(--borderRadius);
@@ -10,7 +10,7 @@
 	overflow: hidden;
 
 	&:hover {
-		background-color: #2d2d2d;
+		background-color: var(--cardFullHoverBackground);
 	}
 
 	&.cardFullWidth {
@@ -55,7 +55,7 @@
 		--height: calc(100% - var(--contentHeight));
 		min-height: var(--height);
 		max-height: var(--height);
-		background-color: #fff;
+		background-color: var(--colorPrimaryForeground);
 		display: flex;
 		flex: 1;
 	}
@@ -102,7 +102,7 @@
 	}
 
 	.price div {
-		color: #999;
+		color: var(--colorGrayTertiary);
 	}
 }
 

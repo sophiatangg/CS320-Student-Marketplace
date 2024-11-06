@@ -17,7 +17,7 @@
 }
 
 .notFound {
-	background-color: #0f1011;
+	background-color: var(--bgColor);
 	height: 100vh;
 }
 
@@ -50,7 +50,7 @@
 
 .notFoundText p {
 	width: 94.5%;
-	color: #ccc;
+	color: var(--colorGrayQuaternary);
 	font-family: "GT Regular";
 	font-size: 1.03em;
 }

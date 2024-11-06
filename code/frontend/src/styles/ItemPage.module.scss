@@ -1,6 +1,6 @@
 .itemPage {
 	margin-top: var(--headerHeight);
-	background-color: #0f1011;
+	background-color: var(--bgColor);
 
 	.itemPageContent {
 		width: 100%;
@@ -21,7 +21,7 @@
 	}
 
 	.goBack {
-		color: #fff;
+		color: var(--colorPrimaryForeground);
 		background-color: transparent;
 		border: 1px transparent;
 		display: flex;
@@ -129,7 +129,7 @@
 		}
 
 		p {
-			color: #cccccc;
+			color: var(--colorGrayQuaternary);
 			font-size: 15px;
 			font-family: "GT Regular";
 			word-spacing: 2px;
@@ -140,7 +140,7 @@
 	.moreBottom {
 		--height: 220px;
 		width: 100%;
-		background-color: #262626;
+		background-color: var(--buttonBackground);
 		border-bottom-left-radius: var(--borderRadius);
 		border-bottom-right-radius: var(--borderRadius);
 		padding: 30px 35px;
@@ -179,11 +179,11 @@
 
 			span {
 				&:first-child {
-					color: #999;
+					color: var(--colorGrayTertiary);
 				}
 
 				&:last-child {
-					color: #fff;
+					color: var(--colorPrimaryForeground);
 				}
 			}
 		}
@@ -247,11 +247,11 @@
 		}
 
 		&.buttonHovered {
-			color: #fff;
+			color: var(--colorPrimaryForeground);
 		}
 
 		&.buttonNotHovered {
-			color: #cccccc;
+			color: var(--colorGrayQuaternary);
 		}
 	}
 
@@ -261,7 +261,7 @@
 
 	.up,
 	.down {
-		fill: #cccccc;
+		fill: var(--colorGrayQuaternary);
 		height: 16px;
 	}
 
@@ -292,7 +292,7 @@
 		gap: 10px;
 
 		h3 {
-			color: #ccc;
+			color: var(--colorGrayQuaternary);
 			font-family: "GT Light";
 		}
 
@@ -327,7 +327,7 @@
 			gap: 12px;
 			background-color: transparent;
 			border: 1px transparent;
-			color: #999999;
+			color: var(--colorGrayTertiary);
 			transition: 0.25s all;
 			cursor: pointer;
 
