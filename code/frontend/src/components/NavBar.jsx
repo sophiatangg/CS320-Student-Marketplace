@@ -1,5 +1,5 @@
+import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
-import Account from "@pages/Account";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
@@ -113,7 +113,7 @@ const NavBar = (props) => {
 						</div>
 					)}
 				</div>
-				<Account />
+				<AccountButton />
 			</div>
 		);
 	};

@@ -4,6 +4,7 @@ import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
 import NotFound from "@pages/NotFound";
+import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
@@ -19,7 +20,7 @@ const App = () => {
 	const [browsing, setBrowsing] = useState(true);
 	const [overlap, setOverlap] = useState(false);
 
-	const { addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
+	const { accountInfoDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
 	const { selectedItem } = useContextSelector("itemsStore");
 
 	const dispatch = useContextDispatch();
@@ -53,9 +54,10 @@ const App = () => {
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</AnimatePresence>
+				{addNewItemDisplayed && <AddNewItemWindow />}
 				{cartDisplayed && <CartWindow />}
 				{tradeDisplayed && <TradeWindow />}
-				{addNewItemDisplayed && <AddNewItemWindow />}
+				{accountInfoDisplayed && <AccountOptionsWindow />}
 				<Footer />
 			</div>
 			<ToastContainer />
