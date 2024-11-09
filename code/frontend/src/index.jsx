@@ -5,7 +5,7 @@ import "@media/fonts/walsheim/GTWalsheimPro-Medium.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Regular.ttf";
 import { StoreProvider } from "@stores/StoreProvider";
 import "@styles/_.scss";
-import React from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,12 +15,12 @@ const elem = document.getElementById("root");
 const root = createRoot(elem);
 
 root.render(
-	<React.StrictMode>
+	<StrictMode>
 		<StoreProvider>
 			<BrowserRouter>
 				<App />
 				<DissolveFilter />
 			</BrowserRouter>
 		</StoreProvider>
-	</React.StrictMode>,
+	</StrictMode>,
 );

@@ -3,7 +3,7 @@
 	height: 100px;
 	border-radius: var(--borderRadius);
 	position: absolute;
-	inset: var(--headerHeight) 30px auto auto;
+	inset: 0 30px auto auto;
 	overflow: hidden;
 	z-index: 9;
 }

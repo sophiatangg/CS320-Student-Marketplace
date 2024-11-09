@@ -1,7 +1,7 @@
 import Pyke from "@media/image/pyke.mp4";
+import { useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/Home.module.scss";
 import cns from "@utils/classNames";
-import itemsData from "@utils/itemsData";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -15,6 +15,8 @@ const Home = (props) => {
 	const [browsing, setBrowsing] = useState(false);
 	const [landingPage, setLandingPage] = useState(true);
 
+	const { allItems } = useContextSelector("itemsStore");
+
 	const navigate = useNavigate();
 
 	const handleBrowse = () => {
@@ -25,16 +27,9 @@ const Home = (props) => {
 		}, 1500);
 	};
 
-	const handleHome = () => {
-		setBrowsing(false);
-		navigate("/");
-	};
-
 	const handlePlayDice = () => {
-		const randomIndex = Math.floor(Math.random() * 32);
-		const randomSurname = itemsData[randomIndex]?.surname || itemsData[randomIndex]?.surName;
-
-		console.log(randomSurname);
+		const randomIndex = Math.floor(Math.random() * allItems.length);
+		const randomSurname = allItems[randomIndex]?.surname || allItems[randomIndex]?.surName;
 
 		setOverlap(true);
 		setTimeout(() => {

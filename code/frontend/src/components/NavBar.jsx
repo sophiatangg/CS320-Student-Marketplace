@@ -1,7 +1,7 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
-import styles from "@styles/NavBar.module.scss";
+import navBarStyles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
 import { FaShoppingBasket } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
@@ -63,9 +63,9 @@ const NavBar = (props) => {
 
 	const renderNavLeft = () => {
 		return (
-			<div className={styles["logo"]} onClick={handleHome}>
-				<div className={styles["icon"]}>
-					<PiStudentBold className={styles["svg"]} style={{ fill: "#fff" }} />
+			<div className={navBarStyles["logo"]} onClick={handleHome}>
+				<div className={navBarStyles["icon"]}>
+					<PiStudentBold className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
 				</div>
 				<h3>
 					<span>Student</span>
@@ -77,12 +77,12 @@ const NavBar = (props) => {
 
 	const renderNavCenter = () => {
 		return (
-			<div className={styles["path"]}>
+			<div className={navBarStyles["path"]}>
 				{browsing && <SearchBar />}
 				{!browsing && (
-					<div className={styles["component"]} id="browseStore">
-						<div className={styles["icon"]}>
-							<FaShoppingBasket className={styles["svg"]} style={{ fill: "#fff" }} />
+					<div className={navBarStyles["component"]} id="browseStore">
+						<div className={navBarStyles["icon"]}>
+							<FaShoppingBasket className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
 						</div>
 						<h3 onClick={handleBrowse}>
 							<span>Browse</span>
@@ -96,19 +96,19 @@ const NavBar = (props) => {
 
 	const renderNavRight = () => {
 		return (
-			<div className={styles["component"]}>
-				<div className={styles["cartComponent"]} onClick={handleOpenCart}>
-					<div className={styles["icon"]}>
+			<div className={navBarStyles["component"]}>
+				<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
+					<div className={navBarStyles["icon"]}>
 						<TiShoppingCart
 							onClick={handleOpenCart}
-							className={styles["svg"]}
+							className={navBarStyles["svg"]}
 							style={{
 								fill: cartAmount ? "#90ee90" : "#fff",
 							}}
 						/>
 					</div>
 					{cartAmount > 0 && (
-						<div className={styles["badge"]} onClick={handleOpenCart}>
+						<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
 							{cartAmount}
 						</div>
 					)}
@@ -121,7 +121,8 @@ const NavBar = (props) => {
 	return (
 		<>
 			<motion.div
-				className={styles["navbar"]}
+				key="navBar-component"
+				className={navBarStyles["navbar"]}
 				id={props.component}
 				animate={"visible"}
 				initial={"visible"}

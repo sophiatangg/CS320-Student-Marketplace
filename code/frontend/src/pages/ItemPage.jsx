@@ -96,22 +96,25 @@ const ItemPage = (props) => {
 	};
 
 	useEffect(() => {
-		document.title = `${PROJECT_NAME} — ${selectedItem.name}`;
-	}, []);
-
-	useEffect(() => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
-			const surname = pathname.substring(29);
-			const currentItem = allItems.find((item) => item.surname === surname);
+			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
+
+			const currentItem = allItems.find((item) => {
+				return item.surName === surname || item.surname === surname;
+			});
 
 			const item = currentItem ?? templateGame;
+
+			document.title = `${PROJECT_NAME} — ${surname}`;
 
 			dispatch({
 				type: "SET_SELECTED_ITEM",
 				payload: item,
 			});
+		} else {
+			document.title = `${PROJECT_NAME} — ${selectedItem.name || selectedItem.name}`;
 		}
-	}, [pathname, selectedItem, allItems, dispatch, setIsError]);
+	}, [pathname, selectedItem, allItems, dispatch]);
 
 	if (!selectedItem) return null;
 

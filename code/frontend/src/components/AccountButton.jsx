@@ -1,9 +1,14 @@
 import { supabase } from "@database/supabaseClient";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
-import styles from "@styles/Account.module.scss";
+import accountButtonStyles from "@styles/AccountButton.module.scss";
+import { useRef } from "react";
 import { PiUserCircleFill } from "react-icons/pi";
 
 const AccountButton = (props) => {
+	const {} = props;
+
+	const componentRef = useRef(null);
+
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const dispatch = useContextDispatch();
 
@@ -17,9 +22,7 @@ const AccountButton = (props) => {
 		}
 	};
 
-	const handleRenderToggle = async () => {
-		// await handleFetchDB();
-
+	const handleClick = async () => {
 		dispatch({
 			type: "SET_ACCOUNT_OPTIONS_DISPLAYED",
 			payload: !accountInfoDisplayed,
@@ -27,14 +30,20 @@ const AccountButton = (props) => {
 	};
 
 	return (
-		<div className={styles["userComponent"]}>
-			<div className={styles["icon"]}>
+		<div
+			ref={componentRef}
+			className={accountButtonStyles["userComponent"]}
+			onClick={async () => {
+				await handleFetchDB();
+				handleClick();
+			}}
+		>
+			<div className={accountButtonStyles["icon"]}>
 				<PiUserCircleFill
-					className={styles["svg"]}
+					className={accountButtonStyles["svg"]}
 					style={{
-						fill: "#fff",
+						fill: accountInfoDisplayed ? "#92f" : "#fff",
 					}}
-					onMouseEnter={handleRenderToggle}
 				/>
 			</div>
 		</div>

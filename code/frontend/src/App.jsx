@@ -42,7 +42,7 @@ const App = () => {
 		<>
 			<div
 				className={cns(appStyles["app"], {
-					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed,
+					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed || accountInfoDisplayed,
 				})}
 			>
 				<NavBar browsing={browsing} component={validPathName} />
