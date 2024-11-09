@@ -1,5 +1,5 @@
-import express from "express";
-import { connectToDatabase, addTrade, disconnectFromDatabase } from "../../backend/dbFuncs.js";
+import * as TradeWindow from ".../.../frontend/popups/TradeWindow.jsx";
+import { addTrade, connectToDatabase, disconnectFromDatabase } from "../../backend/dbFuncs.js";
 
 const storeTradeInDatabase = async (req, res, next) => {
 	const { itemId, userInitiator, userReceiver, timestamp } = req.body;
@@ -12,6 +12,7 @@ const storeTradeInDatabase = async (req, res, next) => {
 		const client = await connectToDatabase();
 
 		await addTrade(itemId, userInitiator, userReceiver, timestamp, client);
+		TradeWindow.handleOfferSubmit(e);
 
 		await disconnectFromDatabase(client);
 
