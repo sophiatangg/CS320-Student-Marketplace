@@ -22,10 +22,15 @@ const App = () => {
 
 	const { accountInfoDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
 	const { selectedItem } = useContextSelector("itemsStore");
+	const { theme } = useContextSelector("globalStore");
 
 	const dispatch = useContextDispatch();
 
 	const { pathname } = useLocation();
+
+	useEffect(() => {
+		document.documentElement.setAttribute("theme", theme);
+	}, [theme]);
 
 	useEffect(() => {
 		setOverlap(false);

@@ -1,5 +1,6 @@
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
+import cns from "@utils/classNames";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -27,6 +28,7 @@ const AccountOptionsWindow = () => {
 	const [isExiting, setIsExiting] = useState(false);
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
+	const { theme: currentTheme } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
 
 	const handleWindowRemoval = (e) => {
@@ -40,6 +42,17 @@ const AccountOptionsWindow = () => {
 		}
 	};
 
+	const handleThemeChange = (selectedTheme) => {
+		dispatch({
+			type: "SET_THEME",
+			payload: selectedTheme,
+		});
+
+		console.log(selectedTheme);
+
+		document.documentElement.setAttribute("theme", selectedTheme);
+	};
+
 	useEffect(() => {
 		document.addEventListener("click", handleWindowRemoval);
 
@@ -48,13 +61,42 @@ const AccountOptionsWindow = () => {
 		};
 	}, [accountInfoDisplayed, dispatch]);
 
+	const renderThemeSwitcher = () => {
+		const themes = ["dark", "light", "system"];
+
+		return (
+			<div className={styles["appearanceGroup"]}>
+				<span className={styles["title"]}>APPEARANCE</span>
+				<div className={styles["group"]}>
+					{themes.map((theme, i) => {
+						return (
+							<div
+								key={i}
+								className={cns(styles["groupItem"], {
+									[styles["groupSelectedItem"]]: currentTheme === theme,
+								})}
+								onClick={() => {
+									handleThemeChange(theme);
+								}}
+							>
+								<div className={styles["groupPhoto"]}>
+									<img src={`/themes/theme-${theme}.png`} />
+								</div>
+								<span className={styles["groupItemName"]}>{theme}</span>
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		);
+	};
+
 	return (
 		<AnimatePresence key={"window"}>
 			{accountInfoDisplayed && (
 				<motion.div
 					ref={windowRef}
 					className={styles["accountOptions"]}
-					style={{ backgroundColor: "var(--popOutBgColor)" }}
 					initial="hidden"
 					animate="visible"
 					exit="hidden"
@@ -70,8 +112,13 @@ const AccountOptionsWindow = () => {
 						}
 					}}
 				>
-					<a>Account Option 1</a>
-					<a>Account Option 2</a>
+					<div className={styles["inner"]}>
+						<div className={styles["header"]}>
+							<span>Hello, sign in!</span>
+						</div>
+						<hr />
+						{renderThemeSwitcher()}
+					</div>
 				</motion.div>
 			)}
 		</AnimatePresence>
