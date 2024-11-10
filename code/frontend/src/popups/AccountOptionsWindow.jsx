@@ -47,10 +47,6 @@ const AccountOptionsWindow = () => {
 			type: "SET_THEME",
 			payload: selectedTheme,
 		});
-
-		console.log(selectedTheme);
-
-		document.documentElement.setAttribute("theme", selectedTheme);
 	};
 
 	useEffect(() => {

@@ -29,7 +29,25 @@ const App = () => {
 	const { pathname } = useLocation();
 
 	useEffect(() => {
-		document.documentElement.setAttribute("theme", theme);
+		const applyTheme = () => {
+			if (theme === "system") {
+				const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+				document.documentElement.setAttribute("theme", systemTheme);
+			} else {
+				document.documentElement.setAttribute("theme", theme);
+			}
+		};
+
+		applyTheme();
+
+		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		if (theme === "system") {
+			mediaQuery.addEventListener("change", applyTheme);
+		}
+
+		return () => {
+			mediaQuery.removeEventListener("change", applyTheme);
+		};
 	}, [theme]);
 
 	useEffect(() => {
