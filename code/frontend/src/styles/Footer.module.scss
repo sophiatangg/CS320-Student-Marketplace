@@ -19,7 +19,7 @@
 
 	h2 {
 		padding-bottom: 4px;
-		color: white;
+		color: var(--colorPrimaryForeground);
 	}
 
 	span {
@@ -30,7 +30,7 @@
 .logo {
 	width: 30px;
 	height: 30px;
-	fill: white;
+	fill: var(--colorPrimaryForeground);
 }
 
 .sections {
@@ -112,14 +112,14 @@
 		}
 
 		&:hover {
-			color: white;
+			color: var(--colorPrimaryForeground);
 		}
 	}
 }
 
 .footer .sections .section .first {
 	font-weight: 1000;
-	color: white;
+	color: var(--colorPrimaryForeground);
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
@@ -148,7 +148,7 @@
 
 		span {
 			text-decoration: underline;
-			color: white;
+			color: var(--colorPrimaryForeground);
 			text-underline-offset: 2px;
 			cursor: pointer;
 		}

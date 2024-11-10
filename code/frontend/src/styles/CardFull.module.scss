@@ -97,7 +97,7 @@
 	}
 
 	.price {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-family: "GT Medium";
 	}
 
@@ -110,7 +110,7 @@
 	width: max-content;
 	max-width: 100%;
 	text-overflow: ellipsis;
-	color: white;
+	color: var(--colorPrimaryForeground);
 	font-family: "GT Bold";
 	font-size: 20px;
 	white-space: nowrap;

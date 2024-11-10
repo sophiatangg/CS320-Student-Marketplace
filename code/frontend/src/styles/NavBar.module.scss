@@ -36,7 +36,7 @@
 	}
 
 	h3 {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-family: "GT Bold";
 		display: flex;
 		flex-flow: column;
@@ -100,7 +100,7 @@
 	cursor: pointer;
 
 	.badge {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-size: 10px;
 		font-family: "GT Bold";
 		background-color: red;

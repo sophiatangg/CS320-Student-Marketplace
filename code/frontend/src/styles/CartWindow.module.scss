@@ -33,7 +33,7 @@
 	align-items: center;
 
 	h2 {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-size: 28px;
 		font-family: "GT Ultrabold";
 	}
@@ -48,7 +48,7 @@
 		cursor: pointer;
 
 		&:hover {
-			color: white;
+			color: var(--colorPrimaryForeground);
 		}
 
 		&:active {

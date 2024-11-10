@@ -20,7 +20,7 @@
 		height: inherit;
 		width: inherit;
 		z-index: -1;
-		background-color: white;
+		background-color: var(--colorPrimaryForeground);
 		opacity: 0.3;
 		pointer-events: none;
 	}
@@ -77,7 +77,7 @@
 	h1 {
 		font-family: "GT Bold";
 		font-size: 90px;
-		color: white;
+		color: var(--colorPrimaryForeground);
 	}
 }
 
@@ -128,7 +128,7 @@
 }
 
 .intro {
-	color: white;
+	color: var(--colorPrimaryForeground);
 	font-family: "GT Regular";
 	font-size: 18px;
 	text-align: center;
@@ -137,7 +137,7 @@
 }
 
 .home h2 {
-	color: white;
+	color: var(--colorPrimaryForeground);
 	font-family: "GT Bold";
 }
 
