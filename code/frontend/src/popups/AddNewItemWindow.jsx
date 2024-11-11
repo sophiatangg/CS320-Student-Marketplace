@@ -33,7 +33,9 @@ const AddNewItemWindow = (props) => {
 		handleAddNewItemOpen(false);
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
+		//I'm leaving the POST in your functions, cuz if it ain't broke
+		e.preventDefault();
 		const date = new Date();
 
 		if (!Array.isArray(newItemState.images)) return;
@@ -54,10 +56,42 @@ const AddNewItemWindow = (props) => {
 			footage: footageList,
 		};
 
-		dispatch({
-			type: "ADD_ITEM",
-			payload: res,
-		});
+		//i added this stuff
+		try {
+			const response = await fetch("/api/addItem", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					itemId: res.id,
+					user: res.seller,
+					category: res.category,
+					timestamp: res.date,
+					...res, // Additional fields can be added if needed
+				}),
+			});
+
+			if (response.ok) {
+				const result = await response.json();
+				console.log(result.message);
+				//your code
+				dispatch({
+					type: "ADD_ITEM",
+					payload: res,
+				});
+				//idk it just needs to be here
+				toast.success("Item successfully added to the database!");
+			} else {
+				const errorData = await response.json();
+				console.error("Failed to store item:", errorData.error);
+				toast.error("Failed to store item in the database.");
+			}
+		} catch (error) {
+			console.error("Error submitting item:", error);
+			toast.error("An error occurred while submitting the item.");
+		}
+		//end of my section
 
 		handleReset(e);
 	};

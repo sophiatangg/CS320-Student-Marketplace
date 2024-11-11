@@ -1,5 +1,5 @@
 import * as AddNewItemWindow from ".../.../frontend/popups/AddNewItemWindow.jsx";
-import { connectToDatabase, disconnectFromDatabase } from "../../backend/dbFuncs.js";
+import { addItem, connectToDatabase, disconnectFromDatabase } from "../../backend/dbFuncs.js";
 
 const storeItemInDatabase = async (req, res, next) => {
 	const { itemId, user, category, timestamp } = req.body;
