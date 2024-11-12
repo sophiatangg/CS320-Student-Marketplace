@@ -32,4 +32,11 @@ const setUser = (setter) => {
 	return authListener;
 };
 
-export { setUser, signInWithGoogle };
+const signOut = async (e) => {
+	if (e) e.preventDefault();
+
+	const data = await supabase.auth.signOut();
+	return data;
+};
+
+export { setUser, signInWithGoogle, signOut };

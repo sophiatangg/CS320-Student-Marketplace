@@ -1,5 +1,5 @@
 import LoginButton from "@components/LoginButton";
-import { setUser } from "@database/users";
+import { setUser, signOut } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
@@ -10,6 +10,7 @@ import { FaTrashCan } from "react-icons/fa6";
 import { HiLogin } from "react-icons/hi";
 import { PiUserCircleFill } from "react-icons/pi";
 import ScrollBar from "react-perfect-scrollbar";
+import { Bounce, toast } from "react-toastify";
 
 const animationVariants = {
 	visible: {
@@ -108,6 +109,24 @@ const AccountOptionsWindow = () => {
 				icon: () => {
 					return <HiLogin />;
 				},
+				onClick: async (e) => {
+					const logOut = await signOut(e);
+					const { error } = logOut;
+
+					if (error) {
+						toast.error("Error signing out.", {
+							position: "top-center",
+							autoClose: 5000,
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+							progress: undefined,
+							theme: "dark",
+							transition: Bounce,
+						});
+					}
+				},
 			},
 		];
 
@@ -124,6 +143,10 @@ const AccountOptionsWindow = () => {
 										[styles["delete-item"]]: option.name === "Delete Account",
 										[styles["logout-item"]]: option.name === "Logout",
 									})}
+									onClick={async (e) => {
+										if (!option.onClick) return;
+										await option.onClick(e);
+									}}
 								>
 									<div className={styles["list-item-inner"]}>
 										<span className={styles["list-icon"]}>{option.icon && option.icon()}</span>
