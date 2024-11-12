@@ -2,7 +2,6 @@ import Window from "@popups/Window";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
-import itemsData from "@utils/itemsData";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 
@@ -42,19 +41,19 @@ const AddNewItemWindow = (props) => {
 
 		const footageList = newItemState.images.length === 0 ? [newItemState.cover] : [newItemState.cover, ...newItemState.images];
 
-		const res = {
-			id: itemsData.length + localStorageItems.length, // uses the max length of itemsData and localStorageItems, add real id soon!
-			name: newItemState.name,
-			surname: newItemState.name.replace(" ", ""),
-			price: newItemState.price,
-			desc: newItemState.description,
-			category: newItemState.category,
-			condition: newItemState.condition,
-			seller: "MockUser1001",
-			date: date.toISOString(),
-			cover: newItemState.cover,
-			footage: footageList,
-		};
+		// const res = {
+		// 	id: itemsData.length + localStorageItems.length, // uses the max length of itemsData and localStorageItems, add real id soon!
+		// 	name: newItemState.name,
+		// 	surname: newItemState.name.replace(" ", ""),
+		// 	price: newItemState.price,
+		// 	desc: newItemState.description,
+		// 	category: newItemState.category,
+		// 	condition: newItemState.condition,
+		// 	seller: "MockUser1",
+		// 	date: date.toISOString(),
+		// 	cover: newItemState.cover,
+		// 	footage: footageList,
+		// };
 
 		//i added this stuff
 		try {
@@ -64,11 +63,11 @@ const AddNewItemWindow = (props) => {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					itemId: res.id,
-					user: res.seller,
-					category: res.category,
-					timestamp: res.date,
-					...res, // Additional fields can be added if needed
+					itemId: itemsData.length + localStorageItems.length,
+					user: "MockUser1",
+					category: newItemState.category,
+					timestamp: date.toISOString(),
+					// Additional fields(?)
 				}),
 			});
 
