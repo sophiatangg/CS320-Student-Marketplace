@@ -1,3 +1,5 @@
+import LoginButton from "@components/LoginButton";
+import { getUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
@@ -26,6 +28,7 @@ const animationVariants = {
 const AccountOptionsWindow = () => {
 	const windowRef = useRef(null);
 	const [isExiting, setIsExiting] = useState(false);
+	const [isAuthorized, setIsAuthorized] = useState(false);
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
@@ -56,6 +59,12 @@ const AccountOptionsWindow = () => {
 			document.removeEventListener("click", handleWindowRemoval);
 		};
 	}, [accountInfoDisplayed, dispatch]);
+
+	useEffect(() => {
+		getUser({
+			setter: setIsAuthorized,
+		});
+	}, []);
 
 	const renderThemeSwitcher = () => {
 		const themes = ["dark", "light", "system"];
@@ -110,8 +119,9 @@ const AccountOptionsWindow = () => {
 				>
 					<div className={styles["inner"]}>
 						<div className={styles["header"]}>
-							<span>Hello, sign in!</span>
+							<span>Hello, {!isAuthorized ? "sign in!" : ""}</span>
 						</div>
+						{!isAuthorized && <LoginButton />}
 						<hr />
 						{renderThemeSwitcher()}
 					</div>

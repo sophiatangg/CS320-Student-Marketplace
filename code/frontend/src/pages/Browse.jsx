@@ -1,15 +1,16 @@
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
+import { getUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { MdOutlineTableRows } from "react-icons/md";
 import { TbLayoutGridFilled } from "react-icons/tb";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const animations = {
 	initial: { opacity: 0, x: -150 },
@@ -18,12 +19,16 @@ const animations = {
 };
 
 const Browse = (props) => {
+	const [isAuthorized, setIsAuthorized] = useState(false);
+
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
 	const { gridDisplay } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
+
+	const navigate = useNavigate();
 
 	const handleAddNewItemOpen = (bool) => {
 		dispatch({
@@ -39,6 +44,16 @@ const Browse = (props) => {
 	useEffect(() => {
 		document.title = `${PROJECT_NAME} — Store`;
 	}, []);
+
+	useEffect(() => {
+		getUser({
+			setter: setIsAuthorized,
+		});
+
+		if (!isAuthorized) {
+			navigate("/login");
+		}
+	}, [isAuthorized]);
 
 	const renderPlaceHolder = () => {
 		return (

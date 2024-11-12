@@ -2,6 +2,7 @@ import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
+import { getUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -44,6 +45,7 @@ const AnimatedText = ({ children }) => {
 const ItemPage = (props) => {
 	const navigate = useNavigate();
 
+	const [isAuthorized, setIsAuthorized] = useState(false);
 	const [extended, setExtended] = useState(false);
 	const [textExtended, setTextExtended] = useState(false);
 	const [carouselState, setCarouselState] = useState(0);
@@ -115,6 +117,16 @@ const ItemPage = (props) => {
 			document.title = `${PROJECT_NAME} — ${selectedItem.name || selectedItem.name}`;
 		}
 	}, [pathname, selectedItem, allItems, dispatch]);
+
+	useEffect(() => {
+		getUser({
+			setter: setIsAuthorized,
+		});
+
+		if (!isAuthorized) {
+			navigate("/login");
+		}
+	}, [isAuthorized]);
 
 	if (!selectedItem) return null;
 

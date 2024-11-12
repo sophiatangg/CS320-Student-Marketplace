@@ -1,20 +1,30 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
+import { getUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import navBarStyles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { FaShoppingBasket } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
 import { TiShoppingCart } from "react-icons/ti";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const navBarVariants = {
+	hidden: { opacity: 1, y: 15 },
+	visible: { opacity: 1, y: 0 },
+};
 
 const NavBar = (props) => {
-	const { browsing } = props;
+	const [isAuthorized, setIsAuthorized] = useState(false);
+	const [browsing, setBrowsing] = useState(true);
 
 	const navigate = useNavigate();
 
 	const { cartAmount } = useContextSelector("cartStore");
 	const dispatch = useContextDispatch();
+
+	const { pathname } = useLocation();
 
 	const handleHome = () => {
 		navigate("/");
@@ -56,10 +66,15 @@ const NavBar = (props) => {
 		});
 	};
 
-	const navBarVariants = {
-		hidden: { opacity: 1, y: 15 },
-		visible: { opacity: 1, y: 0 },
-	};
+	useEffect(() => {
+		setBrowsing(!(pathname === "/"));
+	}, [pathname]);
+
+	useEffect(() => {
+		getUser({
+			setter: setIsAuthorized,
+		});
+	}, [isAuthorized]);
 
 	const renderNavLeft = () => {
 		return (
@@ -78,8 +93,8 @@ const NavBar = (props) => {
 	const renderNavCenter = () => {
 		return (
 			<div className={navBarStyles["path"]}>
-				{browsing && <SearchBar />}
-				{!browsing && (
+				{browsing && isAuthorized && <SearchBar />}
+				{!browsing && isAuthorized && (
 					<div className={navBarStyles["component"]} id="browseStore">
 						<div className={navBarStyles["icon"]}>
 							<FaShoppingBasket className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
@@ -97,22 +112,24 @@ const NavBar = (props) => {
 	const renderNavRight = () => {
 		return (
 			<div className={navBarStyles["component"]}>
-				<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
-					<div className={navBarStyles["icon"]}>
-						<TiShoppingCart
-							onClick={handleOpenCart}
-							className={navBarStyles["svg"]}
-							style={{
-								fill: cartAmount ? "#90ee90" : "#fff",
-							}}
-						/>
-					</div>
-					{cartAmount > 0 && (
-						<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
-							{cartAmount}
+				{isAuthorized && (
+					<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
+						<div className={navBarStyles["icon"]}>
+							<TiShoppingCart
+								onClick={handleOpenCart}
+								className={navBarStyles["svg"]}
+								style={{
+									fill: cartAmount ? "#90ee90" : "#fff",
+								}}
+							/>
 						</div>
-					)}
-				</div>
+						{cartAmount > 0 && (
+							<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
+								{cartAmount}
+							</div>
+						)}
+					</div>
+				)}
 				<AccountButton />
 			</div>
 		);

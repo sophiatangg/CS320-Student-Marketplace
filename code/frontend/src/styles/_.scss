@@ -32,6 +32,12 @@
 
 	--borderRadius: 8px;
 
+	--purpleColor: #92f;
+	--googleColor: #c23321;
+	--umassColor: #{v.$umassColor};
+
+	--selectionColor: #{rgba(v.$umassColor, 0.5)};
+
 	--bgColor: #{v.$bgColor};
 	--highlightColor: rgb(223, 160, 44);
 	--popOutBgColor: #1a1a1a;
@@ -46,7 +52,7 @@
 	--buttonBlue: rgb(76, 76, 224);
 	--buttonBlueHover: rgb(89, 89, 207);
 
-	--buttonSliderDotColor: #92f;
+	--buttonSliderDotColor: var(--purpleColor);
 
 	--buttonBackground: #262626;
 	--buttonHoverBackground: #313131;
@@ -70,6 +76,23 @@
 
 	--scaleUpFactor: 1.1;
 	--scaleDownFactor: 0.95;
+}
+
+::selection {
+	color: var(--colorPrimaryForeground);
+	background-color: var(--selectionColor);
+}
+
+@property --border-angle {
+	syntax: "<angle>";
+	inherits: true;
+	initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+	to {
+		--border-angle: 1turn;
+	}
 }
 
 a {

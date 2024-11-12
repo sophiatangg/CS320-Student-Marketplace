@@ -42,7 +42,7 @@ const AccountButton = (props) => {
 				<PiUserCircleFill
 					className={accountButtonStyles["svg"]}
 					style={{
-						fill: accountInfoDisplayed ? "#92f" : "#fff",
+						fill: accountInfoDisplayed ? "var(--purpleColor)" : "#fff",
 					}}
 				/>
 			</div>
