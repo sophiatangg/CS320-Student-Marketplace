@@ -10,6 +10,7 @@ import { FaTrashCan } from "react-icons/fa6";
 import { HiLogin } from "react-icons/hi";
 import { PiUserCircleFill } from "react-icons/pi";
 import ScrollBar from "react-perfect-scrollbar";
+import { useNavigate } from "react-router-dom";
 import { Bounce, toast } from "react-toastify";
 
 const animationVariants = {
@@ -40,6 +41,8 @@ const AccountOptionsWindow = () => {
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
+
+	const navigate = useNavigate();
 
 	const handleWindowRemoval = (e) => {
 		if (windowRef.current && !windowRef.current.contains(e.target)) {
@@ -125,6 +128,8 @@ const AccountOptionsWindow = () => {
 							theme: "dark",
 							transition: Bounce,
 						});
+					} else {
+						navigate("/");
 					}
 				},
 			},
