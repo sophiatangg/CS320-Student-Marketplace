@@ -1,5 +1,5 @@
 import LoginButton from "@components/LoginButton";
-import { getUser } from "@database/users";
+import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
@@ -29,6 +29,7 @@ const AccountOptionsWindow = () => {
 	const windowRef = useRef(null);
 	const [isExiting, setIsExiting] = useState(false);
 	const [isAuthorized, setIsAuthorized] = useState(false);
+	const [session, setSession] = useState(null);
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
@@ -61,9 +62,16 @@ const AccountOptionsWindow = () => {
 	}, [accountInfoDisplayed, dispatch]);
 
 	useEffect(() => {
-		getUser({
-			setter: setIsAuthorized,
+		const authListener = setUser((session) => {
+			const isUserAuthorized = session?.user?.email || false;
+
+			setSession(session);
+			setIsAuthorized(isUserAuthorized);
 		});
+
+		return () => {
+			authListener?.unsubscribe();
+		};
 	}, []);
 
 	const renderThemeSwitcher = () => {
@@ -96,6 +104,40 @@ const AccountOptionsWindow = () => {
 		);
 	};
 
+	const renderAccountOptions = () => {
+		const optionsList = [
+			{
+				name: "Profile",
+			},
+			{
+				name: "Your Items",
+			},
+			{
+				name: "Orders",
+			},
+			{
+				name: "Delete Account",
+			},
+		];
+
+		return (
+			<>
+				<div className={styles["menu"]}>
+					<span className={cns(styles["title"], styles["alt"])}>Your Account</span>
+					<ul className={styles["list"]}>
+						{optionsList.map((option, i) => {
+							return (
+								<li key={i} className={styles["list-item"]}>
+									<span>{option.name}</span>
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			</>
+		);
+	};
+
 	return (
 		<AnimatePresence key={"window"}>
 			{accountInfoDisplayed && (
@@ -119,9 +161,9 @@ const AccountOptionsWindow = () => {
 				>
 					<div className={styles["inner"]}>
 						<div className={styles["header"]}>
-							<span>Hello, {!isAuthorized ? "sign in!" : ""}</span>
+							<span>Hello, {isAuthorized ? session.user.user_metadata.name.split(" ")[0] : "sign in!"}</span>
 						</div>
-						{!isAuthorized && <LoginButton />}
+						{isAuthorized ? renderAccountOptions() : <LoginButton />}
 						<hr />
 						{renderThemeSwitcher()}
 					</div>

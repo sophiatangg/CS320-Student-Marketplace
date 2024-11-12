@@ -13,34 +13,23 @@ const signInWithGoogle = async () => {
 	}
 };
 
-const getUser = async ({ setter }) => {
+const setUser = (setter) => {
 	if (!setter) {
-		console.log("Missing setter. Check code.");
+		console.log("Missing setter function. Check code.");
 		return;
 	}
 
-	// Check for an active session first
+	supabase.auth.getSession().then(({ data: { session } }) => {
+		setter(session);
+	});
+
 	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+		data: { authListener },
+	} = supabase.auth.onAuthStateChange((_event, session) => {
+		setter(session);
+	});
 
-	if (!session) {
-		// console.log("No active session. User needs to sign in.");
-		setter(false);
-
-		return;
-	}
-
-	// Fetch the user if there's an active session
-	const { data, error } = await supabase.auth.getUser();
-
-	if (error) {
-		console.error("Error fetching user:", error.message);
-		setter(false);
-	} else {
-		const user = data?.user;
-		setter(user && user.email && user.email.endsWith("@umass.edu"));
-	}
+	return authListener;
 };
 
-export { getUser, signInWithGoogle };
+export { setUser, signInWithGoogle };

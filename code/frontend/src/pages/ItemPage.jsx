@@ -2,7 +2,7 @@ import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
-import { getUser } from "@database/users";
+import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -119,13 +119,18 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
-		getUser({
-			setter: setIsAuthorized,
-		});
+		const authListener = setUser((session) => {
+			const isUserAuthorized = session?.user?.email || false;
 
-		if (!isAuthorized) {
-			navigate("/login");
-		}
+			setIsAuthorized(isUserAuthorized || false);
+
+			if (!isUserAuthorized) {
+				navigate("/login");
+			}
+		});
+		return () => {
+			authListener?.unsubscribe();
+		};
 	}, [isAuthorized]);
 
 	if (!selectedItem) return null;

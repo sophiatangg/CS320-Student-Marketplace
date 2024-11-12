@@ -1,19 +1,32 @@
 .accountOptions {
 	width: 320px;
-	height: 280px;
+	height: 300px;
 	background-color: var(--colorGraySecondary);
 	border-radius: var(--borderRadius);
 	position: fixed;
 	inset: calc(var(--headerHeight) + 5px) 30px auto auto;
+	display: flex;
 	overflow: hidden;
 	z-index: 9;
 }
 
 .inner {
 	width: 100%;
-	height: 100%;
-	padding: 20px;
+	flex: 1;
 	position: relative;
+	overflow-y: auto;
+
+	> * {
+		padding: 0 20px;
+
+		&:first-child {
+			padding-top: 20px;
+		}
+
+		&:last-child {
+			padding-bottom: 20px;
+		}
+	}
 
 	span {
 		color: var(--colorPrimaryForeground);
@@ -39,7 +52,28 @@
 	width: 100%;
 	font-size: 12px;
 	text-align: left;
+	text-transform: uppercase;
 	margin: 10px 0;
+	display: block;
+
+	&.alt {
+		font-family: "GT Bold";
+		font-size: 14px;
+		text-align: center;
+	}
+}
+
+.menu {
+	position: relative;
+}
+
+.list {
+	margin: 10px 0;
+
+	.list-item {
+		position: relative;
+		padding: 5px 0;
+	}
 }
 
 .appearanceGroup {
@@ -52,7 +86,7 @@
 		flex-flow: row;
 		align-items: center;
 		justify-content: center;
-		gap: 10px;
+		gap: 5px;
 		overflow: hidden;
 	}
 
@@ -79,7 +113,8 @@
 	}
 
 	.groupPhoto {
-		max-height: 80px;
+		--dimension: 70px;
+		max-height: var(--dimension);
 		border: 3px solid transparent;
 		border-radius: var(--borderRadius);
 		flex: 1;
@@ -95,8 +130,8 @@
 		}
 
 		img {
-			width: 80px;
-			height: 80px;
+			width: var(--dimension);
+			height: var(--dimension);
 			aspect-ratio: 1;
 			user-select: none;
 			pointer-events: none;

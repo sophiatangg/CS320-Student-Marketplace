@@ -1,6 +1,6 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
-import { getUser } from "@database/users";
+import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import navBarStyles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
@@ -71,10 +71,14 @@ const NavBar = (props) => {
 	}, [pathname]);
 
 	useEffect(() => {
-		getUser({
-			setter: setIsAuthorized,
+		const authListener = setUser((session) => {
+			setIsAuthorized(session?.user?.email || false);
 		});
-	}, [isAuthorized]);
+
+		return () => {
+			authListener?.unsubscribe();
+		};
+	}, []);
 
 	const renderNavLeft = () => {
 		return (

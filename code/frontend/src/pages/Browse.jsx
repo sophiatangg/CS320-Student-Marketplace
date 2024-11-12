@@ -1,6 +1,6 @@
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
-import { getUser } from "@database/users";
+import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
@@ -46,13 +46,19 @@ const Browse = (props) => {
 	}, []);
 
 	useEffect(() => {
-		getUser({
-			setter: setIsAuthorized,
+		const authListener = setUser((session) => {
+			const isUserAuthorized = session?.user?.email || false;
+
+			setIsAuthorized(isUserAuthorized || false);
+
+			if (!isUserAuthorized) {
+				navigate("/login");
+			}
 		});
 
-		if (!isAuthorized) {
-			navigate("/login");
-		}
+		return () => {
+			authListener?.unsubscribe();
+		};
 	}, [isAuthorized]);
 
 	const renderPlaceHolder = () => {
