@@ -1,6 +1,7 @@
 const initial = {
 	items: JSON.parse(localStorage.getItem("items")) || [],
 	gridDisplay: JSON.parse(localStorage.getItem("gridDisplay")) ?? true,
+	theme: JSON.parse(localStorage.getItem("theme")) ?? "dark",
 };
 
 export const localStorageReducer = (state = initial, action) => {
@@ -29,6 +30,10 @@ export const localStorageReducer = (state = initial, action) => {
 		case "SET_DISPLAY":
 			localStorage.setItem("gridDisplay", JSON.stringify(action.payload));
 			return { ...state, gridDisplay: action.payload };
+
+		case "SET_THEME":
+			localStorage.setItem("theme", JSON.stringify(action.payload));
+			return { ...state, theme: action.payload };
 
 		default:
 			return state;

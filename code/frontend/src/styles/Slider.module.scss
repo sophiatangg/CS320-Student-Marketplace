@@ -21,7 +21,7 @@
 
 	.slideElem {
 		height: 100%;
-		background-color: #fff;
+		background-color: var(--colorPrimaryForeground);
 		border-radius: var(--borderRadius);
 		position: relative;
 	}
@@ -62,7 +62,7 @@
 	.pageButton {
 		width: 50px;
 		height: 100%;
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 		background-color: transparent;
 		border: 1px transparent;
 		position: absolute;
@@ -121,7 +121,7 @@
 	.button {
 		width: 10px;
 		height: 10px;
-		background-color: #474747;
+		background-color: var(--colorGrayPrimary);
 		border: none;
 		border-radius: 50%;
 		transition: 100ms linear;
@@ -129,11 +129,11 @@
 		transition: background-color 100ms linear;
 
 		&:hover {
-			background-color: #999;
+			background-color: var(--colorGrayTertiary);
 		}
 	}
 
 	.buttonSelected {
-		background-color: #92f;
+		background-color: var(--buttonSliderDotColor);
 	}
 }

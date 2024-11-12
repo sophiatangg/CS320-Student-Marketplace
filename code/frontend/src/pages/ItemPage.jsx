@@ -2,6 +2,7 @@ import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
+import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -44,6 +45,7 @@ const AnimatedText = ({ children }) => {
 const ItemPage = (props) => {
 	const navigate = useNavigate();
 
+	const [isAuthorized, setIsAuthorized] = useState(false);
 	const [extended, setExtended] = useState(false);
 	const [textExtended, setTextExtended] = useState(false);
 	const [carouselState, setCarouselState] = useState(0);
@@ -96,22 +98,40 @@ const ItemPage = (props) => {
 	};
 
 	useEffect(() => {
-		document.title = `${PROJECT_NAME} — ${selectedItem.name}`;
-	}, []);
-
-	useEffect(() => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
-			const surname = pathname.substring(29);
-			const currentItem = allItems.find((item) => item.surname === surname);
+			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
+
+			const currentItem = allItems.find((item) => {
+				return item.surName === surname || item.surname === surname;
+			});
 
 			const item = currentItem ?? templateGame;
+
+			document.title = `${PROJECT_NAME} — ${surname}`;
 
 			dispatch({
 				type: "SET_SELECTED_ITEM",
 				payload: item,
 			});
+		} else {
+			document.title = `${PROJECT_NAME} — ${selectedItem.name || selectedItem.name}`;
 		}
-	}, [pathname, selectedItem, allItems, dispatch, setIsError]);
+	}, [pathname, selectedItem, allItems, dispatch]);
+
+	useEffect(() => {
+		const authListener = setUser((session) => {
+			const isUserAuthorized = session?.user?.email || false;
+
+			setIsAuthorized(isUserAuthorized || false);
+
+			if (!isUserAuthorized) {
+				navigate("/login");
+			}
+		});
+		return () => {
+			authListener?.unsubscribe();
+		};
+	}, [isAuthorized]);
 
 	if (!selectedItem) return null;
 
