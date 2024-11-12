@@ -7,6 +7,7 @@ import { StoreProvider } from "@stores/StoreProvider";
 import "@styles/_.scss";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "react-perfect-scrollbar/dist/css/styles.css";
 import { BrowserRouter } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App";

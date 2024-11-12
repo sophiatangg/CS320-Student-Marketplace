@@ -1,20 +1,18 @@
 .accountOptions {
 	width: 320px;
 	height: 300px;
-	background-color: var(--colorGraySecondary);
+	background-color: var(--popOutBgColor);
+	box-shadow: 0 0 10px var(--popOutBgColor);
 	border-radius: var(--borderRadius);
 	position: fixed;
 	inset: calc(var(--headerHeight) + 5px) 30px auto auto;
-	display: flex;
 	overflow: hidden;
 	z-index: 9;
 }
 
 .inner {
 	width: 100%;
-	flex: 1;
 	position: relative;
-	overflow-y: auto;
 
 	> * {
 		padding: 0 20px;
@@ -69,10 +67,83 @@
 
 .list {
 	margin: 10px 0;
+	display: flex;
+	flex-flow: column;
 
 	.list-item {
 		position: relative;
-		padding: 5px 0;
+		z-index: 1;
+		cursor: pointer;
+		--fontColor: var(--colorPrimaryForeground);
+
+		&:before {
+			--dimension: 5px;
+			content: "";
+			width: calc(100% + (var(--dimension) * 4));
+			height: calc(100% + (var(--dimension) / 2));
+			background-color: var(--popOutBgColorAlt1);
+			border-radius: var(--borderRadius);
+			position: absolute;
+			inset: 50% auto auto 50%;
+			z-index: -1;
+			pointer-events: none;
+			opacity: 0;
+			transform: translate(-50%, -50%);
+			transition: opacity 100ms linear;
+		}
+
+		&:hover {
+			&:before {
+				opacity: 1;
+			}
+		}
+
+		&.delete-item {
+			&:hover {
+				--fontColor: var(--googleColor);
+			}
+		}
+
+		&.logout-item {
+			&:hover {
+				--fontColor: var(--purpleColor);
+			}
+		}
+	}
+
+	.list-item-inner {
+		width: 100%;
+		height: 30px;
+		display: flex;
+		flex-flow: row;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+
+	.list-icon {
+		width: 15px;
+		height: 15px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		svg {
+			width: 100%;
+			height: 100%;
+			fill: var(--fontColor);
+			transition: fill 100ms linear;
+		}
+	}
+
+	.list-name {
+		height: 100%;
+		color: var(--fontColor);
+		font-family: "GT Bold";
+		display: flex;
+		align-items: center;
+		user-select: none;
+		transition: color 100ms linear;
 	}
 }
 

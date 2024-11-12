@@ -5,6 +5,11 @@ import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { BsBagPlusFill } from "react-icons/bs";
+import { FaTrashCan } from "react-icons/fa6";
+import { HiLogin } from "react-icons/hi";
+import { PiUserCircleFill } from "react-icons/pi";
+import ScrollBar from "react-perfect-scrollbar";
 
 const animationVariants = {
 	visible: {
@@ -53,6 +58,10 @@ const AccountOptionsWindow = () => {
 		});
 	};
 
+	const handleScroll = (e) => {
+		e.stopPropagation();
+	};
+
 	useEffect(() => {
 		document.addEventListener("click", handleWindowRemoval);
 
@@ -73,6 +82,61 @@ const AccountOptionsWindow = () => {
 			authListener?.unsubscribe();
 		};
 	}, []);
+
+	const renderAccountOptions = () => {
+		const optionsList = [
+			{
+				name: "Profile",
+				icon: () => {
+					return <PiUserCircleFill />;
+				},
+			},
+			{
+				name: "Your Items",
+				icon: () => {
+					return <BsBagPlusFill />;
+				},
+			},
+			{
+				name: "Delete Account",
+				icon: () => {
+					return <FaTrashCan />;
+				},
+			},
+			{
+				name: "Logout",
+				icon: () => {
+					return <HiLogin />;
+				},
+			},
+		];
+
+		return (
+			<>
+				<div className={styles["menu"]}>
+					<span className={cns(styles["title"], styles["alt"])}>Your Account</span>
+					<ul className={styles["list"]}>
+						{optionsList.map((option, i) => {
+							return (
+								<li
+									key={i}
+									className={cns(styles["list-item"], {
+										[styles["delete-item"]]: option.name === "Delete Account",
+										[styles["logout-item"]]: option.name === "Logout",
+									})}
+								>
+									<div className={styles["list-item-inner"]}>
+										<span className={styles["list-icon"]}>{option.icon && option.icon()}</span>
+										<span className={styles["list-name"]}>{option.name}</span>
+									</div>
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			</>
+		);
+	};
 
 	const renderThemeSwitcher = () => {
 		const themes = ["dark", "light", "system"];
@@ -104,40 +168,6 @@ const AccountOptionsWindow = () => {
 		);
 	};
 
-	const renderAccountOptions = () => {
-		const optionsList = [
-			{
-				name: "Profile",
-			},
-			{
-				name: "Your Items",
-			},
-			{
-				name: "Orders",
-			},
-			{
-				name: "Delete Account",
-			},
-		];
-
-		return (
-			<>
-				<div className={styles["menu"]}>
-					<span className={cns(styles["title"], styles["alt"])}>Your Account</span>
-					<ul className={styles["list"]}>
-						{optionsList.map((option, i) => {
-							return (
-								<li key={i} className={styles["list-item"]}>
-									<span>{option.name}</span>
-								</li>
-							);
-						})}
-					</ul>
-				</div>
-			</>
-		);
-	};
-
 	return (
 		<AnimatePresence key={"window"}>
 			{accountInfoDisplayed && (
@@ -159,14 +189,21 @@ const AccountOptionsWindow = () => {
 						}
 					}}
 				>
-					<div className={styles["inner"]}>
-						<div className={styles["header"]}>
-							<span>Hello, {isAuthorized ? session.user.user_metadata.name.split(" ")[0] : "sign in!"}</span>
+					<ScrollBar
+						options={{
+							wheelSpeed: 0.5,
+						}}
+						onWheel={handleScroll}
+					>
+						<div className={styles["inner"]}>
+							<div className={styles["header"]}>
+								<span>Hello, {isAuthorized ? session.user.user_metadata.name.split(" ")[0] : "sign in!"}</span>
+							</div>
+							{isAuthorized ? renderAccountOptions() : <LoginButton />}
+							<hr />
+							{renderThemeSwitcher()}
 						</div>
-						{isAuthorized ? renderAccountOptions() : <LoginButton />}
-						<hr />
-						{renderThemeSwitcher()}
-					</div>
+					</ScrollBar>
 				</motion.div>
 			)}
 		</AnimatePresence>

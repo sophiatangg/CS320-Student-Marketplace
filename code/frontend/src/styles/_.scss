@@ -43,6 +43,7 @@
 	--popOutBgColor: #1a1a1a;
 	--popOutBgColorAlt1: #373333;
 	--popOutBgColorAlt2: #262222;
+	--popOutBgColorAlt3: #0f0d0d;
 
 	--buttonNormal: rgb(10, 95, 10);
 	--buttonNormalHover: rgb(12, 112, 12);
@@ -130,5 +131,11 @@ form {
 		&:active {
 			transform: scale(var(--scaleDownFactor));
 		}
+	}
+}
+
+.scrollbar-container {
+	.ps__rail-y {
+		background-color: transparent !important;
 	}
 }
