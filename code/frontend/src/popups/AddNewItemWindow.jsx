@@ -5,6 +5,7 @@ import cns from "@utils/classNames";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
+import { storeItemInDatabase } from "../../../middleware/Item/addItem.js";
 
 const AddNewItemWindow = (props) => {
 	const dispatch = useContextDispatch();
@@ -42,60 +43,40 @@ const AddNewItemWindow = (props) => {
 
 		const footageList = newItemState.images.length === 0 ? [newItemState.cover] : [newItemState.cover, ...newItemState.images];
 
-		// const res = {
-		// 	id: itemsData.length + localStorageItems.length, // uses the max length of itemsData and localStorageItems, add real id soon!
-		// 	name: newItemState.name,
-		// 	surname: newItemState.name.replace(" ", ""),
-		// 	price: newItemState.price,
-		// 	desc: newItemState.description,
-		// 	category: newItemState.category,
-		// 	condition: newItemState.condition,
-		// 	seller: "MockUser1",
-		// 	date: date.toISOString(),
-		// 	cover: newItemState.cover,
-		// 	footage: footageList,
-		// };
-
 		//i added this stuff
-		try {
-			const response = await fetch("http://localhost:6969/addItem", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					id: localStorageItems.length + 3, // Simplified ID generation logic, adjust as needed.
-					name: newItemState.name,
-					surname: newItemState.name.replace(" ", ""),
-					price: newItemState.price,
-					desc: newItemState.description,
-					category: newItemState.category,
-					condition: newItemState.condition,
-					seller: "MockUser1",
-					date: date.toISOString(),
-					cover: newItemState.cover,
-					footage: footageList,
-				}),
-			});
+		const res = {
+			id: 157,
+			name: newItemState.name,
+			surname: newItemState.name.replace(" ", ""),
+			price: newItemState.price,
+			desc: newItemState.description,
+			category: newItemState.category,
+			condition: newItemState.condition,
+			seller: "MockUser1",
+			date: date.toISOString(),
+			cover: newItemState.cover,
+			footage: footageList,
+		};
+		const newItem = {
+			id: res.id,
+			seller_id: 234,
+			category: res.category,
+			condition: res.condition,
+			name: res.surname,
+		};
 
-			if (response.ok) {
-				const result = await response.json();
-				console.log(result.message);
-				dispatch({
-					type: "ADD_ITEM",
-					payload: false,
-				});
-				toast.success("Item successfully added to the database!");
-			} else {
-				const errorData = await response.text(); // Use .text() to handle non-JSON responses.
-				console.error("Failed to store item:", errorData);
-				toast.error("Failed to store item in the database.");
-			}
+		try {
+			storeItemInDatabase(newItem);
+			toast.success("Item successfully added to the database!");
+			dispatch({
+				type: "ADD_ITEM",
+				payload: res,
+			});
 		} catch (error) {
 			console.error("Error submitting item:", error);
 			toast.error("An error occurred while submitting the item.");
 		}
-		//handleReset(e);
+		handleReset(e);
 	};
 
 	const handleReset = (e) => {

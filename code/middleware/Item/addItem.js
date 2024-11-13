@@ -1,21 +1,18 @@
-import dbFuncs from "../../backend/dbFuncs.js";
+import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
-const storeItemInDatabase = async (req, res) => {
-	console.log("Endpoint reached"); // Log to confirm the endpoint is hit
-	console.log("Request body:", req.body);
-	const { itemId, user, category, timestamp } = req.body;
-
-	if (!itemId || !user || !category || !timestamp) {
-		return res.status(400).json({ error: "Missing required item details" });
-	}
-
+export const storeItemInDatabase = async (newItem) => {
 	try {
-		await dbFuncs.addItem(itemId, user, category, timestamp);
-		res.status(201).json({ message: "Item successfully stored in database" });
-	} catch (error) {
-		console.error("Error storing item in database:", error);
-		res.status(500).json({ error: "Failed to store item in the database" });
+		const { data, error } = await supabase.from("Item").insert([newItem]);
+		if (error) {
+			console.error("Error adding item:", error);
+			alert(`Error adding item: ${error.message}`);
+		} else {
+			console.log("Item added successfully:", data);
+			alert("Item added successfully!");
+		}
+	} catch (err) {
+		console.error("Unexpected error:", err);
+		alert("An unexpected error occurred. Please try again later.");
 	}
 };
-
-export default storeItemInDatabase;
+//export default storeItemInDatabase;

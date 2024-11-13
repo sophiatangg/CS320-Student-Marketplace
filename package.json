@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.46.1",
+    "supabase": "^1.219.2",
     "terser": "^5.36.0"
   }
 }

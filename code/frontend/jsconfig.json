@@ -13,6 +13,6 @@
 			"@utils/*": ["src/utils/*"]
 		}
 	},
-	"include": ["src"],
+	"include": ["src", "src/database"],
 	"exclude": ["node_modules", "dist"]
 }

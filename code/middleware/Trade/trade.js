@@ -1,19 +1,19 @@
-import dbFuncs from '../../backend/dbFuncs.js';
+import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
-const storeTradeInDatabase = async (req, res) => {
-  const { itemId, buyerId, sellerId, timestamp } = req.body;
-
-  if (!itemId || !buyerId || !sellerId || !timestamp) {
-    return res.status(400).json({ error: "Missing trade details" });
-  }
-
-  try {
-    await dbFuncs.addTrade(itemId, buyerId, sellerId, timestamp);
-    res.status(201).json({ message: "Trade successfully recorded" });
-  } catch (error) {
-    console.error("Error recording trade:", error);
-    res.status(500).json({ error: "Failed to record trade" });
-  }
+export const storeTradeInDatabase = async (newItem) => {
+	try {
+		const { data, error } = await supabase.from("Trade").insert([newItem]);
+		if (error) {
+			console.error("Error adding trade:", error);
+			alert(`Error adding trade: ${error.message}`);
+		} else {
+			console.log("Trade added successfully:", data);
+			alert("Trade added successfully!");
+		}
+	} catch (err) {
+		console.error("Unexpected error:", err);
+		alert("An unexpected error occurred. Please try again later.");
+	}
 };
 
-export default storeTradeInDatabase;
+//export default storeTradeInDatabase;
