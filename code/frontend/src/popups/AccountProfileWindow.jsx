@@ -6,27 +6,34 @@ import { formattedDate, isValidISODate } from "@utils/formatDate";
 import { useEffect, useState } from "react";
 
 const AccountProfileWindow = (props) => {
+	const [currentSession, setCurrentSession] = useState(null);
 	const [userInfo, setUserInfo] = useState({});
 
 	useEffect(() => {
 		const authListener = setUser((session) => {
-			if (!session && !session.user) return;
+			if (!session && !session.user && !session.user.user_metadata) return;
 
-			setUserInfo({
-				id: session.user.id,
-				email: session.user.user_metadata.email,
-				name: session.user.user_metadata.full_name,
-				avatarURL: session.user.user_metadata.avatar_url,
-				createdAt: session.user.created_at,
-				emailConfirmedAt: session.user.email_confirmed_at,
-				lastSignInAt: session.user.last_sign_in_at,
-			});
+			setCurrentSession(session ?? null);
 		});
 
 		return () => {
 			authListener?.unsubscribe();
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!currentSession || !currentSession.user) return;
+
+		setUserInfo({
+			id: currentSession.user.id,
+			email: currentSession.user.user_metadata.email,
+			name: currentSession.user.user_metadata.full_name,
+			avatarURL: currentSession.user.user_metadata.avatar_url,
+			createdAt: currentSession.user.created_at,
+			emailConfirmedAt: currentSession.user.email_confirmed_at,
+			lastSignInAt: currentSession.user.last_sign_in_at,
+		});
+	}, [currentSession]);
 
 	const renderPropIcon = (prop) => {};
 
@@ -66,9 +73,7 @@ const AccountProfileWindow = (props) => {
 							<div className={styles["headerIMG"]} />
 							<div className={styles["headerInner"]}>
 								<div className={styles["avatar"]}>
-									<div className={styles["avatarInner"]}>
-										<img src={userInfo.avatarURL} />
-									</div>
+									<div className={styles["avatarInner"]}>{userInfo.avatarURL ? <img src={userInfo.avatarURL} /> : <div></div>}</div>
 								</div>
 								<div className={styles["name"]}>
 									<span>{userInfo.name}</span>

@@ -1,3 +1,4 @@
+import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
 import { setUser } from "@database/users";
@@ -29,13 +30,6 @@ const Browse = (props) => {
 	const dispatch = useContextDispatch();
 
 	const navigate = useNavigate();
-
-	const handleAddNewItemOpen = (bool) => {
-		dispatch({
-			type: "SET_ADD_NEW_ITEM_DISPLAYED",
-			payload: bool,
-		});
-	};
 
 	const handleLayoutSwitch = (e, bool) => {
 		dispatch({ type: "SET_DISPLAY", payload: bool });
@@ -86,18 +80,7 @@ const Browse = (props) => {
 							<div className={styles["applied"]}>
 								<div className={styles["left"]}>
 									{isNotDefaultItemsPage && renderPlaceHolder()}
-									{categoryName === "my-items" && (
-										<div className={styles["addNewItem"]}>
-											<button
-												className={styles["textButton"]}
-												onClick={(e) => {
-													if (handleAddNewItemOpen) handleAddNewItemOpen(true);
-												}}
-											>
-												Add Item
-											</button>
-										</div>
-									)}
+									{categoryName === "my-items" && <AddNewItemButton />}
 								</div>
 								<div className={styles["displayStyle"]}>
 									<span>Display options:</span>

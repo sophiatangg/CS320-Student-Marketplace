@@ -83,36 +83,6 @@
 	}
 }
 
-.addNewItem {
-	height: 100%;
-	position: relative;
-}
-
-.textButton {
-	padding: 8px 22px;
-	height: 40px;
-	background-color: transparent;
-	color: var(--colorPrimaryForeground);
-	font-family: "GT Light";
-	font-size: 0.95em;
-	border: 1px transparent;
-	border-radius: var(--borderRadius);
-	cursor: pointer;
-	transition: all 100ms;
-
-	&:hover {
-		background-color: var(--buttonHoverBackground);
-	}
-
-	&:active {
-		transform: scale(0.9);
-	}
-
-	@at-root .addNewItem & {
-		font-weight: 700;
-	}
-}
-
 .displayStyle {
 	display: flex;
 	align-items: center;

@@ -1,11 +1,13 @@
 import { supabase } from "@database/supabaseClient";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
-import accountButtonStyles from "@styles/AccountButton.module.scss";
-import { useRef } from "react";
+import styles from "@styles/AccountButton.module.scss";
+import { useEffect, useRef, useState } from "react";
 import { PiUserCircleFill } from "react-icons/pi";
 
 const AccountButton = (props) => {
 	const {} = props;
+
+	const [isClicked, setIsClicked] = useState(false);
 
 	const componentRef = useRef(null);
 
@@ -22,25 +24,31 @@ const AccountButton = (props) => {
 		}
 	};
 
-	const handleClick = async () => {
+	const handleClick = () => {
+		setIsClicked(!isClicked);
+	};
+
+	useEffect(() => {
 		dispatch({
 			type: "SET_ACCOUNT_OPTIONS_DISPLAYED",
-			payload: !accountInfoDisplayed,
+			payload: isClicked,
 		});
-	};
+	}, [isClicked]);
 
 	return (
 		<div
 			ref={componentRef}
-			className={accountButtonStyles["userComponent"]}
-			onClick={async () => {
-				await handleFetchDB();
+			className={styles["userComponent"]}
+			onClick={(e) => {
+				e.preventDefault();
+
 				handleClick();
+				// await handleFetchDB();
 			}}
 		>
-			<div className={accountButtonStyles["icon"]}>
+			<div className={styles["icon"]}>
 				<PiUserCircleFill
-					className={accountButtonStyles["svg"]}
+					className={styles["svg"]}
 					style={{
 						fill: accountInfoDisplayed ? "var(--purpleColor)" : "#fff",
 					}}
