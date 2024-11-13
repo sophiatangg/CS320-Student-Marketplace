@@ -94,6 +94,14 @@
 			border-radius: var(--borderRadius);
 			pointer-events: none;
 		}
+
+		.avatarNotFound {
+			width: 94px;
+			height: 94px;
+			background-color: var(--umassColor);
+			border-radius: var(--borderRadius);
+			pointer-events: none;
+		}
 	}
 
 	.name {

@@ -73,7 +73,9 @@ const AccountProfileWindow = (props) => {
 							<div className={styles["headerIMG"]} />
 							<div className={styles["headerInner"]}>
 								<div className={styles["avatar"]}>
-									<div className={styles["avatarInner"]}>{userInfo.avatarURL ? <img src={userInfo.avatarURL} /> : <div></div>}</div>
+									<div className={styles["avatarInner"]}>
+										{userInfo.avatarURL ? <img src={userInfo.avatarURL} /> : <div className={styles["avatarNotFound"]} />}
+									</div>
 								</div>
 								<div className={styles["name"]}>
 									<span>{userInfo.name}</span>
