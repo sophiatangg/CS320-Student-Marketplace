@@ -1,0 +1,38 @@
+.login {
+	width: 100%;
+	height: calc(100vh - var(--headerHeight));
+	margin: var(--headerHeight) 0 0 0;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.container {
+	width: 420px;
+	height: 350px;
+	background-color: var(--popOutBgColor);
+	border-radius: var(--borderRadius);
+	padding: 20px;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: space-around;
+}
+
+.title {
+	color: var(--colorPrimaryForeground);
+	font-family: "GT Bold";
+	text-align: center;
+	cursor: default;
+
+	.umass {
+		transition: color 250ms linear;
+
+		&:hover {
+			color: var(--umassColor);
+			text-decoration: underline;
+		}
+	}
+}

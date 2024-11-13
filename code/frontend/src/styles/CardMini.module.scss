@@ -32,7 +32,7 @@
 	.thumbnail {
 		width: 120px;
 		height: 120px;
-		background-color: #fff;
+		background-color: var(--colorPrimaryForeground);
 		pointer-events: none;
 		user-select: none;
 
@@ -50,7 +50,7 @@
 	}
 
 	span {
-		color: #fff;
+		color: var(--colorPrimaryForeground);
 
 		&.primary {
 			font-size: 14px;

@@ -3,7 +3,7 @@
 
 	h2 {
 		font-family: "GT Medium";
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-size: 1.6em;
 		letter-spacing: 1px;
 		margin-bottom: 22px;
@@ -23,7 +23,7 @@
 }
 
 .filterDiv {
-	color: white;
+	color: var(--colorPrimaryForeground);
 	font-family: "GT Regular";
 	font-size: 1.2em;
 	margin-bottom: 10px;

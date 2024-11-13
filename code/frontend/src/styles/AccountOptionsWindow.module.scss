@@ -1,0 +1,218 @@
+.accountOptions {
+	width: 320px;
+	height: 300px;
+	background-color: var(--popOutBgColor);
+	box-shadow: 0 0 10px var(--popOutBgColor);
+	border-radius: var(--borderRadius);
+	position: fixed;
+	inset: calc(var(--headerHeight) + 5px) 30px auto auto;
+	overflow: hidden;
+	z-index: 9;
+}
+
+.inner {
+	width: 100%;
+	position: relative;
+
+	> * {
+		padding: 0 20px;
+
+		&:first-child {
+			padding-top: 20px;
+		}
+
+		&:last-child {
+			padding-bottom: 20px;
+		}
+	}
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
+
+	hr {
+		border-top: 0.1px solid rgba(#fff, 0.3);
+		border-right: none;
+		border-bottom: none;
+		border-left: none;
+		margin-block: 0;
+	}
+}
+
+.header {
+	font-family: "GT Bold";
+	font-weight: 700;
+	font-size: 1.2rem;
+	margin-bottom: 1rem;
+}
+
+.title {
+	width: 100%;
+	font-size: 12px;
+	text-align: left;
+	text-transform: uppercase;
+	margin: 10px 0;
+	display: block;
+
+	&.alt {
+		font-family: "GT Bold";
+		font-size: 14px;
+		text-align: center;
+	}
+}
+
+.menu {
+	position: relative;
+}
+
+.list {
+	margin: 10px 0;
+	display: flex;
+	flex-flow: column;
+
+	.list-item {
+		position: relative;
+		z-index: 1;
+		cursor: pointer;
+		--fontColor: var(--colorPrimaryForeground);
+
+		&:before {
+			--dimension: 5px;
+			content: "";
+			width: calc(100% + (var(--dimension) * 4));
+			height: calc(100% + (var(--dimension) / 2));
+			background-color: var(--popOutBgColorAlt1);
+			border-radius: var(--borderRadius);
+			position: absolute;
+			inset: 50% auto auto 50%;
+			z-index: -1;
+			pointer-events: none;
+			opacity: 0;
+			transform: translate(-50%, -50%);
+			transition: opacity 100ms linear;
+		}
+
+		&:hover {
+			&:before {
+				opacity: 1;
+			}
+		}
+
+		&.delete-item {
+			&:hover {
+				--fontColor: var(--googleColor);
+			}
+		}
+
+		&.logout-item {
+			&:hover {
+				--fontColor: var(--purpleColor);
+			}
+		}
+	}
+
+	.list-item-inner {
+		width: 100%;
+		height: 30px;
+		display: flex;
+		flex-flow: row;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+
+	.list-icon {
+		width: 15px;
+		height: 15px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		svg {
+			width: 100%;
+			height: 100%;
+			fill: var(--fontColor);
+			transition: fill 100ms linear;
+		}
+	}
+
+	.list-name {
+		height: 100%;
+		color: var(--fontColor);
+		font-family: "GT Bold";
+		display: flex;
+		align-items: center;
+		user-select: none;
+		transition: color 100ms linear;
+	}
+}
+
+.appearanceGroup {
+	display: flex;
+	flex-flow: column;
+
+	.group {
+		width: 100%;
+		display: flex;
+		flex-flow: row;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+		overflow: hidden;
+	}
+
+	.groupItem {
+		flex: 1;
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 5px;
+	}
+
+	@mixin selected {
+		border-color: var(--colorGrayQuaternary);
+		transform: scale(1);
+	}
+
+	.groupSelectedItem {
+		position: relative;
+
+		.groupPhoto {
+			@include selected();
+		}
+	}
+
+	.groupPhoto {
+		--dimension: 70px;
+		max-height: var(--dimension);
+		border: 3px solid transparent;
+		border-radius: var(--borderRadius);
+		flex: 1;
+		overflow: hidden;
+		cursor: pointer;
+		transform: scale(0.9);
+		transition:
+			border-color 100ms linear,
+			transform 100ms linear;
+
+		&:hover {
+			@include selected();
+		}
+
+		img {
+			width: var(--dimension);
+			height: var(--dimension);
+			aspect-ratio: 1;
+			user-select: none;
+			pointer-events: none;
+		}
+	}
+
+	.groupItemName {
+		font-size: 14px;
+		font-weight: 600;
+		text-transform: capitalize;
+		display: block;
+	}
+}

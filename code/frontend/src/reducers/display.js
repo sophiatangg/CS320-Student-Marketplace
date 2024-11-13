@@ -1,4 +1,5 @@
 const initial = {
+	accountInfoDisplayed: false,
 	addNewItemDisplayed: false,
 	cartDisplayed: false,
 	tradeDisplayed: false,
@@ -6,20 +7,10 @@ const initial = {
 
 export const displayReducer = (state = initial, action) => {
 	switch (action.type) {
-		case "TOGGLE_ADD_NEW_ITEM_DISPLAYED":
+		case "SET_ACCOUNT_OPTIONS_DISPLAYED":
 			return {
 				...state,
-				addNewItemDisplayed: !state.addNewItemDisplayed,
-			};
-		case "TOGGLE_CART_DISPLAYED":
-			return {
-				...state,
-				cartDisplayed: !state.cartDisplayed,
-			};
-		case "TOGGLE_TRADE_DISPLAYED":
-			return {
-				...state,
-				tradeDisplayed: !state.tradeDisplayed,
+				accountInfoDisplayed: action.payload,
 			};
 		case "SET_ADD_NEW_ITEM_DISPLAYED":
 			return {

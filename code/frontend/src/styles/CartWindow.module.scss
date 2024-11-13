@@ -33,7 +33,7 @@
 	align-items: center;
 
 	h2 {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-size: 28px;
 		font-family: "GT Ultrabold";
 	}
@@ -42,13 +42,13 @@
 		padding-top: 4px;
 		font-size: 16px;
 		font-family: "GT Light";
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 		transform: scale(var(--scaleDownFactor));
 		transition: 100ms linear;
 		cursor: pointer;
 
 		&:hover {
-			color: white;
+			color: var(--colorPrimaryForeground);
 		}
 
 		&:active {
@@ -81,11 +81,11 @@
 
 		span {
 			&:first-child {
-				color: #999;
+				color: var(--colorGrayTertiary);
 			}
 
 			&:last-child {
-				color: #ccc;
+				color: var(--colorGrayQuaternary);
 				font-weight: 800;
 			}
 		}
@@ -113,7 +113,7 @@
 }
 
 .item {
-	background-color: #262626;
+	background-color: var(--buttonBackground);
 	border-radius: var(--borderRadius);
 	padding: 20px;
 	display: flex;
@@ -130,10 +130,10 @@
 		font-family: "GT Regular";
 		transition: 100ms linear;
 		cursor: pointer;
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 
 		&:hover {
-			color: #fff;
+			color: var(--colorPrimaryForeground);
 		}
 
 		&:active {
@@ -144,7 +144,7 @@
 	div {
 		display: flex;
 		gap: 16px;
-		color: #999999;
+		color: var(--colorGrayTertiary);
 		font-size: 14px;
 		font-family: "GT Medium";
 		align-items: center;
@@ -154,7 +154,7 @@
 			height: 24px;
 			border-radius: 50%;
 			border: 1px transparent;
-			background-color: #2e2e2e;
+			background-color: var(--buttonBackground);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -162,7 +162,7 @@
 			transition: 0.2s all;
 
 			&:hover {
-				background-color: #353535;
+				background-color: var(--buttonHoverBackground);
 			}
 
 			&:active {
