@@ -94,6 +94,21 @@ const AccountOptionsWindow = () => {
 				icon: () => {
 					return <PiUserCircleFill />;
 				},
+				onClick: async (e) => {
+					e.preventDefault();
+
+					dispatch({
+						type: "SET_ACCOUNT_OPTIONS_DISPLAYED",
+						payload: false,
+					});
+
+					setTimeout(() => {
+						dispatch({
+							type: "SET_ACCOUNT_PROFILE_DISPLAYED",
+							payload: true,
+						});
+					}, 10);
+				},
 			},
 			{
 				name: "Your Items",

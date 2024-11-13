@@ -1,0 +1,176 @@
+.container {
+	width: 450px;
+	height: 500px;
+	background-color: var(--popOutBgColor);
+	border-radius: var(--borderRadius);
+	display: flex;
+	flex-flow: column;
+	position: absolute;
+	inset: 50% auto auto 50%;
+	transform: translate(-50%, -50%);
+	overflow: hidden;
+}
+
+.inner {
+	flex: 1;
+	display: block;
+	overflow: hidden;
+	--innerSpaceOffset: 30px;
+	--headerHeight: 150px;
+	--headerInnerOffsetY: 60px;
+}
+
+.header {
+	height: var(--headerHeight);
+	background-color: var(--umassColor);
+	position: relative;
+
+	.headerIMG {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		inset: 0 auto auto 0;
+	}
+
+	.headerInner {
+		width: 100%;
+		height: var(--headerInnerHeight);
+		position: absolute;
+		inset: auto auto 0 0;
+		transform: translateY(var(--headerInnerOffsetY));
+		--headerInnerHeight: calc(var(--headerInnerOffsetY) + 50px);
+		--avatarDimension: var(--headerInnerHeight);
+	}
+
+	.avatar {
+		width: var(--avatarDimension);
+		height: var(--avatarDimension);
+		background-color: var(--popOutBgColor);
+		border: 8px solid var(--popOutBgColor);
+		border-radius: calc(var(--borderRadius) + 5px);
+		position: absolute;
+		inset: 0 auto auto var(--innerSpaceOffset);
+		user-select: none;
+		--headerWidth: 30px;
+		--borderSize: 8px;
+
+		&:before,
+		&:after {
+			--curveDimension: calc(10px + var(--borderSize));
+			content: "";
+			width: var(--curveDimension);
+			height: var(--curveDimension);
+			position: absolute;
+			top: 54px;
+			box-sizing: content-box;
+			pointer-events: none;
+			z-index: -1;
+		}
+
+		&:before {
+			border-right: var(--curveDimension) solid var(--popOutBgColor);
+			border-bottom: var(--curveDimension) solid var(--popOutBgColor);
+			border-bottom-right-radius: calc(var(--curveDimension) * 2);
+			left: calc((var(--curveDimension) + var(--borderSize)) * -1);
+			transform: translate(0, calc(-1 * var(--headerWidth)));
+		}
+
+		&:after {
+			border-left: var(--curveDimension) solid var(--popOutBgColor);
+			border-bottom: var(--curveDimension) solid var(--popOutBgColor);
+			border-bottom-left-radius: calc(var(--curveDimension) * 2);
+			right: calc((var(--curveDimension) + var(--borderSize)) * -1);
+			transform: translate(0, calc(-1 * var(--headerWidth)));
+		}
+	}
+
+	.avatarInner {
+		border-radius: var(--borderRadius);
+		overflow: hidden;
+
+		img {
+			width: 100%;
+			height: 100%;
+			border-radius: var(--borderRadius);
+			pointer-events: none;
+		}
+	}
+
+	.name {
+		--offsetWidth: calc(var(--avatarDimension) + (var(--innerSpaceOffset) * 2));
+		width: calc(100% - var(--offsetWidth));
+		height: 50px;
+		color: var(--colorPrimaryForeground);
+		font-size: 20px;
+		font-family: "GT Bold";
+		position: absolute;
+		inset: 50% auto auto var(--offsetWidth);
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+
+		span {
+			width: 90%;
+			max-height: 100%;
+			text-overflow: ellipsis;
+			display: block;
+			overflow: hidden;
+		}
+	}
+}
+
+.misc {
+	width: calc(100% - (var(--innerSpaceOffset) * 2));
+	height: calc(100% - var(--headerHeight) - var(--headerInnerOffsetY) - (var(--innerSpaceOffset) * 2));
+	margin: calc(var(--headerInnerOffsetY) + 25px) var(--innerSpaceOffset) var(--innerSpaceOffset) var(--innerSpaceOffset);
+	flex: 1;
+	position: relative;
+}
+
+.row {
+	height: max-content;
+	margin: 10px 0;
+	font-family: "GT Medium";
+	position: relative;
+	display: flex;
+	flex-flow: row;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 10px;
+}
+
+.label {
+	min-width: 150px;
+	height: 100%;
+	text-align: end;
+	text-transform: uppercase;
+	display: flex;
+	flex-flow: row;
+	align-items: flex-start;
+	justify-content: flex-end;
+
+	.bold {
+		min-height: 22px;
+		color: var(--colorGrayQuaternary);
+		font-size: 16px;
+		font-weight: 700;
+		white-space: pre-line;
+	}
+}
+
+.value {
+	width: 100%;
+	color: var(--colorPrimaryForeground);
+	font-size: 16px;
+
+	&.hasDateValue {
+		max-height: 40px;
+		display: flex;
+		flex-flow: column;
+		gap: 2px;
+
+		span {
+			flex: 1;
+		}
+	}
+}

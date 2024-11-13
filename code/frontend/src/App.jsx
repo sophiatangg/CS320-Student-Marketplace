@@ -6,6 +6,7 @@ import ItemPage from "@pages/ItemPage";
 import Login from "@pages/Login";
 import NotFound from "@pages/NotFound";
 import AccountOptionsWindow from "@popups/AccountOptionsWindow";
+import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
@@ -18,7 +19,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-	const { accountInfoDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
+	const { accountInfoDisplayed, accountProfileDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
 	const { selectedItem } = useContextSelector("itemsStore");
 	const { theme } = useContextSelector("globalStore");
 
@@ -57,7 +58,7 @@ const App = () => {
 		<>
 			<div
 				className={cns(appStyles["app"], {
-					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed,
+					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed || accountProfileDisplayed,
 				})}
 			>
 				<NavBar />
@@ -70,10 +71,11 @@ const App = () => {
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</AnimatePresence>
+				{accountInfoDisplayed && <AccountOptionsWindow />}
+				{accountProfileDisplayed && <AccountProfileWindow />}
 				{addNewItemDisplayed && <AddNewItemWindow />}
 				{cartDisplayed && <CartWindow />}
 				{tradeDisplayed && <TradeWindow />}
-				{accountInfoDisplayed && <AccountOptionsWindow />}
 				<Footer />
 			</div>
 			<ToastContainer />

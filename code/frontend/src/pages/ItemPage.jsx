@@ -6,7 +6,7 @@ import { setUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
-import { formatDate } from "@utils/formatDate";
+import { formatDateAgo } from "@utils/formatDate";
 import { PROJECT_NAME } from "@utils/main";
 import templateGame from "@utils/templateGame";
 import { motion } from "framer-motion";
@@ -175,7 +175,7 @@ const ItemPage = (props) => {
 												>
 													<h4>
 														<span>Date Added:</span>
-														<span>{formatDate({ date: selectedItem?.date })}</span>
+														<span>{formatDateAgo({ date: selectedItem?.date })}</span>
 													</h4>
 													<h4>
 														<span>Seller:</span>
