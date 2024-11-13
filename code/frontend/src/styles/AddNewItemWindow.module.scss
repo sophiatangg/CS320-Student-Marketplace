@@ -29,7 +29,7 @@
 	justify-content: space-between;
 
 	h1 {
-		color: #fff;
+		color: var(--colorPrimaryForeground);
 		font-family: "GT Ultrabold";
 		font-size: 40px;
 	}
@@ -46,7 +46,7 @@
 	cursor: pointer;
 
 	svg {
-		color: #fff;
+		color: var(--colorPrimaryForeground);
 		transition: transform 100ms linear;
 
 		&:hover {
@@ -80,7 +80,7 @@
 	width: 100%;
 	height: var(--bottomComponent);
 	background-color: var(--popOutBgColorAlt1);
-	box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
+	box-shadow: 0 -2px 15px #{rgba(#000, 0.25)};
 	position: absolute;
 	inset: auto auto 0 0;
 	display: flex;
@@ -93,7 +93,7 @@
 .button {
 	height: 35px;
 	font-size: 18px;
-	color: #fff;
+	color: var(--colorPrimaryForeground);
 	border: none;
 	border-radius: calc(var(--borderRadius) - 2px);
 	padding: 5px 12px;
@@ -150,7 +150,7 @@
 	}
 
 	.label {
-		color: #ccc;
+		color: var(--colorGrayQuaternary);
 		font-family: "GT Bold";
 		font-size: 18px;
 		margin-bottom: 5px;
@@ -185,7 +185,7 @@
 	input,
 	textarea {
 		width: 100%;
-		color: #fff;
+		color: var(--colorPrimaryForeground);
 		font-family: "GT Light";
 		font-size: 18px;
 		background-color: var(--popOutBgColorAlt1);
@@ -227,7 +227,7 @@
 }
 
 .imageItem {
-	color: #fff;
+	color: var(--colorPrimaryForeground);
 	display: flex;
 	flex-flow: row;
 	align-items: center;

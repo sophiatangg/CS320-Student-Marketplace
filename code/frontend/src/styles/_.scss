@@ -8,7 +8,7 @@
 		outline: 0;
 		outline-style: none;
 		outline-width: 0;
-		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	&,
@@ -32,11 +32,18 @@
 
 	--borderRadius: 8px;
 
+	--purpleColor: #92f;
+	--googleColor: #c23321;
+	--umassColor: #{v.$umassColor};
+
+	--selectionColor: #{rgba(v.$umassColor, 0.5)};
+
 	--bgColor: #{v.$bgColor};
 	--highlightColor: rgb(223, 160, 44);
 	--popOutBgColor: #1a1a1a;
 	--popOutBgColorAlt1: #373333;
 	--popOutBgColorAlt2: #262222;
+	--popOutBgColorAlt3: #0f0d0d;
 
 	--buttonNormal: rgb(10, 95, 10);
 	--buttonNormalHover: rgb(12, 112, 12);
@@ -46,8 +53,51 @@
 	--buttonBlue: rgb(76, 76, 224);
 	--buttonBlueHover: rgb(89, 89, 207);
 
+	--buttonSliderDotColor: var(--purpleColor);
+
+	--buttonBackground: #262626;
+	--buttonHoverBackground: #313131;
+	--buttonActiveBackground: #282828;
+
+	--homeColoredButtonColor: #45c1bc;
+
+	--colorGrayPrimary: #474747;
+	--colorGraySecondary: #696969;
+	--colorGrayTertiary: #999;
+	--colorGrayQuaternary: #cccccc;
+
+	--colorTransparent: transparent;
+	--colorPrimaryForeground: #fff;
+	--colorSecondaryForeground: #eee;
+
+	--colorDark: #000;
+
+	--cardFullBackground: #202020;
+	--cardFullHoverBackground: #2d2d2d;
+
 	--scaleUpFactor: 1.1;
 	--scaleDownFactor: 0.95;
+}
+
+::selection {
+	color: var(--colorPrimaryForeground);
+	background-color: var(--selectionColor);
+}
+
+@property --border-angle {
+	syntax: "<angle>";
+	inherits: true;
+	initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+	to {
+		--border-angle: 1turn;
+	}
+}
+
+li {
+	list-style: none;
 }
 
 a {
@@ -81,5 +131,11 @@ form {
 		&:active {
 			transform: scale(var(--scaleDownFactor));
 		}
+	}
+}
+
+.scrollbar-container {
+	.ps__rail-y {
+		background-color: transparent !important;
 	}
 }

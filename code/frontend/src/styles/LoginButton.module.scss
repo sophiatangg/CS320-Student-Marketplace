@@ -1,0 +1,49 @@
+.signInButtonContainer {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.signInButton {
+	background-color: white;
+	border: none;
+	border-radius: var(--borderRadius);
+	padding: 8px 15px;
+	margin: 0 0 15px 0;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	transform: scale(var(--scaleUpFactor));
+	transition:
+		background-color 200ms linear,
+		transform 100ms linear;
+
+	&:hover {
+		background-color: var(--googleColor);
+		transform: scale(var(--scaleDownFactor));
+
+		.name {
+			color: white !important;
+		}
+	}
+
+	.googleIcon {
+		width: 20px;
+		height: 20px;
+
+		svg {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	.name {
+		color: var(--colorDark) !important;
+		font-family: "GT Medium";
+		font-size: 14px;
+		transition: color 100ms linear;
+	}
+}

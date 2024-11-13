@@ -1,0 +1,20 @@
+.userComponent {
+	position: relative;
+}
+
+.icon {
+	width: 40px;
+	height: 40px;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	transition: ease-in-out 0.2s;
+
+	.svg {
+		position: relative;
+		transition: fill 100ms linear;
+	}
+}

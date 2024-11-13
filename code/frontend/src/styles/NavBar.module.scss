@@ -17,7 +17,7 @@
 	}
 
 	&:not([id="home"]) {
-		background-color: rgba(v.$bgColor, 0.7);
+		background-color: #{rgba(v.$bgColor, 0.7)};
 	}
 
 	> div {
@@ -36,7 +36,7 @@
 	}
 
 	h3 {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-family: "GT Bold";
 		display: flex;
 		flex-flow: column;
@@ -91,10 +91,6 @@
 	}
 }
 
-.userComponent {
-	position: relative;
-}
-
 .cartComponent {
 	position: relative;
 	display: flex;
@@ -104,7 +100,7 @@
 	cursor: pointer;
 
 	.badge {
-		color: white;
+		color: var(--colorPrimaryForeground);
 		font-size: 10px;
 		font-family: "GT Bold";
 		background-color: red;
