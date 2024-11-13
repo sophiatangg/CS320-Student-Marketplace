@@ -23,19 +23,19 @@ async function connectToDatabase() {
 
 async function addItem(itemId, sellerId, category, initalTimestamp) {
 	const initialTime = new Date(initalTimestamp);
-	const query = 'INSERT INTO ITEM (id, seller_id, created_at, category) VALUES ($1, $2, $3, $4)';
-	const res = await client.query(query, [uuidv4(), itemID, sellerId, category, initalTimestamp]);
+	const query = "INSERT INTO item (id, seller_id, created_at, category) VALUES ($1, $2, $3, $4)";
+	const res = await client.query(query, [itemID, sellerId, category, initalTimestamp]);
 	console.log("item created");
 	//cut everything above
 	// const { data, error } = await supabase
-    // .from('ITEM')
-    // .insert([{ id: itemId, seller_id: sellerId, created_at: initialTimestamp, category }]);
-    
-  	// if (error) {
-    // 	console.error('Error adding item:', error);
-    // 	throw error;
-  	// }
-  	// console.log('Item added:', data);
+	// .from('ITEM')
+	// .insert([{ id: itemId, seller_id: sellerId, created_at: initialTimestamp, category }]);
+
+	// if (error) {
+	// 	console.error('Error adding item:', error);
+	// 	throw error;
+	// }
+	// console.log('Item added:', data);
 }
 
 async function addTrade(itemId, buyerId, sellerId, initalTimestamp, client) {
@@ -46,14 +46,14 @@ async function addTrade(itemId, buyerId, sellerId, initalTimestamp, client) {
 	const res = await client.query(query, [uuidv4(), itemId, buyerId, sellerId, initalTimestamp, expirationDate]);
 	console.log("trade added");
 	// const { data, error } = await supabase
-    // .from('trade')
-    // .insert([{ id: uuidv4(), item_id: itemId, buyer_id: buyerId, seller_id: sellerId, timestamp: initialTimestamp, expiration_date: expirationDate }]);
-  
-  	// if (error) {
-    // 	console.error('Error adding trade:', error);
-    // 	throw error;
-  	// }
-  	// console.log('Trade added:', data);
+	// .from('trade')
+	// .insert([{ id: uuidv4(), item_id: itemId, buyer_id: buyerId, seller_id: sellerId, timestamp: initialTimestamp, expiration_date: expirationDate }]);
+
+	// if (error) {
+	// 	console.error('Error adding trade:', error);
+	// 	throw error;
+	// }
+	// console.log('Trade added:', data);
 }
 
 //i think we can cut below

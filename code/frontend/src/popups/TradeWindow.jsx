@@ -60,7 +60,7 @@ const TradeWindow = (props) => {
 			return;
 		}
 		try {
-			const response = await fetch("/api/trade", {
+			const response = await fetch("/https://localhost:6969/trade", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

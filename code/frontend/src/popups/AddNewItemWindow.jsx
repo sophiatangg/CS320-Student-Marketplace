@@ -4,6 +4,7 @@ import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const AddNewItemWindow = (props) => {
 	const dispatch = useContextDispatch();
@@ -57,42 +58,44 @@ const AddNewItemWindow = (props) => {
 
 		//i added this stuff
 		try {
-			const response = await fetch("/api/addItem", {
+			const response = await fetch("http://localhost:6969/addItem", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					itemId: itemsData.length + localStorageItems.length,
-					user: "MockUser1",
+					id: localStorageItems.length + 3, // Simplified ID generation logic, adjust as needed.
+					name: newItemState.name,
+					surname: newItemState.name.replace(" ", ""),
+					price: newItemState.price,
+					desc: newItemState.description,
 					category: newItemState.category,
-					timestamp: date.toISOString(),
-					// Additional fields(?)
+					condition: newItemState.condition,
+					seller: "MockUser1",
+					date: date.toISOString(),
+					cover: newItemState.cover,
+					footage: footageList,
 				}),
 			});
 
 			if (response.ok) {
 				const result = await response.json();
 				console.log(result.message);
-				//your code
 				dispatch({
 					type: "ADD_ITEM",
-					payload: res,
+					payload: false,
 				});
-				//idk it just needs to be here
 				toast.success("Item successfully added to the database!");
 			} else {
-				const errorData = await response.json();
-				console.error("Failed to store item:", errorData.error);
+				const errorData = await response.text(); // Use .text() to handle non-JSON responses.
+				console.error("Failed to store item:", errorData);
 				toast.error("Failed to store item in the database.");
 			}
 		} catch (error) {
 			console.error("Error submitting item:", error);
 			toast.error("An error occurred while submitting the item.");
 		}
-		//end of my section
-
-		handleReset(e);
+		//handleReset(e);
 	};
 
 	const handleReset = (e) => {
