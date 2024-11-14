@@ -10,7 +10,7 @@ import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence } from "framer-motion";

@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AddToCartButton.module.scss";
 import cns from "@utils/classNames";
 import { useRef, useState } from "react";

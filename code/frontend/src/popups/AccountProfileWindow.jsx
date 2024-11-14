@@ -1,5 +1,5 @@
 import Window from "@popups/Window";
-import { useAuth } from "@stores/AuthProvider";
+import { useAuth } from "@providers/AuthProvider";
 import styles from "@styles/AccountProfileWindow.module.scss";
 import cns from "@utils/classNames";
 import { formattedDate, isValidISODate } from "@utils/formatDate";

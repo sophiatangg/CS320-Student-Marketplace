@@ -1,5 +1,5 @@
 import _404 from "@media/image/404.png";
-import { useContextDispatch } from "@stores/StoreProvider";
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/NotFound.module.scss";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";

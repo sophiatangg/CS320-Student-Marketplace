@@ -1,4 +1,4 @@
-import { useContextSelector } from "@stores/StoreProvider";
+import { useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Home.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";

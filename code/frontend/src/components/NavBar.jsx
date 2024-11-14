@@ -1,7 +1,7 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
-import { useAuth } from "@stores/AuthProvider";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import navBarStyles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";

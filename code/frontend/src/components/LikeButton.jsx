@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/LikeButton.module.scss";
 import { TiHeartFullOutline, TiHeartOutline } from "react-icons/ti";
 

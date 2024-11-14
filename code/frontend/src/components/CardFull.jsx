@@ -1,7 +1,7 @@
 import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import TradeButton from "@components/TradeButton";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/CardFull.module.scss";
 import cns from "@utils/classNames";
 import { motion } from "framer-motion";

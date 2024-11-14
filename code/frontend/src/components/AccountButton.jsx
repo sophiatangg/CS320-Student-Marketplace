@@ -1,5 +1,5 @@
 import { supabase } from "@database/supabaseClient";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountButton.module.scss";
 import cns from "@utils/classNames";
 import { useEffect, useRef, useState } from "react";

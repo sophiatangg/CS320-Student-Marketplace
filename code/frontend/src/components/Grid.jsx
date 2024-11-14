@@ -1,5 +1,5 @@
 import CardFull from "@components/CardFull";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
 import { useEffect } from "react";

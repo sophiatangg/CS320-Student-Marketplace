@@ -1,8 +1,8 @@
 import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
-import { useAuth } from "@stores/AuthProvider";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";

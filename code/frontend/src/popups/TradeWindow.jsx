@@ -1,6 +1,6 @@
 import CardMini from "@components/CardMini";
 import Window from "@popups/Window";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/TradeWindow.module.scss";
 import { useState } from "react";
 import { IoChatbubble, IoClose } from "react-icons/io5";

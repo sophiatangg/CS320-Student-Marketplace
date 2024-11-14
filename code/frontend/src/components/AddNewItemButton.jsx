@@ -1,4 +1,4 @@
-import { useContextDispatch } from "@stores/StoreProvider";
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/AddNewItemButton.module.scss";
 
 const AddNewItemButton = (props) => {

@@ -1,7 +1,7 @@
 import LoginButton from "@components/LoginButton";
 import { signOut } from "@database/users";
-import { useAuth } from "@stores/AuthProvider";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence, motion } from "framer-motion";

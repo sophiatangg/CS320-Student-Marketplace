@@ -1,4 +1,4 @@
-import { useContextDispatch } from "@stores/StoreProvider";
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/Window.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";

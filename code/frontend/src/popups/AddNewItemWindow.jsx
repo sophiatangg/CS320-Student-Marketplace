@@ -1,5 +1,5 @@
 import Window from "@popups/Window";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
