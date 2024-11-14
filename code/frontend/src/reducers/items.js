@@ -1,9 +1,9 @@
+import { selectItemsFromUser } from "@database/items";
 import itemsData from "@utils/itemsData";
 
 const initial = {
 	allItems: [],
 	selectedItem: null,
-	shownItems: [],
 };
 
 export const itemsReducer = (state = initial, action) => {
@@ -11,10 +11,15 @@ export const itemsReducer = (state = initial, action) => {
 		case "@@INIT":
 			const localStorageItems = JSON.parse(localStorage.getItem("items")) || [];
 
+			let data = null;
+
+			selectItemsFromUser().then((d) => {
+				data = d;
+			});
+
 			return {
 				...state,
 				allItems: [...itemsData, ...localStorageItems],
-				shownItems: [...itemsData, ...localStorageItems],
 			};
 
 		case "SET_ALL_ITEMS":
@@ -27,12 +32,6 @@ export const itemsReducer = (state = initial, action) => {
 			return {
 				...state,
 				selectedItem: action.payload,
-			};
-
-		case "SET_SHOWN_ITEMS":
-			return {
-				...state,
-				shownItems: action.payload,
 			};
 
 		default:

@@ -10,7 +10,7 @@ const Grid = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { allItems, shownItems } = useContextSelector("itemsStore");
+	const { allItems } = useContextSelector("itemsStore");
 	const { gridDisplay, items: localStorageItems } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
@@ -49,18 +49,18 @@ const Grid = (props) => {
 		<>
 			<div
 				className={cns(styles["gridContainer"], {
-					[styles["withGrid"]]: gridDisplay && shownItems?.length,
-					[styles["noGrid"]]: !gridDisplay && shownItems?.length,
-					[styles["emptyGrid"]]: !shownItems?.length,
+					[styles["withGrid"]]: gridDisplay && allItems?.length,
+					[styles["noGrid"]]: !gridDisplay && allItems?.length,
+					[styles["emptyGrid"]]: !allItems?.length,
 				})}
 				id="gridContainer"
 			>
-				{!shownItems?.length && (
+				{!allItems?.length && (
 					<div className={styles["placeholder"]}>
 						<h1>No items</h1>
 					</div>
 				)}
-				{shownItems?.map((item, i) => {
+				{allItems?.map((item, i) => {
 					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
 				})}
 			</div>

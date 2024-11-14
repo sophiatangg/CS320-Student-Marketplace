@@ -1,5 +1,7 @@
 import { supabase } from "@database/supabaseClient";
 
+const tableName = "User";
+
 const signInWithGoogle = async () => {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: "google",
@@ -47,8 +49,6 @@ const insertUserData = async () => {
 		user_metadata: { full_name, avatar_url },
 	} = user;
 
-	const tableName = "User";
-
 	// Check if a user with the same id or email already exists
 	const { data: existingUser, error: fetchError } = await supabase
 		.from(tableName)
@@ -57,7 +57,10 @@ const insertUserData = async () => {
 		.maybeSingle();
 
 	if (existingUser) {
-		return { message: "User data already exists. Skipped inserting." };
+		return {
+			message: "User data already exists. Skipped inserting.",
+			error: null,
+		};
 	} else {
 		const { error: insertError } = await supabase.from(tableName).insert({
 			id,
@@ -74,6 +77,7 @@ const insertUserData = async () => {
 		} else {
 			return {
 				message: "User data insertion successful",
+				error: null,
 			};
 		}
 	}
