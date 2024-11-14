@@ -1,4 +1,4 @@
-import { setUser } from "@database/users";
+import { insertUserData, setUser } from "@database/users";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext({
@@ -12,6 +12,16 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		const authListener = setUser((session) => {
 			setCurrentUser(session?.user ?? null);
+
+			if (session) {
+				insertUserData()
+					.then((data) => {
+						console.log(data);
+					})
+					.catch((data) => {
+						console.error(data);
+					});
+			}
 		});
 
 		return () => {
