@@ -15,6 +15,10 @@
 	transition: ease-in-out 0.2s;
 	overflow: hidden;
 
+	&.userSignedIn {
+		position: relative;
+	}
+
 	.svg {
 		position: relative;
 		transition: fill 100ms linear;
