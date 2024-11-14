@@ -19,7 +19,7 @@ const Slider = (props) => {
 	const location = useLocation();
 
 	useEffect(() => {
-		const selectedGameIndex = allItems.findIndex((_item) => "/store/" + _item.surname === location.pathname);
+		const selectedGameIndex = allItems?.findIndex((_item) => "/store/" + _item.surname === location.pathname);
 
 		const selectedItemElem = allItems[selectedGameIndex];
 

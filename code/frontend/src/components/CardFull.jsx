@@ -30,7 +30,7 @@ const CardFull = (props) => {
 	};
 
 	const handleSelectItem = ({ id }) => {
-		const clickedItem = allItems.find((_item) => {
+		const clickedItem = allItems?.find((_item) => {
 			return _item.id === id;
 		});
 
@@ -48,7 +48,7 @@ const CardFull = (props) => {
 			return;
 		}
 
-		const hoveredItem = allItems.find((item) => {
+		const hoveredItem = allItems?.find((item) => {
 			return item.id === id;
 		});
 

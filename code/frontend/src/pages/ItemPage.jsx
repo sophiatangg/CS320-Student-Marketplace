@@ -102,7 +102,7 @@ const ItemPage = (props) => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
 			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
 
-			const currentItem = allItems.find((item) => {
+			const currentItem = allItems?.find((item) => {
 				return item.surName === surname || item.surname === surname;
 			});
 

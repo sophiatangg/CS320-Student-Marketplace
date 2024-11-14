@@ -7,7 +7,7 @@ import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { MdOutlineTableRows } from "react-icons/md";
 import { TbLayoutGridFilled } from "react-icons/tb";
@@ -20,13 +20,11 @@ const animations = {
 };
 
 const Browse = (props) => {
-	const [isAuthorized, setIsAuthorized] = useState(false);
-
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { currentUser, setCurrentUser } = useAuth();
+	const { currentUser } = useAuth();
 
 	const { gridDisplay } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
@@ -34,7 +32,10 @@ const Browse = (props) => {
 	const navigate = useNavigate();
 
 	const handleLayoutSwitch = (e, bool) => {
-		dispatch({ type: "SET_DISPLAY", payload: bool });
+		dispatch({
+			type: "SET_DISPLAY",
+			payload: bool,
+		});
 	};
 
 	useEffect(() => {

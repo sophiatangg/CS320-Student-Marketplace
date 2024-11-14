@@ -11,5 +11,39 @@ export const selectItemsFromUser = async () => {
 
 	const res = await supabase.from(tableName).select("id").or(`id.eq.${userId}`);
 
-	console.log(res);
+	if (!res) {
+		console.error("Error fetching items from database");
+		return {
+			data: null,
+			error: res.error,
+			status: res.status,
+		};
+	} else {
+		return {
+			data: res.data,
+			error: res.error,
+			status: res.status,
+		};
+	}
 };
+
+export const selectAllItems = async () => {
+	const res = await supabase.from(tableName).select("*");
+
+	if (!res) {
+		console.error("Error fetching items from database");
+		return {
+			data: null,
+			error: res.error,
+			status: res.status,
+		};
+	} else {
+		return {
+			data: res.data,
+			error: res.error,
+			status: res.status,
+		};
+	}
+};
+
+export const insertItemByUser = async () => {};

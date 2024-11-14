@@ -1,5 +1,4 @@
-import { selectItemsFromUser } from "@database/items";
-import itemsData from "@utils/itemsData";
+import { selectAllItems } from "@database/items";
 
 const initial = {
 	allItems: [],
@@ -9,18 +8,21 @@ const initial = {
 export const itemsReducer = (state = initial, action) => {
 	switch (action.type) {
 		case "@@INIT":
-			const localStorageItems = JSON.parse(localStorage.getItem("items")) || [];
+			selectAllItems()
+				.then((res) => {
+					return {
+						...state,
+						allItems: [...res.data],
+					};
+				})
+				.catch((res) => {
+					console.error(res);
 
-			let data = null;
-
-			selectItemsFromUser().then((d) => {
-				data = d;
-			});
-
-			return {
-				...state,
-				allItems: [...itemsData, ...localStorageItems],
-			};
+					return {
+						...state,
+						allItems: [],
+					};
+				});
 
 		case "SET_ALL_ITEMS":
 			return {

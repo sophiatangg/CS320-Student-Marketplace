@@ -24,12 +24,12 @@ const Grid = (props) => {
 			} else if (categoryName === "my-items") {
 				items = localStorageItems;
 			} else if (categoryName === "wishlist") {
-				items = allItems.filter((item) => item.isLiked);
+				items = allItems?.filter((item) => item.isLiked);
 			} else {
-				items = allItems.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
+				items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
 			}
 		} else {
-			const foundItems = allItems.filter((item, i) => {
+			const foundItems = allItems?.filter((item, i) => {
 				const name = item.name.toLowerCase().replace(" ", "");
 				const query = searchQuery.toLowerCase().replace(" ", "");
 

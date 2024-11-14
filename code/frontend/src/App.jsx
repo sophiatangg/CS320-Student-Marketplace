@@ -10,7 +10,7 @@ import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
-import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
+import { useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence } from "framer-motion";
@@ -20,11 +20,8 @@ import { ToastContainer } from "react-toastify";
 
 const App = () => {
 	const { accountInfoDisplayed, accountProfileDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
-	const { selectedItem } = useContextSelector("itemsStore");
+
 	const { theme } = useContextSelector("globalStore");
-
-	const dispatch = useContextDispatch();
-
 	const { pathname } = useLocation();
 
 	useEffect(() => {
