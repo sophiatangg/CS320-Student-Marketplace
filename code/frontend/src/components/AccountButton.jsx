@@ -1,11 +1,12 @@
 import { supabase } from "@database/supabaseClient";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountButton.module.scss";
+import cns from "@utils/classNames";
 import { useEffect, useRef, useState } from "react";
 import { PiUserCircleFill } from "react-icons/pi";
 
 const AccountButton = (props) => {
-	const {} = props;
+	const { userAvatar } = props;
 
 	const [isClicked, setIsClicked] = useState(false);
 
@@ -40,19 +41,30 @@ const AccountButton = (props) => {
 			ref={componentRef}
 			className={styles["userComponent"]}
 			onClick={(e) => {
-				e.preventDefault();
-
 				handleClick();
 				// await handleFetchDB();
 			}}
 		>
-			<div className={styles["icon"]}>
-				<PiUserCircleFill
-					className={styles["svg"]}
-					style={{
-						fill: accountInfoDisplayed ? "var(--purpleColor)" : "#fff",
-					}}
-				/>
+			<div
+				className={cns(styles["icon"], {
+					[styles["userSignedIn"]]: userAvatar !== "",
+				})}
+			>
+				{userAvatar === "" ? (
+					<PiUserCircleFill
+						className={styles["svg"]}
+						style={{
+							fill: accountInfoDisplayed ? "var(--purpleColor)" : "#fff",
+						}}
+					/>
+				) : (
+					<div
+						className={styles["userIcon"]}
+						style={{
+							backgroundImage: `url("${userAvatar}")`,
+						}}
+					/>
+				)}
 			</div>
 		</div>
 	);

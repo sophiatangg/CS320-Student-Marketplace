@@ -2,7 +2,7 @@ import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
-import { setUser } from "@database/users";
+import { useAuth } from "@stores/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -43,9 +43,10 @@ const AnimatedText = ({ children }) => {
 };
 
 const ItemPage = (props) => {
+	const { currentUser } = useAuth();
+
 	const navigate = useNavigate();
 
-	const [isAuthorized, setIsAuthorized] = useState(false);
 	const [extended, setExtended] = useState(false);
 	const [textExtended, setTextExtended] = useState(false);
 	const [carouselState, setCarouselState] = useState(0);
@@ -119,19 +120,10 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
-
-			setIsAuthorized(isUserAuthorized || false);
-
-			if (!isUserAuthorized) {
-				navigate("/login");
-			}
-		});
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, [isAuthorized]);
+		if (!currentUser) {
+			navigate("/login");
+		}
+	}, [currentUser]);
 
 	if (!selectedItem) return null;
 

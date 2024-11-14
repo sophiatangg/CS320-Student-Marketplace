@@ -1,39 +1,28 @@
-import { setUser } from "@database/users";
 import Window from "@popups/Window";
+import { useAuth } from "@stores/AuthProvider";
 import styles from "@styles/AccountProfileWindow.module.scss";
 import cns from "@utils/classNames";
 import { formattedDate, isValidISODate } from "@utils/formatDate";
 import { useEffect, useState } from "react";
 
 const AccountProfileWindow = (props) => {
-	const [currentSession, setCurrentSession] = useState(null);
 	const [userInfo, setUserInfo] = useState({});
 
-	useEffect(() => {
-		const authListener = setUser((session) => {
-			if (!session && !session.user && !session.user.user_metadata) return;
-
-			setCurrentSession(session ?? null);
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, []);
+	const { currentUser } = useAuth();
 
 	useEffect(() => {
-		if (!currentSession || !currentSession.user) return;
+		if (!currentUser) return;
 
 		setUserInfo({
-			id: currentSession.user.id,
-			email: currentSession.user.user_metadata.email,
-			name: currentSession.user.user_metadata.full_name,
-			avatarURL: currentSession.user.user_metadata.avatar_url,
-			createdAt: currentSession.user.created_at,
-			emailConfirmedAt: currentSession.user.email_confirmed_at,
-			lastSignInAt: currentSession.user.last_sign_in_at,
+			id: currentUser.id,
+			email: currentUser.user_metadata.email,
+			name: currentUser.user_metadata.full_name,
+			avatarURL: currentUser.user_metadata.avatar_url,
+			createdAt: currentUser.created_at,
+			emailConfirmedAt: currentUser.email_confirmed_at,
+			lastSignInAt: currentUser.last_sign_in_at,
 		});
-	}, [currentSession]);
+	}, [currentUser]);
 
 	const renderPropIcon = (prop) => {};
 

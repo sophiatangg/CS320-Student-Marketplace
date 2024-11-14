@@ -1,7 +1,7 @@
 import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
-import { setUser } from "@database/users";
+import { useAuth } from "@stores/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
@@ -26,6 +26,8 @@ const Browse = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
+	const { currentUser, setCurrentUser } = useAuth();
+
 	const { gridDisplay } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
 
@@ -40,20 +42,10 @@ const Browse = (props) => {
 	}, []);
 
 	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
-
-			setIsAuthorized(isUserAuthorized || false);
-
-			if (!isUserAuthorized) {
-				navigate("/login");
-			}
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, [isAuthorized]);
+		if (!currentUser) {
+			navigate("/login");
+		}
+	}, [currentUser]);
 
 	const renderPlaceHolder = () => {
 		return (

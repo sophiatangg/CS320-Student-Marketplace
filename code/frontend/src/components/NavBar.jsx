@@ -1,6 +1,6 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
-import { setUser } from "@database/users";
+import { useAuth } from "@stores/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import navBarStyles from "@styles/NavBar.module.scss";
 import { motion } from "framer-motion";
@@ -16,10 +16,12 @@ const navBarVariants = {
 };
 
 const NavBar = (props) => {
-	const [isAuthorized, setIsAuthorized] = useState(false);
+	const [userAvatar, setUserAvatar] = useState("");
 	const [browsing, setBrowsing] = useState(true);
 
 	const navigate = useNavigate();
+
+	const { currentUser } = useAuth();
 
 	const { cartAmount } = useContextSelector("cartStore");
 	const dispatch = useContextDispatch();
@@ -71,20 +73,16 @@ const NavBar = (props) => {
 	}, [pathname]);
 
 	useEffect(() => {
-		const authListener = setUser((session) => {
-			setIsAuthorized(session?.user?.email || false);
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, []);
+		if (currentUser) {
+			setUserAvatar(currentUser.user_metadata.avatar_url);
+		}
+	}, [currentUser]);
 
 	const renderNavLeft = () => {
 		return (
 			<div className={navBarStyles["logo"]} onClick={handleHome}>
 				<div className={navBarStyles["icon"]}>
-					<PiStudentBold className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
+					<PiStudentBold style={{ fill: "#fff" }} />
 				</div>
 				<h3>
 					<span>Student</span>
@@ -97,11 +95,11 @@ const NavBar = (props) => {
 	const renderNavCenter = () => {
 		return (
 			<div className={navBarStyles["path"]}>
-				{browsing && isAuthorized && <SearchBar />}
-				{!browsing && isAuthorized && (
+				{browsing && currentUser && <SearchBar />}
+				{!browsing && currentUser && (
 					<div className={navBarStyles["component"]} id="browseStore">
 						<div className={navBarStyles["icon"]}>
-							<FaShoppingBasket className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
+							<FaShoppingBasket style={{ fill: "#fff" }} />
 						</div>
 						<h3 onClick={handleBrowse}>
 							<span>Browse</span>
@@ -116,12 +114,11 @@ const NavBar = (props) => {
 	const renderNavRight = () => {
 		return (
 			<div className={navBarStyles["component"]}>
-				{isAuthorized && (
+				{currentUser && (
 					<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
 						<div className={navBarStyles["icon"]}>
 							<TiShoppingCart
 								onClick={handleOpenCart}
-								className={navBarStyles["svg"]}
 								style={{
 									fill: cartAmount ? "#90ee90" : "#fff",
 								}}
@@ -134,7 +131,7 @@ const NavBar = (props) => {
 						)}
 					</div>
 				)}
-				<AccountButton />
+				<AccountButton userAvatar={userAvatar} />
 			</div>
 		);
 	};

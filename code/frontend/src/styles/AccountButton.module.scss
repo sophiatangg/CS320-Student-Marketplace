@@ -5,6 +5,7 @@
 .icon {
 	width: 40px;
 	height: 40px;
+	border-radius: 50%;
 	position: relative;
 	display: flex;
 	justify-content: center;
@@ -12,9 +13,23 @@
 	gap: 6px;
 	cursor: pointer;
 	transition: ease-in-out 0.2s;
+	overflow: hidden;
 
 	.svg {
 		position: relative;
 		transition: fill 100ms linear;
+	}
+}
+
+.userIcon {
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-size: cover;
+	position: relative;
+	transition: transform 100ms linear;
+
+	&:hover {
+		transform: scale(var(--scaleUpFactor));
 	}
 }

@@ -2,6 +2,10 @@
 	margin-top: var(--headerHeight);
 	background-color: var(--bgColor);
 
+	&.notFound {
+		position: relative;
+	}
+
 	.itemPageContent {
 		width: 100%;
 		padding: 0 calc(var(--sidebarSpaceOffset) - 20px);

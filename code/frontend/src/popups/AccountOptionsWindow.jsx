@@ -1,5 +1,6 @@
 import LoginButton from "@components/LoginButton";
-import { setUser, signOut } from "@database/users";
+import { signOut } from "@database/users";
+import { useAuth } from "@stores/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
@@ -35,8 +36,8 @@ const animationVariants = {
 const AccountOptionsWindow = () => {
 	const windowRef = useRef(null);
 	const [isExiting, setIsExiting] = useState(false);
-	const [isAuthorized, setIsAuthorized] = useState(false);
-	const [session, setSession] = useState(null);
+
+	const { currentUser, setCurrentUser } = useAuth();
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
@@ -73,19 +74,6 @@ const AccountOptionsWindow = () => {
 			document.removeEventListener("click", handleWindowRemoval);
 		};
 	}, [accountInfoDisplayed, dispatch]);
-
-	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
-
-			setSession(session);
-			setIsAuthorized(isUserAuthorized);
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, []);
 
 	const renderAccountOptions = () => {
 		const optionsList = [
@@ -144,7 +132,7 @@ const AccountOptionsWindow = () => {
 							transition: Bounce,
 						});
 					} else {
-						navigate("/");
+						navigate(0);
 					}
 				},
 			},
@@ -240,9 +228,9 @@ const AccountOptionsWindow = () => {
 					>
 						<div className={styles["inner"]}>
 							<div className={styles["header"]}>
-								<span>Hello, {isAuthorized ? session.user.user_metadata.name.split(" ")[0] : "sign in!"}</span>
+								<span>Hello, {currentUser ? currentUser.user_metadata.name.split(" ")[0] : "sign in!"}</span>
 							</div>
-							{isAuthorized ? renderAccountOptions() : <LoginButton />}
+							{currentUser ? renderAccountOptions() : <LoginButton />}
 							<hr />
 							{renderThemeSwitcher()}
 						</div>

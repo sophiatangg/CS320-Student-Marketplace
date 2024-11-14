@@ -3,6 +3,7 @@ import "@media/fonts/walsheim/GTWalsheimPro-Bold.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Light.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Medium.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Regular.ttf";
+import { AuthProvider } from "@stores/AuthProvider";
 import { StoreProvider } from "@stores/StoreProvider";
 import "@styles/_.scss";
 import { StrictMode } from "react";
@@ -19,8 +20,10 @@ root.render(
 	<StrictMode>
 		<StoreProvider>
 			<BrowserRouter>
-				<App />
-				<DissolveFilter />
+				<AuthProvider>
+					<App />
+					<DissolveFilter />
+				</AuthProvider>
 			</BrowserRouter>
 		</StoreProvider>
 	</StrictMode>,
