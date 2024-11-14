@@ -36,10 +36,8 @@ const insertUserData = async () => {
 	const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
 	if (sessionError || !sessionData || !sessionData.session) {
-		return {
-			status: "No active session found or error fetching session",
-			error: sessionError,
-		};
+		console.error("No active session found or error fetching session:", sessionError?.message);
+		return;
 	}
 
 	const user = sessionData.session.user;
@@ -51,27 +49,33 @@ const insertUserData = async () => {
 
 	const tableName = "User";
 
-	// Check if user already exists in the users table
-	const { data, error, status } = await supabase.from(tableName).upsert(
-		{
+	// Check if a user with the same id or email already exists
+	const { data: existingUser, error: fetchError } = await supabase
+		.from(tableName)
+		.select("id", "email")
+		.or(`id.eq.${id},email.eq.${email}`)
+		.maybeSingle();
+
+	if (existingUser) {
+		return { message: "User data already exists. Skipped inserting." };
+	} else {
+		const { error: insertError } = await supabase.from(tableName).insert({
 			id,
 			email,
 			name: full_name,
 			avatar_url,
-		},
-		{ onConflict: ["id"] }, // Prevents conflict on 'id' column
-	);
+		});
 
-	if (error) {
-		return {
-			error,
-			status,
-		};
-	} else {
-		return {
-			data,
-			status,
-		};
+		if (insertError) {
+			return {
+				message: "Error inserting user",
+				error: insertError,
+			};
+		} else {
+			return {
+				message: "User data insertion successful",
+			};
+		}
 	}
 };
 
