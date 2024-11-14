@@ -1,25 +1,19 @@
-import express from "express";
-import { connectToDatabase, addTrade, disconnectFromDatabase } from "../../backend/dbFuncs.js";
+import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
-const storeTradeInDatabase = async (req, res, next) => {
-	const { itemId, userInitiator, userReceiver, timestamp } = req.body;
-
-	if (!itemId || !userInitiator || !userReceiver || !timestamp) {
-		return res.status(400).json({ error: "Missing required trade details" });
-	}
-
+export const storeTradeInDatabase = async (newItem) => {
 	try {
-		const client = await connectToDatabase();
-
-		await addTrade(itemId, userInitiator, userReceiver, timestamp, client);
-
-		await disconnectFromDatabase(client);
-
-		res.status(201).json({ message: "Trade successfully stored in database" });
+		const { data, error } = await supabase.from("Trade").insert([newItem]);
+		if (error) {
+			console.error("Error adding trade:", error);
+			alert(`Error adding trade: ${error.message}`);
+		} else {
+			console.log("Trade added successfully:", data);
+			alert("Trade added successfully!");
+		}
 	} catch (err) {
-		console.error("Error storing trade in database:", err);
-		res.status(500).json({ error: "Failed to store trade in the database" });
+		console.error("Unexpected error:", err);
+		alert("An unexpected error occurred. Please try again later.");
 	}
 };
 
-export default storeTradeInDatabase;
+//export default storeTradeInDatabase;
