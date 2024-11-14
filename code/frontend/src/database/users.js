@@ -42,36 +42,48 @@ const insertUserData = async () => {
 		};
 	}
 
-	const user = sessionData.session.user;
-	const {
-		id,
-		email,
-		user_metadata: { full_name, avatar_url },
-	} = user;
+	const user = /* sessionData.session.user;
+	const*/ {
+		id: sessionData.session.user.id,
+		email: sessionData.session.user.email,
+		user_metadata: { full_name: sessionData.session.user.full_name, avatar_url: sessionData.session.user.avatar_url },
+	}; /*= user*/
+
+	console.log(user);
 
 	const tableName = "User";
-
 	// Check if user already exists in the users table
-	const { data, error, status } = await supabase.from(tableName).upsert(
-		{
-			id,
-			email,
-			name: full_name,
-			avatar_url,
-		},
-		{ onConflict: ["id"] }, // Prevents conflict on 'id' column
-	);
+	const { data: existingUser, error: existingUserError } = await supabase.from(tableName).select("id").eq("id", user.id);
 
-	if (error) {
+	console.log(existingUser);
+
+	if (existingUserError) {
+		console.error("Error checking for existing user:", existingUserError);
 		return {
-			error,
-			status,
+			error: existingUserError,
+			status: existingUserError.status,
 		};
-	} else {
-		return {
-			data,
-			status,
-		};
+	}
+	// If user does not exist, insert them
+	if (!existingUser) {
+		const retObj = await supabase.from(tableName).insert({
+			id: user.id,
+			email: user.email,
+			name: user.user_metadata.full_name,
+			avatar_url: user.user_metadata.avatar_url,
+		});
+
+		if (retObj.status === 201) {
+			return {
+				data: retObj.data,
+				status: retObj.status,
+			};
+		} else {
+			return {
+				error: retObj.error,
+				status: retObj.status,
+			};
+		}
 	}
 };
 

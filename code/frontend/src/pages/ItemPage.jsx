@@ -1,4 +1,5 @@
 import AddToCartButton from "@components/AddToCartButton";
+import DeleteItemButton from "@components/DeleteItemButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
@@ -94,6 +95,13 @@ const ItemPage = (props) => {
 	const handleTradeOpen = (bool) => {
 		dispatch({
 			type: "SET_TRADE_DISPLAYED",
+			payload: bool,
+		});
+	};
+
+	const handleDeleteItem = (bool) => {
+		dispatch({
+			type: "DELETE_ITEM",
 			payload: bool,
 		});
 	};
@@ -208,6 +216,7 @@ const ItemPage = (props) => {
 											<div className={styles["cart-trade"]}>
 												<AddToCartButton item={selectedItem} isBig={true} />
 												<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
+												<DeleteItemButton isBig={true} handleDeleteItem={handleDeleteItem} />
 											</div>
 										</div>
 
