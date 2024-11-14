@@ -6,7 +6,7 @@ const itemsData = [
 		price: "59.99",
 		desc: "Like new apple pencil, second generation, ",
 		category: "tech",
-		condition: "Like-new",
+		condition: "Like-New",
 		seller: "mock_user1",
 		date: "10/22/2024",
 		cover: "/listingImages/applePencil.png",

@@ -2,9 +2,10 @@ import Window from "@popups/Window";
 import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
-import itemsData from "@utils/itemsData";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
+import { storeItemInDatabase } from "../../../middleware/Item/addItem.js";
 
 const AddNewItemWindow = (props) => {
 	const dispatch = useContextDispatch();
@@ -33,32 +34,48 @@ const AddNewItemWindow = (props) => {
 		handleAddNewItemOpen(false);
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
+		//I'm leaving the POST in your functions, cuz if it ain't broke
+		e.preventDefault();
 		const date = new Date();
 
 		if (!Array.isArray(newItemState.images)) return;
 
 		const footageList = newItemState.images.length === 0 ? [newItemState.cover] : [newItemState.cover, ...newItemState.images];
 
+		//i added this stuff
 		const res = {
-			id: itemsData.length + localStorageItems.length, // uses the max length of itemsData and localStorageItems, add real id soon!
+			id: 157,
 			name: newItemState.name,
 			surname: newItemState.name.replace(" ", ""),
 			price: newItemState.price,
 			desc: newItemState.description,
 			category: newItemState.category,
 			condition: newItemState.condition,
-			seller: "MockUser1001",
+			seller: "MockUser1",
 			date: date.toISOString(),
 			cover: newItemState.cover,
 			footage: footageList,
 		};
+		const newItem = {
+			id: res.id,
+			seller_id: 234,
+			category: res.category,
+			condition: res.condition,
+			name: res.surname,
+		};
 
-		dispatch({
-			type: "ADD_ITEM",
-			payload: res,
-		});
-
+		try {
+			storeItemInDatabase(newItem);
+			toast.success("Item successfully added to the database!");
+			dispatch({
+				type: "ADD_ITEM",
+				payload: res,
+			});
+		} catch (error) {
+			console.error("Error submitting item:", error);
+			toast.error("An error occurred while submitting the item.");
+		}
 		handleReset(e);
 	};
 
