@@ -8,6 +8,11 @@ import { IoClose } from "react-icons/io5";
 import { MdOutlineManageSearch } from "react-icons/md";
 import { useLocation, useSearchParams } from "react-router-dom";
 
+const searchVariants = {
+	hidden: { opacity: 0 },
+	visible: { opacity: 1 },
+};
+
 const SearchBar = (props) => {
 	const [searchVal, setSearchVal] = useState("");
 	const [searchHover, setSearchHover] = useState(false);
@@ -21,11 +26,6 @@ const SearchBar = (props) => {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const { pathname } = useLocation();
-
-	const searchVariants = {
-		hidden: { opacity: 0 },
-		visible: { opacity: 1 },
-	};
 
 	const handleSearch = (e) => {
 		const val = e.target.value;
