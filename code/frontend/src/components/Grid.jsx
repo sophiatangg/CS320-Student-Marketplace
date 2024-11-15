@@ -35,11 +35,17 @@ const Grid = (props) => {
 			}
 		} else {
 			const foundItems = allItems?.filter((item, i) => {
-				const name = item.name.toLowerCase().replace(" ", "");
-				const query = searchQuery.toLowerCase().replace(" ", "");
+				// safe checking for items without names
+				// this should only happen in development and not during production
+				if (!item?.name) return false;
+
+				const name = item.name.toLowerCase().replace(/\s+/g, ""); // Safely access `name` and replace all spaces
+				const query = searchQuery.toLowerCase().replace(/\s+/g, ""); // Replace all spaces in query
 
 				return name.includes(query);
 			});
+
+			console.log(foundItems);
 
 			items = foundItems;
 		}

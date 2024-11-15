@@ -62,6 +62,7 @@ const CardFull = (props) => {
 	};
 
 	const renderItemName = ({ text, highlight }) => {
+		if (!text) return;
 		if (!highlight) return text;
 
 		const parts = text?.split(new RegExp(`(${highlight})`, "gi"));
