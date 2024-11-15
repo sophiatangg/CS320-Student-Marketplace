@@ -1,7 +1,7 @@
 import styles from "@styles/DeleteItemButton.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
-import { FiEdit } from "react-icons/fi";
+import { FaEdit } from "react-icons/fa";
 import { editItemInDatabase } from "../../../middleware/Item/editItem.js";
 
 const EditItemButton = (props) => {
@@ -48,7 +48,7 @@ const EditItemButton = (props) => {
 			>
 				<h4 style={{ color: handleChangeHoverColor() }}>Edit</h4>
 				<span className={styles["icon"]}>
-					<FiEdit style={{ width: handleIconDimension(), height: handleIconDimension(), fill: handleChangeHoverColor() }} />
+					<FaEdit style={{ width: handleIconDimension(), height: handleIconDimension(), fill: handleChangeHoverColor() }} />
 				</span>
 			</div>
 		</>
