@@ -1,5 +1,6 @@
 import AddToCartButton from "@components/AddToCartButton";
 import DeleteItemButton from "@components/DeleteItemButton";
+import EditItemButton from "@components/EditItemButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
@@ -229,6 +230,7 @@ const ItemPage = (props) => {
 												<AddToCartButton item={selectedItem} isBig={true} />
 												<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
 												<DeleteItemButton isBig={true} itemID={selectedItem?.id} />
+												<EditItemButton isBig={true} itemID={selectedItem?.id} />
 											</div>
 										</div>
 

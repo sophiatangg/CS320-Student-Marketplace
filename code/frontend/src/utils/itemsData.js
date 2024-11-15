@@ -28,7 +28,7 @@ const itemsData = [
 	{
 		id: 2,
 		name: "WhirlPool Microwave",
-		surname: "microwave",
+		surname: "whirlpoolmicrowave",
 		price: "75.00",
 		desc: "Lightly used microwave, in working condition, from best buy ",
 		category: "appliances",
