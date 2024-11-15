@@ -97,7 +97,7 @@ const CardFull = (props) => {
 					handleSelectItem({ id: item.id });
 				}}
 			>
-				<img src={item.cover} className={styles["img"]} alt="Item Cover Image" />
+				<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
 			</div>
 			<div className={styles["content"]}>
 				<h2

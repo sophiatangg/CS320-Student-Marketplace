@@ -33,7 +33,7 @@ const CardMini = (props) => {
 				}}
 			>
 				<div className={styles["thumbnail"]}>
-					<img src={item.cover} className={styles["img"]} alt="Item Cover Image" />
+					<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
 				</div>
 				<div className={styles["content"]}>
 					<span className={styles["primary"]}>{item.name}</span>

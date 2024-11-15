@@ -71,11 +71,6 @@
 	overflow-y: auto;
 }
 
-.content {
-	flex: 1;
-	height: 100%;
-}
-
 .bottom {
 	width: 100%;
 	height: var(--bottomComponent);
@@ -142,22 +137,22 @@
 
 	> div {
 		width: 100%;
-		display: flex;
 
 		&:last-child {
 			margin-bottom: 40px;
 		}
 	}
+}
 
-	.label {
-		color: var(--colorGrayQuaternary);
-		font-family: "GT Bold";
-		font-size: 18px;
-		margin-bottom: 5px;
-	}
+.label {
+	color: var(--colorGrayQuaternary);
+	font-family: "GT Bold";
+	font-size: 18px;
+	margin-bottom: 5px;
 }
 
 .single {
+	display: flex;
 	position: relative;
 
 	&.singleRow {
@@ -165,13 +160,8 @@
 	}
 }
 
-.imageItem {
-	width: 100%;
-	flex: 1;
-}
-
 .double {
-	position: relative;
+	display: flex;
 	gap: 20px;
 }
 
@@ -218,30 +208,93 @@
 	}
 }
 
-.addedImages {
-	margin-top: 10px;
-	position: relative;
-	display: flex;
-	flex-flow: column;
-	gap: 10px;
+.imagesElem {
+	margin-bottom: 30px;
 }
 
-.imageItem {
-	color: var(--colorPrimaryForeground);
+.imagesInner {
+	gap: 20px;
+}
+
+.dropZone {
+	--dropZoneHeight: 300px;
+	min-height: var(--dropZoneHeight);
+	max-height: var(--dropZoneHeight);
+	background-color: var(--popOutBgColorAlt1);
+	border: 3px dashed transparent;
+	border-radius: var(--borderRadius);
+	position: relative;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	transition:
+		background-color 100ms linear,
+		border-color 100ms linear;
+
+	&.dropZoneHover {
+		background-color: var(--popOutBgColorAlt2);
+		border-color: var(--popOutBgColorAlt1);
+	}
+
+	p {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
+.previewImages {
+	width: 100%;
+	max-height: 300px;
+	flex: 1;
 	display: flex;
 	flex-flow: row;
 	align-items: center;
-	justify-content: flex-start;
-	gap: 10px;
+	justify-content: center;
+	overflow: hidden;
+}
 
-	.removeIMGButton {
-		width: 20px;
-		height: 20px;
-		background-color: transparent !important;
-		padding: 3px;
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+.imageItem {
+	height: 100%;
+	border-radius: var(--borderRadius);
+	position: relative;
+	overflow: hidden;
+
+	&:hover {
+		.removeIMGButton {
+			opacity: 1;
+		}
+	}
+}
+
+.imageThumbnailContainer {
+	width: 120px;
+	min-height: 120px;
+	float: left;
+	position: relative;
+	z-index: 1;
+
+	img {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+		pointer-events: none;
+	}
+}
+
+.removeIMGButton {
+	width: 100%;
+	height: 100%;
+	background-color: rgba(#000, 0.3);
+	border: none;
+	position: absolute;
+	inset: 0 auto auto 0;
+	z-index: 2;
+	opacity: 0;
+	transition: opacity 100ms linear;
+	cursor: pointer;
+
+	span {
+		color: var(--colorPrimaryForeground);
 	}
 }

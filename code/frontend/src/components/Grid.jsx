@@ -19,7 +19,7 @@ const Grid = (props) => {
 	useEffect(() => {
 		let items;
 		if (!searchQuery) {
-			if (!categoryName || categoryName == "all") {
+			if (!categoryName || categoryName === "all") {
 				items = allItems;
 			} else if (categoryName === "my-items") {
 				items = localStorageItems;
@@ -45,6 +45,16 @@ const Grid = (props) => {
 		});
 	}, [allItems, categoryName, localStorageItems, searchQuery]);
 
+	const renderPlaceHolder = ({ condition, text }) => {
+		return (
+			condition && (
+				<div className={styles["placeholder"]}>
+					<h1>{text}</h1>
+				</div>
+			)
+		);
+	};
+
 	return (
 		<>
 			<div
@@ -55,11 +65,18 @@ const Grid = (props) => {
 				})}
 				id="gridContainer"
 			>
-				{!allItems?.length && (
-					<div className={styles["placeholder"]}>
-						<h1>No items</h1>
-					</div>
-				)}
+				{renderPlaceHolder({
+					condition: categoryName === "all" && !allItems?.length,
+					text: "Empty Store",
+				})}
+				{renderPlaceHolder({
+					condition: categoryName === "my-items",
+					text: "No Items",
+				})}
+				{renderPlaceHolder({
+					condition: categoryName === "wishlist",
+					text: "Empty Wishlist",
+				})}
 				{allItems?.map((item, i) => {
 					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
 				})}

@@ -134,9 +134,14 @@
 }
 
 .placeholder {
-	width: 400px;
+	width: 450px;
 	height: 400px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+
+	h1 {
+		width: 100%;
+		text-align: center;
+	}
 }
