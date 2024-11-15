@@ -53,7 +53,6 @@ const TradeWindow = (props) => {
 	};
 
 	const handleOfferSubmit = async (e) => {
-		// I'm so sorry idk what else to do
 		console.log(selectedOfferedItems);
 
 		e.preventDefault();
@@ -63,14 +62,15 @@ const TradeWindow = (props) => {
 			return;
 		}
 
-		const newItem = {
-			id: 1234,
-			userInitiator: "initiatorUserId",
+		const newOffer = {
+			userInitiator: currentUser.id,
 			userReceiver: selectedItem.ownerId,
 			items_in_trade: selectedOfferedItems.map((item) => item.id),
+			item_id : selectedItem.id,
+
 		};
 		try {
-			storeTradeInDatabase(newItem);
+			storeTradeInDatabase(newOffer);
 			toast.success("Trade offer sent!", {
 				position: "top-center",
 				autoClose: 5000,
