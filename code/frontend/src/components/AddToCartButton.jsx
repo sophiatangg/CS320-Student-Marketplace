@@ -25,7 +25,7 @@ const AddToCartButton = (props) => {
 	};
 
 	const handleHoverItem = (e) => {
-		const handledHoveredItem = allItems.map((item, i) => {
+		const handledHoveredItem = allItems?.map((item, i) => {
 			if (e.target.id === i) {
 				item.isHovered = !item.isHovered;
 				return item;

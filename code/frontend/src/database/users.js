@@ -1,5 +1,7 @@
 import { supabase } from "@database/supabaseClient";
 
+const tableName = "User";
+
 const signInWithGoogle = async () => {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: "google",
@@ -36,10 +38,8 @@ const insertUserData = async () => {
 	const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
 	if (sessionError || !sessionData || !sessionData.session) {
-		return {
-			status: "No active session found or error fetching session",
-			error: sessionError,
-		};
+		console.error("No active session found or error fetching session:", sessionError?.message);
+		return;
 	}
 
 	const user = /* sessionData.session.user;
@@ -51,37 +51,35 @@ const insertUserData = async () => {
 
 	console.log(user);
 
-	const tableName = "User";
-	// Check if user already exists in the users table
-	const { data: existingUser, error: existingUserError } = await supabase.from(tableName).select("id").eq("id", user.id);
+	// Check if a user with the same id or email already exists
+	const { data: existingUser, error: fetchError } = await supabase
+		.from(tableName)
+		.select("id", "email")
+		.or(`id.eq.${id},email.eq.${email}`)
+		.maybeSingle();
 
-	console.log(existingUser);
-
-	if (existingUserError) {
-		console.error("Error checking for existing user:", existingUserError);
+	if (existingUser) {
 		return {
-			error: existingUserError,
-			status: existingUserError.status,
+			message: "User data already exists. Skipped inserting.",
+			error: null,
 		};
-	}
-	// If user does not exist, insert them
-	if (!existingUser) {
-		const retObj = await supabase.from(tableName).insert({
-			id: user.id,
-			email: user.email,
-			name: user.user_metadata.full_name,
-			avatar_url: user.user_metadata.avatar_url,
+	} else {
+		const { error: insertError } = await supabase.from(tableName).insert({
+			id,
+			email,
+			name: full_name,
+			avatar_url,
 		});
 
-		if (retObj.status === 201) {
+		if (insertError) {
 			return {
-				data: retObj.data,
-				status: retObj.status,
+				message: "Error inserting user",
+				error: insertError,
 			};
 		} else {
 			return {
-				error: retObj.error,
-				status: retObj.status,
+				message: "User data insertion successful",
+				error: null,
 			};
 		}
 	}

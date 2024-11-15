@@ -14,7 +14,7 @@ const LikeButton = (props) => {
 			return;
 		}
 
-		const handledLike = allItems.map((item, i) => {
+		const handledLike = allItems?.map((item, i) => {
 			if (id === item.id) {
 				item.isLiked = !item.isLiked;
 			}

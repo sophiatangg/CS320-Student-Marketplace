@@ -8,18 +8,20 @@ const AuthContext = createContext({
 
 export const AuthProvider = ({ children }) => {
 	const [currentUser, setCurrentUser] = useState(null);
+	const [userChecked, setUserChecked] = useState(false);
 
 	useEffect(() => {
 		const authListener = setUser((session) => {
 			setCurrentUser(session?.user ?? null);
 
-			if (session) {
+			// Run this logic only if the user is logged in and hasn't been checked yet
+			if (session && !userChecked) {
 				insertUserData()
 					.then((data) => {
-						console.log(data);
+						setUserChecked(true);
 					})
-					.catch((data) => {
-						console.error(data);
+					.catch((error) => {
+						console.error(error);
 					});
 			}
 		});
@@ -27,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 		return () => {
 			authListener?.unsubscribe();
 		};
-	}, []);
+	}, [userChecked]);
 
 	return <AuthContext.Provider value={{ currentUser, setCurrentUser }}>{children}</AuthContext.Provider>;
 };

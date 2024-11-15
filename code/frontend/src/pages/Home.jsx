@@ -37,7 +37,7 @@ const Home = (props) => {
 	};
 
 	const handlePlayDice = () => {
-		const randomIndex = Math.floor(Math.random() * allItems.length);
+		const randomIndex = Math.floor(Math.random() * allItems?.length);
 		const randomSurname = allItems[randomIndex]?.surname || allItems[randomIndex]?.surName;
 
 		setOverlap(true);

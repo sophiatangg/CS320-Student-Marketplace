@@ -18,7 +18,7 @@ const Sidebar = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))]
+	const uniqueCategoriesFromList = [...new Set(allItems?.map((item) => item.category))]
 		.map((category) => category.charAt(0).toUpperCase() + category.slice(1))
 		.sort();
 
