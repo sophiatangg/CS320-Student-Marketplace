@@ -1,4 +1,5 @@
 import { supabase } from "@database/supabaseClient";
+import { keysChecker } from "@utils/others";
 
 const tableName = "Item";
 
@@ -46,4 +47,27 @@ export const selectAllItems = async () => {
 	}
 };
 
-export const insertItemByUser = async () => {};
+export const addItemByUser = async ({ itemData }) => {
+	if (!itemData) return null;
+
+	const keysItemData = ["category", "condition", "desc", "name", "surname", "price", "in_trade"];
+
+	if (!keysChecker(keysItemData, itemData)) return;
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	const userId = user.id;
+
+	const objToAppend = {
+		seller_id: userId,
+		...itemData,
+	};
+
+	const res = await supabase.from(tableName).insert(objToAppend);
+
+	console.log(res);
+
+	return res;
+};

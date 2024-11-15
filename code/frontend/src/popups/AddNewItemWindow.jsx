@@ -1,15 +1,14 @@
+import { addItemByUser } from "@database/items.js";
 import Window from "@popups/Window";
-import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
+import { useContextDispatch } from "@providers/StoreProvider.jsx";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
-import { storeItemInDatabase } from "../../../middleware/Item/addItem.js";
 
 const AddNewItemWindow = (props) => {
 	const dispatch = useContextDispatch();
-	const localStorageItems = useContextSelector("globalStore").items;
 
 	const [newItemState, setNewItemState] = useState({
 		name: "",
@@ -43,35 +42,35 @@ const AddNewItemWindow = (props) => {
 
 		const footageList = newItemState.images.length === 0 ? [newItemState.cover] : [newItemState.cover, ...newItemState.images];
 
-		//i added this stuff
-		const res = {
-			id: 157,
-			name: newItemState.name,
-			surname: newItemState.name.replace(" ", ""),
-			price: newItemState.price,
-			desc: newItemState.description,
-			category: newItemState.category,
-			condition: newItemState.condition,
-			seller: "MockUser1",
-			date: date.toISOString(),
-			cover: newItemState.cover,
-			footage: footageList,
-		};
-		const newItem = {
-			id: res.id,
-			seller_id: 234,
-			category: res.category,
-			condition: res.condition,
-			name: res.surname,
+		// const newItemData = {
+		// 	category: newItemState.category,
+		// 	condition: newItemState.condition,
+		// 	desc: newItemState.desc,
+		// 	name: newItemState.surname,
+		// 	surname: newItemState.name.replace(" ", ""),
+		// 	price: newItemState.price,
+		// 	in_trade: false,
+		// };
+
+		const newItemData = {
+			category: "Misc",
+			condition: "New",
+			desc: "Test",
+			name: "Sample",
+			surname: "ajksndjkasd",
+			price: 29.99,
+			in_trade: false,
 		};
 
 		try {
-			storeItemInDatabase(newItem);
-			toast.success("Item successfully added to the database!");
-			dispatch({
-				type: "ADD_ITEM",
-				payload: res,
-			});
+			const res = await addItemByUser({ itemData: newItemData });
+
+			console.log(res);
+			if (res && res.status && res.status === 201) {
+				toast.success("Item successfully added to the database!");
+			} else {
+				console.error(res);
+			}
 		} catch (error) {
 			console.error("Error submitting item:", error);
 			toast.error("An error occurred while submitting the item.");
