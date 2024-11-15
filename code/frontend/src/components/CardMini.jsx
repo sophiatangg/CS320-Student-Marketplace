@@ -32,9 +32,11 @@ const CardMini = (props) => {
 					handleCardClick(e);
 				}}
 			>
-				<div className={styles["thumbnail"]}>
-					<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
-				</div>
+				{item.images && (
+					<div className={styles["thumbnail"]}>
+						<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
+					</div>
+				)}
 				<div className={styles["content"]}>
 					<span className={styles["primary"]}>{item.name}</span>
 				</div>

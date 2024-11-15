@@ -1,22 +1,25 @@
 import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import TradeButton from "@components/TradeButton";
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/CardFull.module.scss";
 import cns from "@utils/classNames";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+const variants = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+};
+
 const CardFull = (props) => {
 	const { item, isFullWidth } = props;
 
-	const navigate = useNavigate();
+	const { currentUser } = useAuth();
 
-	const variants = {
-		initial: { opacity: 0 },
-		animate: { opacity: 1 },
-		exit: { opacity: 0 },
-	};
+	const navigate = useNavigate();
 
 	const { allItems } = useContextSelector("itemsStore");
 	const { searchQuery } = useContextSelector("searchStore");
@@ -73,10 +76,13 @@ const CardFull = (props) => {
 		);
 	};
 
+	const isOwnItem = item.seller_id === currentUser.id;
+
 	return (
 		<motion.div
 			className={cns(styles["cardFull"], {
 				[styles["cardFullWidth"]]: !isFullWidth,
+				[styles["cardFullOwnItem"]]: isOwnItem,
 			})}
 			onMouseEnter={(e) => {
 				handleCurrentHoveredItem({ id: item.id });
@@ -114,12 +120,14 @@ const CardFull = (props) => {
 				<div className={styles["buttons"]}>
 					<div className={styles["price-cart-trade"]}>
 						<span className={styles["price"]}>${item.price}</span>
-						<div className={styles["cart-trade"]}>
-							<AddToCartButton item={item} isBig={false} />
-							<TradeButton handleTradeOpen={handleTradeOpen} />
-						</div>
+						{!isOwnItem && (
+							<div className={styles["cart-trade"]}>
+								<AddToCartButton item={item} isBig={false} />
+								<TradeButton handleTradeOpen={handleTradeOpen} />
+							</div>
+						)}
 					</div>
-					<LikeButton item={item} />
+					{!isOwnItem && <LikeButton item={item} />}
 				</div>
 			</div>
 		</motion.div>

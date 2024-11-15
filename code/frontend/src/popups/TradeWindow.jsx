@@ -1,20 +1,22 @@
 import CardMini from "@components/CardMini";
 import Window from "@popups/Window";
+import { useAuth } from "@providers/AuthProvider.jsx";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/TradeWindow.module.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoChatbubble, IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
 import { toast } from "react-toastify";
 import { storeTradeInDatabase } from "../../../middleware/Trade/trade.js";
 
 const TradeWindow = (props) => {
-	const { selectedItem } = useContextSelector("itemsStore");
-	const { items: localStorageItems } = useContextSelector("globalStore");
+	const { currentUser } = useAuth();
+
+	const { allItems, selectedItem } = useContextSelector("itemsStore");
 
 	const dispatch = useContextDispatch();
 
-	const [inventoryItems, setInventoryItems] = useState([...localStorageItems]);
+	const [inventoryItems, setInventoryItems] = useState([]);
 	const [selectedOfferedItems, setSelectedOfferedItems] = useState([]);
 
 	const handleTradeOpen = (bool) => {
@@ -127,6 +129,14 @@ const TradeWindow = (props) => {
 		// 		toast.error("Failed to send trade offer. Please try again.");
 		// 	}
 	};
+
+	useEffect(() => {
+		const personalItems = allItems.filter((item) => {
+			return item.seller_id === currentUser.id;
+		});
+
+		setInventoryItems(personalItems);
+	}, [allItems]);
 
 	return (
 		<Window dispatchType={"SET_TRADE_DISPLAYED"}>
