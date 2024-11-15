@@ -98,12 +98,12 @@ const ItemPage = (props) => {
 		});
 	};
 
-	const handleDeleteOpen = (bool) => {
-		dispatch({
-			type: "DELETE_ITEM",
-			payload: bool,
-		});
-	};
+	// const handleDeleteOpen = (bool) => {
+	// 	dispatch({
+	// 		type: "DELETE_ITEM",
+	// 		payload: bool,
+	// 	});
+	// };
 
 	useEffect(() => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
@@ -228,7 +228,7 @@ const ItemPage = (props) => {
 											<div className={styles["cart-trade"]}>
 												<AddToCartButton item={selectedItem} isBig={true} />
 												<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
-												<DeleteItemButton isBig={true} handleDeleteOpen={handleDeleteOpen} itemID={selectedItem?.id} />
+												<DeleteItemButton isBig={true} itemID={selectedItem?.id} />
 											</div>
 										</div>
 

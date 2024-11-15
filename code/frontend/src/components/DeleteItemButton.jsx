@@ -5,7 +5,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { deleteItemInDatabase } from "../../../middleware/Item/deleteItem.js";
 
 const DeleteItemButton = (props) => {
-	const { isBig, handleDeleteOpen, itemId } = props;
+	const { isBig, itemId } = props;
 
 	const [isHovered, setHovered] = useState(false);
 
