@@ -41,8 +41,28 @@ const AddNewItemWindow = (props) => {
 		e.preventDefault();
 		if (!Array.isArray(newItemState.images)) return;
 
+		if (newItemState.name.length <= 0) {
+			toast.error(`You need to enter a name to add an item.`);
+			return;
+		}
+
+		if (newItemState.price <= 0) {
+			toast.error(`You need to enter a price to add ${newItemState.name}.`);
+			return;
+		}
+
+		if (newItemState.category.length <= 0) {
+			toast.error(`You need to enter a category to add ${newItemState.name}.`);
+			return;
+		}
+
+		if (newItemState.condition.length <= 0) {
+			toast.error(`You need to enter a condition to add ${newItemState.name}.`);
+			return;
+		}
+
 		if (newItemState.images.length <= 0) {
-			toast.error(`You need at least 1 image to post ${newItemState.name}.`);
+			toast.error(`You need at least 1 image to add ${newItemState.name}.`);
 			return;
 		}
 
