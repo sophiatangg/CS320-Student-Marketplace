@@ -1,4 +1,5 @@
 import CardFull from "@components/CardFull";
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
@@ -6,11 +7,13 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const Grid = (props) => {
+	const { currentUser } = useAuth();
+
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { allItems } = useContextSelector("itemsStore");
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const { gridDisplay, items: localStorageItems } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
@@ -19,10 +22,12 @@ const Grid = (props) => {
 	useEffect(() => {
 		let items;
 		if (!searchQuery) {
-			if (!categoryName || categoryName == "all") {
+			if (!categoryName || categoryName === "all") {
 				items = allItems;
 			} else if (categoryName === "my-items") {
-				items = localStorageItems;
+				items = allItems.filter((item) => {
+					return item.seller_id === currentUser.id;
+				});
 			} else if (categoryName === "wishlist") {
 				items = allItems?.filter((item) => item.isLiked);
 			} else {
@@ -45,22 +50,36 @@ const Grid = (props) => {
 		});
 	}, [allItems, categoryName, localStorageItems, searchQuery]);
 
+	const renderPlaceHolder = () => {
+		let message = "";
+
+		if (categoryName === "all") {
+			message = "Empty Store";
+		} else if (categoryName === "my-items") {
+			message = "No Items";
+		} else if (categoryName === "wishlist") {
+			message = "Empty Wishlist";
+		}
+
+		return (
+			<div className={styles["placeholder"]}>
+				<h1>{message}</h1>
+			</div>
+		);
+	};
+
 	return (
 		<>
 			<div
 				className={cns(styles["gridContainer"], {
-					[styles["withGrid"]]: gridDisplay && allItems?.length,
-					[styles["noGrid"]]: !gridDisplay && allItems?.length,
-					[styles["emptyGrid"]]: !allItems?.length,
+					[styles["withGrid"]]: gridDisplay && shownItems?.length,
+					[styles["noGrid"]]: !gridDisplay && shownItems?.length,
+					[styles["emptyGrid"]]: !shownItems?.length,
 				})}
 				id="gridContainer"
 			>
-				{!allItems?.length && (
-					<div className={styles["placeholder"]}>
-						<h1>No items</h1>
-					</div>
-				)}
-				{allItems?.map((item, i) => {
+				{!shownItems?.length && renderPlaceHolder()}
+				{shownItems?.map((item, i) => {
 					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
 				})}
 			</div>

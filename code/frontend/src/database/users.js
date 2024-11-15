@@ -34,6 +34,18 @@ const setUser = (setter) => {
 	return authListener;
 };
 
+const getUser = async (userId) => {
+	const { data: userData, error: userError } = await supabase.from(tableName).select("*").eq("id", userId).single();
+
+	if (userError) {
+		throw Error("Error fetching user by userId.");
+	}
+
+	if (userData) {
+		return userData;
+	}
+};
+
 const insertUserData = async () => {
 	const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
@@ -92,4 +104,4 @@ const signOut = async (e) => {
 	return data;
 };
 
-export { insertUserData, setUser, signInWithGoogle, signOut };
+export { getUser, insertUserData, setUser, signInWithGoogle, signOut };

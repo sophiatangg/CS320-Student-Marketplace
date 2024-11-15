@@ -3,7 +3,7 @@ import DeleteItemButton from "@components/DeleteItemButton";
 import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
-import { useAuth } from "@providers/AuthProvider";
+import { getUser } from "@database/users";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -44,8 +44,6 @@ const AnimatedText = ({ children }) => {
 };
 
 const ItemPage = (props) => {
-	const { currentUser } = useAuth();
-
 	const navigate = useNavigate();
 
 	const [extended, setExtended] = useState(false);
@@ -53,6 +51,7 @@ const ItemPage = (props) => {
 	const [carouselState, setCarouselState] = useState(0);
 	const [isHover, setIsHover] = useState(false);
 	const [isError, setIsError] = useState(false);
+	const [sellerData, setSellerData] = useState(null);
 
 	const { pathname } = useLocation();
 
@@ -128,10 +127,23 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
-		if (!currentUser) {
-			navigate("/login");
-		}
-	}, [currentUser]);
+		const fetchUser = async () => {
+			if (!selectedItem?.seller_id) {
+				setSellerData(null);
+				return;
+			}
+
+			try {
+				const res = await getUser(selectedItem.seller_id);
+				setSellerData(res ?? null);
+			} catch (error) {
+				console.error("Error fetching seller data:", error);
+				setSellerData(null);
+			}
+		};
+
+		fetchUser();
+	}, [selectedItem?.seller_id]);
 
 	if (!selectedItem) return null;
 
@@ -175,11 +187,11 @@ const ItemPage = (props) => {
 												>
 													<h4>
 														<span>Date Added:</span>
-														<span>{formatDateAgo({ date: selectedItem?.date })}</span>
+														<span>{formatDateAgo({ date: selectedItem?.created_at })}</span>
 													</h4>
 													<h4>
 														<span>Seller:</span>
-														<span>{selectedItem?.seller}</span>
+														<span>{sellerData?.name}</span>
 													</h4>
 													<h4>
 														<span>Category:</span>

@@ -1,7 +1,6 @@
 import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
-import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
@@ -11,7 +10,7 @@ import { useEffect } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { MdOutlineTableRows } from "react-icons/md";
 import { TbLayoutGridFilled } from "react-icons/tb";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const animations = {
 	initial: { opacity: 0, x: -150 },
@@ -24,12 +23,8 @@ const Browse = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { currentUser } = useAuth();
-
 	const { gridDisplay } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
-
-	const navigate = useNavigate();
 
 	const handleLayoutSwitch = (e, bool) => {
 		dispatch({
@@ -41,12 +36,6 @@ const Browse = (props) => {
 	useEffect(() => {
 		document.title = `${PROJECT_NAME} — Store`;
 	}, []);
-
-	useEffect(() => {
-		if (!currentUser) {
-			navigate("/login");
-		}
-	}, [currentUser]);
 
 	const renderPlaceHolder = () => {
 		return (

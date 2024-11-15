@@ -9,8 +9,18 @@
 	position: relative;
 	overflow: hidden;
 
-	&:hover {
-		background-color: var(--cardFullHoverBackground);
+	&:not(.cardFullOwnItem) {
+		&:hover {
+			background-color: var(--cardFullHoverBackground);
+		}
+	}
+
+	&.cardFullOwnItem {
+		background-color: var(--cardOwnFullBackground);
+
+		&:hover {
+			background-color: var(--cardOwnFullHoverBackground);
+		}
 	}
 
 	&.cardFullWidth {
