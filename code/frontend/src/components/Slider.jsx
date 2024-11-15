@@ -1,4 +1,3 @@
-import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Slider.module.scss";
 import cns from "@utils/classNames";
@@ -11,8 +10,6 @@ import "react-slideshow-image/dist/styles.css";
 
 const Slider = (props) => {
 	const { carouselState, setCarouselState } = props;
-
-	const { currentUser } = useAuth();
 
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
@@ -70,6 +67,7 @@ const Slider = (props) => {
 	};
 
 	if (!selectedItem) return null;
+	if (!selectedItem.images) return null;
 
 	return (
 		<div className={styles["slider"]}>
