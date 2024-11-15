@@ -99,7 +99,7 @@ const ItemPage = (props) => {
 		});
 	};
 
-	const handleDeleteItem = (bool) => {
+	const handleDeleteOpen = (bool) => {
 		dispatch({
 			type: "DELETE_ITEM",
 			payload: bool,
@@ -216,7 +216,7 @@ const ItemPage = (props) => {
 											<div className={styles["cart-trade"]}>
 												<AddToCartButton item={selectedItem} isBig={true} />
 												<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
-												<DeleteItemButton isBig={true} handleDeleteItem={handleDeleteItem} />
+												<DeleteItemButton isBig={true} handleDeleteOpen={handleDeleteOpen} itemID={selectedItem?.id} />
 											</div>
 										</div>
 

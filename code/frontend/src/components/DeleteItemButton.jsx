@@ -1,11 +1,11 @@
-import styles from "@styles/TradeButton.module.scss";
+import styles from "@styles/DeleteItemButton.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { deleteItemInDatabase } from "../../../middleware/Item/deleteItem.js";
 
 const DeleteItemButton = (props) => {
-	const { isBig, handleTradeOpen, itemId } = props;
+	const { isBig, handleDeleteOpen, itemId } = props;
 
 	const [isHovered, setHovered] = useState(false);
 
@@ -22,7 +22,7 @@ const DeleteItemButton = (props) => {
 	};
 
 	const handleDeleteItem = () => {
-		if (itemId) {
+		if (itemId != NULL || itemId > -1) {
 			deleteItemInDatabase(itemId);
 			console.log(`Deleting item with ID: ${itemId}`);
 		} else {

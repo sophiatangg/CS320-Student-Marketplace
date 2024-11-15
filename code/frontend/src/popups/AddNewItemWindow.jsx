@@ -42,23 +42,13 @@ const AddNewItemWindow = (props) => {
 
 		const footageList = newItemState.images.length === 0 ? [newItemState.cover] : [newItemState.cover, ...newItemState.images];
 
-		// const newItemData = {
-		// 	category: newItemState.category,
-		// 	condition: newItemState.condition,
-		// 	desc: newItemState.desc,
-		// 	name: newItemState.surname,
-		// 	surname: newItemState.name.replace(" ", ""),
-		// 	price: newItemState.price,
-		// 	in_trade: false,
-		// };
-
 		const newItemData = {
-			category: "Misc",
-			condition: "New",
-			desc: "Test",
-			name: "Sample",
-			surname: "ajksndjkasd",
-			price: 29.99,
+			category: newItemState.category,
+			condition: newItemState.condition,
+			desc: newItemState.desc,
+			name: newItemState.name,
+			surname: newItemState.name.replace(" ", ""),
+			price: newItemState.price,
 			in_trade: false,
 		};
 
