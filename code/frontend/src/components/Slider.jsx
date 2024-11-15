@@ -1,3 +1,4 @@
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Slider.module.scss";
 import cns from "@utils/classNames";
@@ -10,6 +11,8 @@ import "react-slideshow-image/dist/styles.css";
 
 const Slider = (props) => {
 	const { carouselState, setCarouselState } = props;
+
+	const { currentUser } = useAuth();
 
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
@@ -72,16 +75,20 @@ const Slider = (props) => {
 		<div className={styles["slider"]}>
 			<Slide ref={slideRef} {...properties}>
 				{selectedItem
-					? selectedItem.images.map((each, index) => (
-							<div key={index} className={styles["slide"]}>
-								<img className={styles["currentImg"]} src={each} alt="sample" />
-							</div>
-						))
-					: selectedItem.images.map((each, index) => (
-							<div key={index} className={styles["slide"]}>
-								<img className={styles["currentImg"]} src={each} alt="sample" />
-							</div>
-						))}
+					? selectedItem.images.map((each, index) => {
+							return (
+								<div key={index} className={styles["slide"]}>
+									<img className={styles["currentImg"]} src={each} alt="sample" />
+								</div>
+							);
+						})
+					: selectedItem.images.map((each, index) => {
+							return (
+								<div key={index} className={styles["slide"]}>
+									<img className={styles["currentImg"]} src={each} alt="sample" />
+								</div>
+							);
+						})}
 			</Slide>
 			{selectedItem.images.length > 1 && (
 				<>

@@ -3,7 +3,6 @@ import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
 import { getUser } from "@database/users";
-import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
@@ -44,8 +43,6 @@ const AnimatedText = ({ children }) => {
 };
 
 const ItemPage = (props) => {
-	const { currentUser } = useAuth();
-
 	const navigate = useNavigate();
 
 	const [extended, setExtended] = useState(false);
@@ -122,12 +119,6 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
-		if (!currentUser) {
-			navigate("/login");
-		}
-	}, [currentUser]);
-
-	useEffect(() => {
 		const fetchUser = async () => {
 			if (!selectedItem?.seller_id) {
 				setSellerData(null);
@@ -192,7 +183,7 @@ const ItemPage = (props) => {
 													</h4>
 													<h4>
 														<span>Seller:</span>
-														<span>{sellerData.name}</span>
+														<span>{sellerData?.name}</span>
 													</h4>
 													<h4>
 														<span>Category:</span>
