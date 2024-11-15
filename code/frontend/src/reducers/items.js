@@ -1,5 +1,3 @@
-import { selectAllItems } from "@database/items";
-
 const initial = {
 	allItems: [],
 	selectedItem: null,
@@ -8,21 +6,7 @@ const initial = {
 export const itemsReducer = (state = initial, action) => {
 	switch (action.type) {
 		case "@@INIT":
-			selectAllItems()
-				.then((res) => {
-					return {
-						...state,
-						allItems: [...res.data],
-					};
-				})
-				.catch((res) => {
-					console.error(res);
-
-					return {
-						...state,
-						allItems: [],
-					};
-				});
+			return state;
 
 		case "SET_ALL_ITEMS":
 			return {

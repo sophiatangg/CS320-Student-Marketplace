@@ -50,6 +50,36 @@ export const selectAllItems = async () => {
 	}
 };
 
+export const selectAllItemsWithImages = async () => {
+	// Fetch all items
+	const { data: items, error: itemsError } = await supabase.from(itemTableName).select("*");
+
+	if (itemsError) {
+		console.error("Error fetching items:", itemsError);
+		return { data: null, error: itemsError };
+	}
+
+	// Fetch all images and group by itemid
+	const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("*");
+
+	if (imagesError) {
+		console.error("Error fetching images:", imagesError);
+		return { data: null, error: imagesError };
+	}
+
+	// Combine items with their respective images
+	const itemsWithImages = items.map((item) => {
+		const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+		return {
+			...item,
+			images: itemImages, // Attach images as an array
+		};
+	});
+
+	return { data: itemsWithImages, error: null };
+};
+
 const generateUniqueSurname = async (itemName) => {
 	const baseSurname = itemName.toLowerCase().replace(/\s+/g, "-");
 

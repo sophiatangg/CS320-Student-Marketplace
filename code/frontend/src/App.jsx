@@ -1,5 +1,6 @@
 import Footer from "@components/Footer";
 import NavBar from "@components/NavBar";
+import { selectAllItemsWithImages } from "@database/items";
 import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
@@ -10,7 +11,7 @@ import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
-import { useContextSelector } from "@providers/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence } from "framer-motion";
@@ -20,9 +21,30 @@ import { ToastContainer } from "react-toastify";
 
 const App = () => {
 	const { accountInfoDisplayed, accountProfileDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
+	const dispatch = useContextDispatch();
 
 	const { theme } = useContextSelector("globalStore");
 	const { pathname } = useLocation();
+
+	useEffect(() => {
+		const fetchItems = async () => {
+			try {
+				const res = await selectAllItemsWithImages();
+				if (res.data) {
+					dispatch({
+						type: "SET_ALL_ITEMS",
+						payload: res.data,
+					});
+				} else {
+					console.error("Failed to fetch items:", res.error);
+				}
+			} catch (error) {
+				console.error("Error fetching items:", error);
+			}
+		};
+
+		fetchItems();
+	}, [dispatch]);
 
 	useEffect(() => {
 		const applyTheme = () => {
