@@ -69,7 +69,13 @@ export const selectAllItemsWithImages = async () => {
 
 	// Combine items with their respective images
 	const itemsWithImages = items.map((item) => {
-		const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+		const itemImages = images
+			.filter((image) => {
+				return image.itemid === item.id;
+			})
+			.map((image) => {
+				return image.image_url;
+			});
 
 		return {
 			...item,
