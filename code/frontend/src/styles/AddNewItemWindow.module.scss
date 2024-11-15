@@ -83,6 +83,10 @@
 	justify-content: center;
 	gap: 25px;
 	z-index: 2;
+
+	.label {
+		margin-bottom: 0;
+	}
 }
 
 .button {
@@ -229,6 +233,7 @@
 	align-items: center;
 	justify-content: center;
 	user-select: none;
+	cursor: pointer;
 	transition:
 		background-color 100ms linear,
 		border-color 100ms linear;

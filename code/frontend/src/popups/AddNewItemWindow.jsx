@@ -3,7 +3,7 @@ import Window from "@popups/Window";
 import { useContextDispatch } from "@providers/StoreProvider.jsx";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 
@@ -23,6 +23,8 @@ const AddNewItemWindow = (props) => {
 	const [imageInput, setImageInput] = useState("");
 	const [isUploading, setIsUploading] = useState(false);
 	const [isDragZoneHovered, setIsDragZoneHovered] = useState(false);
+
+	const dropInputRef = useRef(null);
 
 	const handleAddNewItemOpen = (bool) => {
 		dispatch({
@@ -208,18 +210,26 @@ const AddNewItemWindow = (props) => {
 						className={cns(styles["dropZone"], {
 							[styles["dropZoneHover"]]: isDragZoneHovered,
 						})}
+						onClick={(e) => {
+							dropInputRef.current?.click();
+						}}
 						onDrop={handleDrop}
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 					>
 						<p>Drag and drop images here, or click to select files</p>
 						<input
+							ref={dropInputRef}
 							type="file"
 							multiple
 							onChange={(e) => {
+								e.stopPropagation();
+
 								handleImageAdd(e.target.files);
 							}}
-							style={{ display: "none" }}
+							style={{
+								display: "none",
+							}}
 						/>
 					</div>
 					{newItemState.images.length > 0 && (
