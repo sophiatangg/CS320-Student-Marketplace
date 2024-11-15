@@ -115,15 +115,12 @@ export const removeUploadedItemImage = async (imageURL) => {
 };
 
 const insertItemImageToItemSchema = async (files, newItemId) => {
-	const uploadedImages = await Promise.all(
+	await Promise.all(
 		files.map(async (file) => {
-			const imageUrl = await uploadAndHostItemImage({ file });
-			if (imageUrl) {
-				await supabase.from(itemImagesTableName).insert({
-					itemId: newItemId,
-					imageUrl: imageUrl,
-				});
-			}
+			await supabase.from(itemImagesTableName).insert({
+				itemid: newItemId,
+				image_url: file.fullPath,
+			});
 		}),
 	);
 };
@@ -144,10 +141,12 @@ export const addItemByUser = async ({ itemData }) => {
 	const uniqueSurname = await generateUniqueSurname(itemData.name);
 
 	if (uniqueSurname.hasOwnProperty("name")) {
+		const { images, ...itemDataWithoutImages } = itemData;
+
 		const objToAppend = {
 			seller_id: userId,
 			surname: uniqueSurname.name,
-			...itemData,
+			...itemDataWithoutImages,
 		};
 
 		// Insert item and get the generated ID
@@ -158,7 +157,7 @@ export const addItemByUser = async ({ itemData }) => {
 		}
 
 		// Call insertItemImageToSchema with the files and generated item ID
-		await insertItemImageToItemSchema(itemData.images, insertedItem.id);
+		await insertItemImageToItemSchema(images, insertedItem.id);
 
 		return insertedItem;
 	} else {

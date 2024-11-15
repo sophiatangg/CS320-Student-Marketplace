@@ -20,7 +20,6 @@ const AddNewItemWindow = (props) => {
 		price: 0,
 	});
 
-	const [imageInput, setImageInput] = useState("");
 	const [isUploading, setIsUploading] = useState(false);
 	const [isDragZoneHovered, setIsDragZoneHovered] = useState(false);
 
@@ -42,6 +41,11 @@ const AddNewItemWindow = (props) => {
 		e.preventDefault();
 		if (!Array.isArray(newItemState.images)) return;
 
+		if (newItemState.images.length <= 0) {
+			toast.error(`You need at least 1 image to post ${newItemState.name}.`);
+			return;
+		}
+
 		const newItemData = {
 			category: newItemState.category,
 			condition: newItemState.condition,
@@ -54,8 +58,6 @@ const AddNewItemWindow = (props) => {
 
 		try {
 			const res = await addItemByUser({ itemData: newItemData });
-
-			console.log(res);
 			if (res) {
 				toast.success("Item successfully added to the database!");
 			} else {
@@ -167,19 +169,6 @@ const AddNewItemWindow = (props) => {
 							placeholder={placeholder}
 							required={required}
 						/>
-					) : field === "images" ? (
-						<>
-							<input
-								type={inputType}
-								onChange={(e) => setImageInput(e.target.value)}
-								value={imageInput}
-								placeholder={placeholder}
-								required={required}
-							/>
-							<button className={styles["button"]} id={"upload"} onClick={handleImageAdd}>
-								Submit Image
-							</button>
-						</>
 					) : (
 						<input
 							type={inputType}
