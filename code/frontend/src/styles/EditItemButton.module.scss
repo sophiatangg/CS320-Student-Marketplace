@@ -1,6 +1,8 @@
 .editItemButton {
 	position: relative;
 	display: flex;
+	align-items: center;
+	justify-content: center;
 	gap: 6px;
 	cursor: pointer;
 	user-select: none;
@@ -10,20 +12,16 @@
 	}
 
 	&.isBig {
-		height: 25px;
-
 		h4 {
-			font-size: 18px;
+			font-size: 15px;
 		}
+	}
+
+	* {
+		transition: 100ms linear;
 	}
 
 	h4 {
 		font-family: "GT Light";
-		font-size: 0.945em;
-	}
-
-	h4,
-	span {
-		transition: 100ms linear;
 	}
 }

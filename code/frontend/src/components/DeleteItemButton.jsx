@@ -18,7 +18,7 @@ const DeleteItemButton = (props) => {
 	};
 
 	const handleIconDimension = () => {
-		return isBig ? 24 : 18;
+		return isBig ? 20 : 18;
 	};
 
 	const handleDeleteItem = () => {
@@ -33,7 +33,7 @@ const DeleteItemButton = (props) => {
 	return (
 		<>
 			<div
-				className={cns(styles["DeleteItemButton"], {
+				className={cns(styles["deleteItemButton"], {
 					[styles["isBig"]]: isBig,
 				})}
 				onClick={(e) => {
@@ -46,10 +46,15 @@ const DeleteItemButton = (props) => {
 					handleComponentHover(e);
 				}}
 			>
-				<h4 style={{ color: handleChangeHoverColor() }}>Delete</h4>
-				<span className={styles["icon"]}>
+				<span
+					style={{
+						width: handleIconDimension(),
+						height: handleIconDimension(),
+					}}
+				>
 					<FaRegTrashCan style={{ width: handleIconDimension(), height: handleIconDimension(), fill: handleChangeHoverColor() }} />
 				</span>
+				<h4 style={{ color: handleChangeHoverColor() }}>Delete</h4>
 			</div>
 		</>
 	);

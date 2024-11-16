@@ -6,6 +6,7 @@ import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
 import Login from "@pages/Login";
 import NotFound from "@pages/NotFound";
+import ProtectedRoute from "@pages/ProtectedRoute";
 import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddNewItemWindow from "@popups/AddNewItemWindow";
@@ -85,8 +86,22 @@ const App = () => {
 					<Routes key={animationKey()} location={location}>
 						<Route path="/" element={<Home />} />
 						<Route path="/login/" element={<Login />} />
-						<Route path="/browse/*" element={<Browse />} />
-						<Route path="/store/:itemId" element={<ItemPage />} />
+						<Route
+							path="/browse/*"
+							element={
+								<ProtectedRoute>
+									<Browse />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/store/:itemId"
+							element={
+								<ProtectedRoute>
+									<ItemPage />
+								</ProtectedRoute>
+							}
+						/>
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</AnimatePresence>

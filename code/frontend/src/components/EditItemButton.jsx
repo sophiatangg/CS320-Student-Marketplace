@@ -1,4 +1,4 @@
-import styles from "@styles/DeleteItemButton.module.scss";
+import styles from "@styles/EditItemButton.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -18,7 +18,7 @@ const EditItemButton = (props) => {
 	};
 
 	const handleIconDimension = () => {
-		return isBig ? 24 : 18;
+		return isBig ? 20 : 18;
 	};
 
 	const handleEditItem = () => {
@@ -33,7 +33,7 @@ const EditItemButton = (props) => {
 	return (
 		<>
 			<div
-				className={cns(styles["EditItemButton"], {
+				className={cns(styles["editItemButton"], {
 					[styles["isBig"]]: isBig,
 				})}
 				onClick={(e) => {
@@ -46,10 +46,15 @@ const EditItemButton = (props) => {
 					handleComponentHover(e);
 				}}
 			>
-				<h4 style={{ color: handleChangeHoverColor() }}>Edit</h4>
-				<span className={styles["icon"]}>
+				<span
+					style={{
+						width: handleIconDimension(),
+						height: handleIconDimension(),
+					}}
+				>
 					<FaEdit style={{ width: handleIconDimension(), height: handleIconDimension(), fill: handleChangeHoverColor() }} />
 				</span>
+				<h4 style={{ color: handleChangeHoverColor() }}>Edit</h4>
 			</div>
 		</>
 	);

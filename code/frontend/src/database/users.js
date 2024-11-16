@@ -54,14 +54,14 @@ const insertUserData = async () => {
 		return;
 	}
 
-	const user = /* sessionData.session.user;
-	const*/ {
-		id: sessionData.session.user.id,
-		email: sessionData.session.user.email,
-		user_metadata: { full_name: sessionData.session.user.full_name, avatar_url: sessionData.session.user.avatar_url },
-	}; /*= user*/
+	const user = sessionData.session.user;
+	const {
+		id,
+		email,
+		user_metadata: { full_name, avatar_url },
+	} = user;
 
-	console.log(user);
+	// console.log(user);
 
 	// Check if a user with the same id or email already exists
 	const { data: existingUser, error: fetchError } = await supabase
@@ -76,6 +76,14 @@ const insertUserData = async () => {
 			error: null,
 		};
 	} else {
+		// We need to do this here so that logged-in users data will populate the "User" table.
+		// Records in our "User" table is separate from User Authentication.
+		// The separation is due to the fact that User Authentication is done through Google, not from us or supabase.
+		// We are simply connecting Google's services in our supabase's Authentication.
+		// We need our own user record thus, we need to fetch them from authentication's session.
+		// Here, we are checking if the user is logged in and if their data is already existed in our "User" table.
+		// Otherwise, we are inserting the following row to the "User" table:
+
 		const { error: insertError } = await supabase.from(tableName).insert({
 			id,
 			email,

@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 						setUserChecked(true);
 					})
 					.catch((error) => {
-						console.error(error);
+						// console.error(error);
 					});
 			}
 		});
