@@ -51,7 +51,7 @@ const AddEditNewItemWindow = (props) => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
-	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
+	const { allItems, selectedItemIdToEdit } = useContextSelector("itemsStore");
 
 	const isEditWindow = selectedItemIdToEdit > -1;
 
@@ -140,11 +140,28 @@ const AddEditNewItemWindow = (props) => {
 					itemId: selectedItemIdToEdit,
 				});
 
-				if (res) {
-					toast.success(`Item successfully updated!`, toastProps);
-				} else {
+				if (res.error) {
 					throw new Error("Error updating the item.");
 				}
+
+				toast.success(`Item successfully updated!`, toastProps);
+
+				const updatedDataItem = res.data[0];
+
+				// Update "allItems" list.
+				// If we don't update it here, we can only see the changes if we refresh the page
+				const updatedAllItems = allItems.filter((item) => {
+					if (item.id === updatedDataItem.id) {
+						return updatedDataItem; // Replace the matching item with updated data
+					}
+
+					return item;
+				});
+
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: updatedAllItems,
+				});
 
 				// Close the window
 				dispatch({
@@ -515,7 +532,7 @@ const AddEditNewItemWindow = (props) => {
 				</div>
 				<div className={styles["bottom"]}>
 					<button id="post" className={styles["button"]} onClick={handleSubmit}>
-						<span className={styles["label"]}>Post</span>
+						<span className={styles["label"]}>{isEditWindow ? "Update" : "Post"}</span>
 					</button>
 					<button id="reset" className={styles["button"]} onClick={handleReset}>
 						<span className={styles["label"]}>Reset</span>
