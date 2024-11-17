@@ -24,6 +24,7 @@ const Browse = (props) => {
 	const categoryName = params.get("cat") || "";
 
 	const { gridDisplay } = useContextSelector("globalStore");
+	const { shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
 	const handleLayoutSwitch = (e, bool) => {
@@ -50,6 +51,15 @@ const Browse = (props) => {
 		);
 	};
 
+	const renderCounter = () => {
+		return (
+			<div className={styles["counterContainer"]}>
+				<span>{shownItems.length + 1}</span>
+				<span>{shownItems.length > 0 ? "Items" : "Item"}</span>
+			</div>
+		);
+	};
+
 	const isNotDefaultItemsPage = !categoryName && categoryName === "all" && (categoryName === "wishlist" || categoryName === "my-items");
 
 	return (
@@ -63,6 +73,7 @@ const Browse = (props) => {
 								<div className={styles["left"]}>
 									{isNotDefaultItemsPage && renderPlaceHolder()}
 									{categoryName === "my-items" && <AddNewItemButton />}
+									{renderCounter()}
 								</div>
 								<div className={styles["displayStyle"]}>
 									<span>Display options:</span>

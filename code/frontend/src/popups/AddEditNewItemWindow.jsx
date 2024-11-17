@@ -514,7 +514,7 @@ const AddEditNewItemWindow = (props) => {
 		<Window dispatchType={"SET_ADD_EDIT_NEW_ITEM_DISPLAYED"}>
 			<div className={styles["addNewItemWindowContainer"]}>
 				<div className={styles["header"]}>
-					<h1>{isEditWindow ? `Edit Item — ${newItemState.name}` : "Add Item"}</h1>
+					<h1 className={styles["headerTitle"]}>{isEditWindow ? `Edit Item — ${newItemState.name}` : "Add Item"}</h1>
 					<div className={styles["closeButton"]} tabIndex={0}>
 						<IoClose
 							tabIndex={0}

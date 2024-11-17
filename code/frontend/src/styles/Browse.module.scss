@@ -53,6 +53,8 @@
 	.left {
 		position: relative;
 		display: flex;
+		align-items: center;
+		gap: 15px;
 	}
 
 	.placeholder {
@@ -80,6 +82,17 @@
 			color: var(--colorPrimaryForeground);
 			font-family: "GT Bold";
 		}
+	}
+}
+
+.counterContainer {
+	position: relative;
+	display: flex;
+	gap: 5px;
+
+	span {
+		font-weight: 700;
+		color: var(--colorGraySecondary);
 	}
 }
 
@@ -131,10 +144,4 @@
 .displayItem {
 	transform: scale(0.9);
 	transition: 100ms linear;
-}
-
-@media screen and (max-width: 320px) {
-	.filterButton {
-		font-size: 12px;
-	}
 }
