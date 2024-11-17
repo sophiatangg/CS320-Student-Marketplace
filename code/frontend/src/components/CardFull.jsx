@@ -1,11 +1,13 @@
 import AddToCartButton from "@components/AddToCartButton";
 import LikeButton from "@components/LikeButton";
 import TradeButton from "@components/TradeButton";
+import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/CardFull.module.scss";
 import cns from "@utils/classNames";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const variants = {
@@ -16,6 +18,8 @@ const variants = {
 
 const CardFull = (props) => {
 	const { item, isFullWidth } = props;
+
+	const [owner, setOwner] = useState("");
 
 	const { currentUser } = useAuth();
 
@@ -60,6 +64,18 @@ const CardFull = (props) => {
 			payload: hoveredItem,
 		});
 	};
+
+	useEffect(() => {
+		if (!item || !item.seller_id) return;
+
+		getUser(item.seller_id)
+			.then((res) => {
+				setOwner(res.name);
+			})
+			.catch((error) => {
+				console.error("Error finding owner of the item. Check the code!");
+			});
+	}, [item, owner]);
 
 	const renderItemName = ({ text, highlight }) => {
 		if (!text) return;
@@ -118,6 +134,16 @@ const CardFull = (props) => {
 						highlight: searchQuery,
 					})}
 				</h2>
+				{owner && (
+					<div
+						className={cns(styles["ownerInfo"], {
+							[styles["ownerInfoFull"]]: isFullWidth,
+						})}
+					>
+						<span>Posted by</span>
+						<span>{owner}</span>
+					</div>
+				)}
 				<div className={styles["buttons"]}>
 					<div className={styles["price-cart-trade"]}>
 						<span className={styles["price"]}>${item.price}</span>
@@ -128,7 +154,11 @@ const CardFull = (props) => {
 							</div>
 						)}
 					</div>
-					{!isOwnItem && <LikeButton item={item} />}
+					{!isOwnItem && (
+						<>
+							<LikeButton item={item} />
+						</>
+					)}
 				</div>
 			</div>
 		</motion.div>

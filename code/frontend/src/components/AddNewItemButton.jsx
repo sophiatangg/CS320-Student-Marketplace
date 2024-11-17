@@ -6,7 +6,7 @@ const AddNewItemButton = (props) => {
 
 	const handleAddNewItemOpen = (bool) => {
 		dispatch({
-			type: "SET_ADD_NEW_ITEM_DISPLAYED",
+			type: "SET_ADD_EDIT_NEW_ITEM_DISPLAYED",
 			payload: bool,
 		});
 	};

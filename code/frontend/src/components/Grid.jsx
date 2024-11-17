@@ -45,8 +45,6 @@ const Grid = (props) => {
 				return name.includes(query);
 			});
 
-			console.log(foundItems);
-
 			items = foundItems;
 		}
 

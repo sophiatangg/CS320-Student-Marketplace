@@ -1,6 +1,8 @@
 const initial = {
 	allItems: [],
 	selectedItem: null,
+	selectedItemIdToEdit: -1,
+	selectedItemIdToDelete: -1,
 	shownItems: [],
 };
 
@@ -21,6 +23,18 @@ export const itemsReducer = (state = initial, action) => {
 			return {
 				...state,
 				selectedItem: action.payload,
+			};
+
+		case "SET_SELECTED_ITEM_ID_TO_EDIT":
+			return {
+				...state,
+				selectedItemIdToEdit: action.payload,
+			};
+
+		case "SET_SELECTED_ITEM_ID_TO_DELETE":
+			return {
+				...state,
+				selectedItemIdToDelete: action.payload,
 			};
 
 		case "SET_SHOWN_ITEMS":

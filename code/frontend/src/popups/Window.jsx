@@ -38,9 +38,16 @@ const Window = (props) => {
 						exit="exit"
 						onAnimationComplete={(definition) => {
 							if (definition === "exit") {
+								// default dispatch
 								dispatch({
 									type: dispatchType,
 									payload: false,
+								});
+
+								// setting the "selectedItemIdToEdit" to -1
+								dispatch({
+									type: "SET_SELECTED_ITEM_ID_TO_EDIT",
+									payload: -1,
 								});
 							}
 						}}

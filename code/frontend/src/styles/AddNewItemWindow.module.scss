@@ -212,8 +212,38 @@
 	}
 }
 
+.choiceContainer {
+	padding: 20px;
+	position: relative;
+	display: flex;
+	flex-flow: row wrap;
+	gap: 10px;
+	align-items: flex-start;
+	justify-content: flex-start;
+
+	.choiceItem {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--colorPrimaryForeground);
+		border: 3px solid var(--popOutBgColorAlt1);
+		border-radius: var(--borderRadius);
+		padding: 8px 15px;
+		cursor: pointer;
+		transition: background-color 100ms linear;
+		user-select: none;
+
+		&.choiceItemSelected {
+			background-color: var(--popOutBgColorAlt1);
+		}
+	}
+}
+
 .imagesElem {
 	margin-bottom: 30px;
+
+	.label {
+		margin-bottom: 15px;
+	}
 }
 
 .imagesInner {
@@ -251,19 +281,29 @@
 .previewImages {
 	width: 100%;
 	max-height: 300px;
+	border: 3px dashed var(--popOutBgColorAlt1);
+	border-radius: var(--borderRadius);
+	padding: 10px;
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	overflow: hidden;
+}
+
+.previewImagesInner {
 	flex: 1;
 	display: flex;
 	flex-flow: row;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
 }
 
 .imageItem {
 	height: 100%;
-	border-radius: var(--borderRadius);
 	position: relative;
-	overflow: hidden;
 
 	&:hover {
 		.removeIMGButton {
@@ -274,27 +314,35 @@
 
 .imageThumbnailContainer {
 	width: 120px;
-	min-height: 120px;
-	float: left;
+	min-height: max-content;
 	position: relative;
-	z-index: 1;
 
 	img {
 		width: 100%;
 		height: auto;
+		border: 5px solid transparent;
+		border-radius: var(--borderRadius);
+		aspect-ratio: 1;
 		object-fit: cover;
-		pointer-events: none;
+		cursor: pointer;
+		transition: border-color 100ms linear;
+	}
+
+	&:hover {
+		img {
+			border-color: var(--popOutBgColorAlt1);
+		}
 	}
 }
 
 .removeIMGButton {
-	width: 100%;
-	height: 100%;
-	background-color: rgba(#000, 0.3);
+	width: 25px;
+	height: 25px;
+	background-color: var(--popOutBgColorAlt1);
 	border: none;
+	border-radius: 0 var(--borderRadius) 0 var(--borderRadius);
 	position: absolute;
-	inset: 0 auto auto 0;
-	z-index: 2;
+	inset: 0 0 auto auto;
 	opacity: 0;
 	transition: opacity 100ms linear;
 	cursor: pointer;
@@ -302,4 +350,10 @@
 	span {
 		color: var(--colorPrimaryForeground);
 	}
+}
+
+.previewImagesNotice {
+	color: var(--colorPrimaryForeground);
+	font-size: 12px;
+	opacity: 0.5;
 }

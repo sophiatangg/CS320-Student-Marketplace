@@ -1,7 +1,7 @@
 const initial = {
 	accountInfoDisplayed: false,
 	accountProfileDisplayed: false,
-	addNewItemDisplayed: false,
+	addEditNewItemDisplayed: false,
 	cartDisplayed: false,
 	tradeDisplayed: false,
 };
@@ -18,10 +18,10 @@ export const displayReducer = (state = initial, action) => {
 				...state,
 				accountProfileDisplayed: action.payload,
 			};
-		case "SET_ADD_NEW_ITEM_DISPLAYED":
+		case "SET_ADD_EDIT_NEW_ITEM_DISPLAYED":
 			return {
 				...state,
-				addNewItemDisplayed: action.payload,
+				addEditNewItemDisplayed: action.payload,
 			};
 		case "SET_CART_DISPLAYED":
 			return {

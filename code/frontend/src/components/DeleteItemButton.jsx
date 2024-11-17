@@ -22,7 +22,7 @@ const DeleteItemButton = (props) => {
 	};
 
 	const handleDeleteItem = () => {
-		if (itemId != null || itemId > -1) {
+		if (itemId) {
 			deleteItemInDatabase(itemId);
 			console.log(`Deleting item with ID: ${itemId}`);
 		} else {

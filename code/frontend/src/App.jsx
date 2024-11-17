@@ -9,7 +9,7 @@ import NotFound from "@pages/NotFound";
 import ProtectedRoute from "@pages/ProtectedRoute";
 import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
-import AddNewItemWindow from "@popups/AddNewItemWindow";
+import AddEditNewItemWindow from "@popups/AddEditNewItemWindow";
 import CartWindow from "@popups/CartWindow";
 import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -21,10 +21,12 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-	const { accountInfoDisplayed, accountProfileDisplayed, addNewItemDisplayed, cartDisplayed, tradeDisplayed } = useContextSelector("displayStore");
+	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed } =
+		useContextSelector("displayStore");
 	const dispatch = useContextDispatch();
 
 	const { theme } = useContextSelector("globalStore");
+	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
 	const { pathname } = useLocation();
 
 	useEffect(() => {
@@ -74,11 +76,13 @@ const App = () => {
 		return key || "home";
 	};
 
+	const isAddItemWindowOpen = addEditNewItemDisplayed || selectedItemIdToEdit > -1;
+
 	return (
 		<>
 			<div
 				className={cns(appStyles["app"], {
-					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || addNewItemDisplayed || accountProfileDisplayed,
+					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || isAddItemWindowOpen || accountProfileDisplayed,
 				})}
 			>
 				<NavBar />
@@ -107,7 +111,7 @@ const App = () => {
 				</AnimatePresence>
 				{accountInfoDisplayed && <AccountOptionsWindow />}
 				{accountProfileDisplayed && <AccountProfileWindow />}
-				{addNewItemDisplayed && <AddNewItemWindow />}
+				{isAddItemWindowOpen && <AddEditNewItemWindow />}
 				{cartDisplayed && <CartWindow />}
 				{tradeDisplayed && <TradeWindow />}
 				<Footer />

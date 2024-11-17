@@ -1,13 +1,14 @@
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/EditItemButton.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { editItemInDatabase } from "../../../middleware/Item/editItem.js";
 
 const EditItemButton = (props) => {
 	const { isBig, itemId } = props;
 
 	const [isHovered, setHovered] = useState(false);
+	const dispatch = useContextDispatch();
 
 	const handleComponentHover = (e) => {
 		setHovered(!isHovered);
@@ -22,9 +23,15 @@ const EditItemButton = (props) => {
 	};
 
 	const handleEditItem = () => {
-		if (itemId != null || itemId > -1) {
-			editItemInDatabase(itemId);
-			console.log(`Deleting item with ID: ${itemId}`);
+		if (itemId) {
+			// editItemInDatabase(itemId);
+
+			dispatch({
+				type: "SET_SELECTED_ITEM_ID_TO_EDIT",
+				payload: itemId,
+			});
+
+			console.log(`Editing item with ID: ${itemId}`);
 		} else {
 			console.error("No item ID provided");
 		}

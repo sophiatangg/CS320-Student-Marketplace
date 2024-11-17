@@ -35,6 +35,8 @@ const setUser = (setter) => {
 };
 
 const getUser = async (userId) => {
+	if (!userId) return;
+
 	const { data: userData, error: userError } = await supabase.from(tableName).select("*").eq("id", userId).single();
 
 	if (userError) {

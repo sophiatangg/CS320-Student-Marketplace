@@ -172,7 +172,7 @@
 
 .itemInfo {
 	flex: 1;
-	justify-content: space-between;
+	justify-content: flex-start;
 	gap: 40px;
 
 	@media screen and (max-width: 950px) {
@@ -265,6 +265,18 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+}
+
+.valueClickable {
+	span {
+		&:last-child {
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
 }
 
 .conditionalOpen {
@@ -468,10 +480,9 @@
 }
 
 .delete-edit {
-	width: 120px;
-	height: 100px;
+	height: 70px;
 	display: inline-flex;
-	flex-flow: column;
+	flex-flow: row;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;

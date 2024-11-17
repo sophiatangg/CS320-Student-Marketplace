@@ -86,7 +86,38 @@ export const selectAllItemsWithImages = async () => {
 	return { data: itemsWithImages, error: null };
 };
 
-const generateUniqueSurname = async (itemName) => {
+export const getItemByItemId = async (itemId) => {
+	if (!itemId) return;
+
+	const { data: itemData, error: itemError } = await supabase.from(itemTableName).select("*").eq("id", itemId).single();
+
+	if (itemError) {
+		throw Error(`Error fetching item by ${itemId}`);
+	}
+
+	if (itemData) {
+		return itemData;
+	}
+};
+
+export const getItemImagesByItemId = async (itemId) => {
+	if (!itemId) return;
+
+	// NOTE: "data" should return an array!
+	// This is because an item CAN have MULTIPLE images.
+	// Hence, no methods after ".eq()".
+	const { data: itemImageData, error: itemImageError } = await supabase.from(itemImagesTableName).select("*").eq("itemid", itemId);
+
+	if (itemImageError) {
+		throw Error(`Error fetching item by ${itemId}`);
+	}
+
+	if (itemImageData) {
+		return itemImageData;
+	}
+};
+
+export const generateUniqueSurname = async (itemName) => {
 	const baseSurname = itemName.toLowerCase().replace(/\s+/g, "-");
 
 	let uniqueSurname = baseSurname;
@@ -109,7 +140,7 @@ const generateUniqueSurname = async (itemName) => {
 	};
 };
 
-export const uploadAndHostItemImage = async ({ file }) => {
+export const uploadAndHostItemImage = async ({ file, expiration = 604800 }) => {
 	const uniqueFileName = `${uuidv4()}-${file.name}`;
 
 	const { data: uploadData, error: uploadError } = await supabase.storage.from(itemImagesStorageName).upload(`images/${uniqueFileName}`, file, {
@@ -125,7 +156,7 @@ export const uploadAndHostItemImage = async ({ file }) => {
 	// URL valid for 604800 seconds (1 week)
 	const { data: signedUrl, error: signedError } = await supabase.storage
 		.from(itemImagesStorageName)
-		.createSignedUrl(`images/${uniqueFileName}`, 604800);
+		.createSignedUrl(`images/${uniqueFileName}`, expiration);
 
 	if (signedError) {
 		console.error("Error creating signed URL:", signedError);
@@ -150,6 +181,15 @@ export const removeUploadedItemImage = async (imageURL) => {
 	return res;
 };
 
+export const extractFilePathFromImageURLColumn = (imageURL) => {
+	if (!imageURL) return;
+
+	const regex = /\/object\/sign\/[^/]+\/(images\/.+)\?/;
+	const match = imageURL.match(regex);
+
+	return match ? match[1] : null;
+};
+
 const insertItemImageToItemSchema = async (files, newItemId) => {
 	await Promise.all(
 		files.map(async (file) => {
@@ -159,6 +199,31 @@ const insertItemImageToItemSchema = async (files, newItemId) => {
 			});
 		}),
 	);
+};
+
+const deleteItemImageFromItemSchema = async (images) => {
+	const { data: imagesToDeleteData, error: fetchError } = await supabase
+		.from(itemImagesTableName)
+		.select("id, image_url")
+		.in(
+			"image_url",
+			images.map((image) => {
+				return image.image_url;
+			}),
+		);
+
+	if (fetchError) {
+		console.error("Error fetching image IDs for deletion:", fetchError);
+		throw new Error("Failed to fetch image IDs for deletion.");
+	}
+
+	if (imagesToDeleteData?.length > 0) {
+		await Promise.all(
+			imagesToDeleteData.map(async (image) => {
+				await supabase.from(itemImagesTableName).delete().eq("id", image.id);
+			}),
+		);
+	}
 };
 
 export const addItemByUser = async ({ itemData }) => {
@@ -199,4 +264,59 @@ export const addItemByUser = async ({ itemData }) => {
 	} else {
 		throw Error("Error generating surname.");
 	}
+};
+
+export const editItemByUser = async ({ itemData, itemId }) => {
+	if (!itemData) return null;
+
+	// all keys here must match from what we have in our
+	// "newItemData" object inside "handleSubmit"
+	const keysItemData = ["category", "condition", "desc", "images", "in_trade", "name", "price"];
+	if (!keysChecker(keysItemData, itemData)) throw Error("A key is missing.");
+
+	// NOTE: When editing, we only need to update the necessary columns.
+	// For "Item" table, for example, we do not need to update "id", "created_at", "seller_id", "dae_added"
+
+	const uniqueSurname = await generateUniqueSurname(itemData.name);
+
+	if (!uniqueSurname.hasOwnProperty("name")) {
+		throw new Error("Error generating unique surname.");
+	}
+
+	const { images: currentImages, ...itemDataWithoutImages } = itemData;
+
+	const objToUpdate = {
+		surname: uniqueSurname.name,
+		...itemDataWithoutImages,
+	};
+
+	// Update the item row
+	const { error: itemError } = await supabase.from(itemTableName).update(objToUpdate).eq("id", itemId);
+	if (itemError) throw new Error("Error updating item row.");
+
+	// Fetch existing images to differentiate
+	const existingImages = await getItemImagesByItemId(itemId);
+
+	const existingPaths = existingImages.map((image) => image.image_url);
+	const currentPaths = currentImages.map((image) => image.fullPath);
+
+	// Images to add
+	const imagesToAdd = currentImages.filter((image) => {
+		return !existingPaths.includes(image.fullPath);
+	});
+
+	if (imagesToAdd.length > 0) {
+		await insertItemImageToItemSchema(imagesToAdd, itemId);
+	}
+
+	// Images to delete
+	const imagesToDelete = existingImages.filter((image) => {
+		return !currentPaths.includes(image.image_url);
+	});
+
+	if (imagesToDelete.length > 0) {
+		await deleteItemImageFromItemSchema(imagesToDelete);
+	}
+
+	return true;
 };

@@ -115,6 +115,13 @@ const ItemPage = (props) => {
 		});
 	};
 
+	const handleNavigateCategory = (categoryName) => {
+		if (!categoryName) return;
+		if (categoryName === "") return;
+
+		navigate(`/browse?cat=${String(categoryName).toLowerCase()}`);
+	};
+
 	useEffect(() => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
 			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
@@ -137,6 +144,8 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
+		if (!selectedItem || !selectedItem.hasOwnProperty("seller_id")) return;
+
 		const fetchUser = async () => {
 			if (!selectedItem?.seller_id) {
 				setSellerData(null);
@@ -154,8 +163,6 @@ const ItemPage = (props) => {
 
 		fetchUser();
 	}, [selectedItem?.seller_id]);
-
-	const isOwnItem = selectedItem.seller_id === currentUser.id;
 
 	const renderMoreBottom = () => {
 		return (
@@ -177,13 +184,19 @@ const ItemPage = (props) => {
 							<span>Date Added:</span>
 							<span>{formatDateAgo({ date: selectedItem?.created_at })}</span>
 						</h4>
-						<h4>
+						<h4 className={styles["valueClickable"]}>
 							<span>Seller:</span>
 							<span>{sellerData?.name}</span>
 						</h4>
-						<h4>
+						<h4 className={styles["valueClickable"]}>
 							<span>Category:</span>
-							<span>{selectedItem?.category}</span>
+							<span
+								onClick={(e) => {
+									handleNavigateCategory(selectedItem?.category);
+								}}
+							>
+								{selectedItem?.category}
+							</span>
 						</h4>
 						<h4>
 							<span>Condition:</span>
@@ -238,8 +251,8 @@ const ItemPage = (props) => {
 					<LikeButton item={selectedItem ?? templateGame} />
 				) : (
 					<div className={styles["delete-edit"]}>
-						<DeleteItemButton isBig={true} itemID={selectedItem?.id} />
-						<EditItemButton isBig={true} itemID={selectedItem?.id} />
+						<DeleteItemButton isBig={true} itemId={selectedItem?.id} />
+						<EditItemButton isBig={true} itemId={selectedItem?.id} />
 					</div>
 				)}
 			</div>
@@ -247,6 +260,8 @@ const ItemPage = (props) => {
 	};
 
 	if (!selectedItem) return null;
+
+	const isOwnItem = selectedItem?.seller_id === currentUser?.id;
 
 	return (
 		<>
