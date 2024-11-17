@@ -30,8 +30,6 @@ const EditItemButton = (props) => {
 				type: "SET_SELECTED_ITEM_ID_TO_EDIT",
 				payload: itemId,
 			});
-
-			console.log(`Editing item with ID: ${itemId}`);
 		} else {
 			console.error("No item ID provided");
 		}

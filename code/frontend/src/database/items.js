@@ -145,7 +145,10 @@ export const getItemImagesByItemId = async (itemId) => {
 };
 
 export const generateUniqueSurname = async (itemName) => {
-	const baseSurname = itemName.toLowerCase().replace(/\s+/g, "-");
+	const baseSurname = itemName
+		.toLowerCase()
+		.replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+		.replace(/\s+/g, "-"); // Replace spaces with dashes
 
 	let uniqueSurname = baseSurname;
 	let suffix = 1;
@@ -351,8 +354,12 @@ export const editItemByUser = async ({ itemData, itemId }) => {
 	};
 
 	// Update the item row
-	const { error: itemError } = await supabase.from(itemTableName).update(objToUpdate).eq("id", itemId);
-	if (itemError) throw new Error("Error updating item row.");
+	const updateRes = await supabase.from(itemTableName).update(objToUpdate).eq("id", itemId).select();
+	const { data: updateData, error: updateError } = updateRes;
+
+	if (updateError) {
+		throw new Error("Error updating item row.");
+	}
 
 	// Fetch existing images to differentiate
 	const existingImages = await getItemImagesByItemId(itemId);
@@ -378,5 +385,5 @@ export const editItemByUser = async ({ itemData, itemId }) => {
 		await deleteItemImageFromItemSchema(imagesToDelete);
 	}
 
-	return true;
+	return updateRes;
 };

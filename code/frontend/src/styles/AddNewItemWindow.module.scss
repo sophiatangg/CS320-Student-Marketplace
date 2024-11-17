@@ -28,10 +28,15 @@
 	align-items: center;
 	justify-content: space-between;
 
-	h1 {
+	.headerTitle {
+		max-width: 95%;
 		color: var(--colorPrimaryForeground);
 		font-family: "GT Ultrabold";
 		font-size: 40px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
+		overflow: hidden;
 	}
 }
 
