@@ -1,9 +1,9 @@
 import AddToCartButton from "@components/AddToCartButton";
 import DeleteItemButton from "@components/DeleteItemButton";
 import EditItemButton from "@components/EditItemButton";
-import LikeButton from "@components/LikeButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
+import WishlistButton from "@components/WishlistButton";
 import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -248,7 +248,7 @@ const ItemPage = (props) => {
 					)}
 				</div>
 				{!isOwnItem ? (
-					<LikeButton item={selectedItem ?? templateGame} />
+					<WishlistButton item={selectedItem ?? templateGame} />
 				) : (
 					<div className={styles["delete-edit"]}>
 						<DeleteItemButton isBig={true} itemId={selectedItem?.id} />

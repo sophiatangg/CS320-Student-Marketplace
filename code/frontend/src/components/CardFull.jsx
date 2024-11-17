@@ -1,6 +1,6 @@
 import AddToCartButton from "@components/AddToCartButton";
-import LikeButton from "@components/LikeButton";
 import TradeButton from "@components/TradeButton";
+import WishlistButton from "@components/WishlistButton";
 import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -134,16 +134,22 @@ const CardFull = (props) => {
 						highlight: searchQuery,
 					})}
 				</h2>
-				{owner && (
-					<div
-						className={cns(styles["ownerInfo"], {
-							[styles["ownerInfoFull"]]: isFullWidth,
-						})}
-					>
-						<span>Posted by</span>
-						<span>{owner}</span>
-					</div>
-				)}
+				<div
+					className={cns(styles["ownerInfo"], {
+						[styles["ownerInfoFull"]]: isFullWidth,
+						[styles["ownerDataFetching"]]: !owner,
+					})}
+				>
+					{owner ? (
+						<>
+							<span>Posted by</span>
+							<span>{owner}</span>
+						</>
+					) : (
+						<span>Fetching seller name...</span>
+					)}
+				</div>
+
 				<div className={styles["buttons"]}>
 					<div className={styles["price-cart-trade"]}>
 						<span className={styles["price"]}>${item.price}</span>
@@ -156,7 +162,7 @@ const CardFull = (props) => {
 					</div>
 					{!isOwnItem && (
 						<>
-							<LikeButton item={item} />
+							<WishlistButton item={item} />
 						</>
 					)}
 				</div>

@@ -13,7 +13,7 @@ const Grid = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { allItems, shownItems } = useContextSelector("itemsStore");
+	const { allItems, ownWishlistItems, shownItems } = useContextSelector("itemsStore");
 	const { gridDisplay, items: localStorageItems } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
@@ -29,7 +29,13 @@ const Grid = (props) => {
 					return item.seller_id === currentUser.id;
 				});
 			} else if (categoryName === "wishlist") {
-				items = allItems?.filter((item) => item.isLiked);
+				const matchedItems = allItems.filter((item) => {
+					return ownWishlistItems.some((wishlistItem) => {
+						return wishlistItem.item_id === item.id;
+					});
+				});
+
+				items = matchedItems;
 			} else {
 				items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
 			}

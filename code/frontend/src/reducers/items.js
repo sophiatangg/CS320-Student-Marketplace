@@ -1,5 +1,6 @@
 const initial = {
 	allItems: [],
+	ownWishlistItems: [],
 	selectedItem: null,
 	selectedItemIdToEdit: -1,
 	selectedItemIdToDelete: -1,
@@ -17,6 +18,12 @@ export const itemsReducer = (state = initial, action) => {
 			return {
 				...state,
 				allItems: action.payload,
+			};
+
+		case "SET_WISHLIST_ITEMS":
+			return {
+				...state,
+				ownWishlistItems: action.payload,
 			};
 
 		case "SET_SELECTED_ITEM":

@@ -1,4 +1,3 @@
-import { supabase } from "@database/supabaseClient";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountButton.module.scss";
 import cns from "@utils/classNames";
@@ -14,16 +13,6 @@ const AccountButton = (props) => {
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const dispatch = useContextDispatch();
-
-	const handleFetchDB = async () => {
-		const { data, error } = await supabase.from("sampletest").select("*");
-
-		if (error) {
-			console.error("Check database", error);
-		} else {
-			console.log("Return from database", data);
-		}
-	};
 
 	const handleClick = () => {
 		setIsClicked(!isClicked);
@@ -42,7 +31,6 @@ const AccountButton = (props) => {
 			className={styles["userComponent"]}
 			onClick={(e) => {
 				handleClick();
-				// await handleFetchDB();
 			}}
 		>
 			<div

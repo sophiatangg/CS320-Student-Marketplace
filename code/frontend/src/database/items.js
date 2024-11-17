@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 
 const itemTableName = "Item";
 const itemImagesTableName = "ItemImages";
+const wishlistTableName = "Wishlist";
+
 const itemImagesStorageName = "item-images";
 
 export const selectItemsFromUser = async () => {
@@ -84,6 +86,31 @@ export const selectAllItemsWithImages = async () => {
 	});
 
 	return { data: itemsWithImages, error: null };
+};
+
+export const selectAllWishlistItemsByUser = async () => {
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	const userId = user.id;
+
+	const res = await supabase.from(wishlistTableName).select("*").eq("user_id", userId);
+
+	if (!res) {
+		console.error("Error fetching wishlist items from database:", res.error);
+		return {
+			data: null,
+			error: res.error,
+			status: res.status,
+		};
+	} else {
+		return {
+			data: res.data,
+			error: res.error,
+			status: res.status,
+		};
+	}
 };
 
 export const getItemByItemId = async (itemId) => {
@@ -224,6 +251,39 @@ const deleteItemImageFromItemSchema = async (images) => {
 			}),
 		);
 	}
+};
+
+export const addWishlistItemByUser = async ({ userId, itemId }) => {
+	if (!userId) return;
+	if (!itemId) return;
+
+	const { data: addedWishlistedItem, error } = await supabase
+		.from(wishlistTableName)
+		.insert({
+			item_id: itemId,
+			user_id: userId,
+		})
+		.select("*")
+		.single();
+
+	if (error || !addedWishlistedItem) {
+		throw Error("Error inserting wishlist row.");
+	}
+
+	return addedWishlistedItem;
+};
+
+export const removeWishlistItemByUser = async ({ userId, itemId }) => {
+	if (!userId) return;
+	if (!itemId) return;
+
+	const { data: deletedWishlistItem, error } = await supabase.from(wishlistTableName).delete().eq("user_id", userId).eq("item_id", itemId).select();
+
+	if (error || !deletedWishlistItem) {
+		throw Error("Error deleting wishlist row.");
+	}
+
+	return deletedWishlistItem;
 };
 
 export const addItemByUser = async ({ itemData }) => {

@@ -12,22 +12,11 @@ import Window from "@popups/Window";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/AddNewItemWindow.module.scss";
 import cns from "@utils/classNames";
+import { toastProps } from "@utils/toastProps";
 import { useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bounce, toast } from "react-toastify";
-
-const toastProps = {
-	position: "top-center",
-	autoClose: 5000,
-	hideProgressBar: false,
-	closeOnClick: true,
-	pauseOnHover: true,
-	draggable: true,
-	progress: undefined,
-	theme: "dark",
-	transition: Bounce,
-};
+import { toast } from "react-toastify";
 
 const validateNewItemState = (state) => {
 	if (state.name.trim().length === 0) {

@@ -1,6 +1,6 @@
 import Footer from "@components/Footer";
 import NavBar from "@components/NavBar";
-import { selectAllItemsWithImages } from "@database/items";
+import { selectAllItemsWithImages, selectAllWishlistItemsByUser } from "@database/items";
 import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
@@ -23,6 +23,7 @@ import { ToastContainer } from "react-toastify";
 const App = () => {
 	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed } =
 		useContextSelector("displayStore");
+
 	const dispatch = useContextDispatch();
 
 	const { theme } = useContextSelector("globalStore");
@@ -47,6 +48,26 @@ const App = () => {
 		};
 
 		fetchItems();
+	}, [dispatch]);
+
+	useEffect(() => {
+		const fetchWishlistItems = async () => {
+			try {
+				const res = await selectAllWishlistItemsByUser();
+				if (res.data) {
+					dispatch({
+						type: "SET_WISHLIST_ITEMS",
+						payload: res.data,
+					});
+				} else {
+					console.error("Failed to fetch wishlist items:", res.error);
+				}
+			} catch (error) {
+				console.error("Error fetching wishlist items:", error);
+			}
+		};
+
+		fetchWishlistItems();
 	}, [dispatch]);
 
 	useEffect(() => {
