@@ -34,7 +34,7 @@ const CardMini = (props) => {
 			>
 				{item.images && (
 					<div className={styles["thumbnail"]}>
-						<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
+						<img src={item.images[0]} className={styles["thumbnailIMG"]} alt="Item Cover Image" />
 					</div>
 				)}
 				<div className={styles["content"]}>

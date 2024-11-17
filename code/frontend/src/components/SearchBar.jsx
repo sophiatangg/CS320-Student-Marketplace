@@ -161,7 +161,7 @@ const SearchBar = (props) => {
 							[styles["hasQuery"]]: searchQuery,
 						})}
 					>
-						<HiSearch className={styles["svg"]} style={{ fill: searchHover ? "#fff" : "#cccccc" }} id="7" aria-label="Search" />
+						<HiSearch style={{ fill: searchHover ? "#fff" : "#cccccc" }} id="7" aria-label="Search" />
 					</div>
 					{searchQuery ? (
 						<div className={styles["submittedQuery"]}>
@@ -174,7 +174,7 @@ const SearchBar = (props) => {
 								</div>
 							</div>
 							<div ref={queryButtonRemoveRef} onClick={handleRemoveSearchQuery} className={styles["removeQueryButton"]}>
-								<IoClose className={styles["svg"]} />
+								<IoClose />
 							</div>
 						</div>
 					) : (

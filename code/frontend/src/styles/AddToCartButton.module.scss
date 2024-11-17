@@ -44,4 +44,8 @@
 	&:active {
 		transform: translateY(2px);
 	}
+
+	&.isBig {
+		position: relative;
+	}
 }
