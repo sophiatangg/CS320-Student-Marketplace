@@ -20,23 +20,25 @@ const CardMini = (props) => {
 	};
 
 	useEffect(() => {
-		if (!item && !item.hasOwnProperty("seller_id")) return;
+		if (!item && !item?.seller_id) return;
 
-		getUser(item.seller_id)
+		getUser(item?.seller_id)
 			.then((res) => {
 				setItemOwner(res);
 			})
 			.catch((error) => {
-				throw Error(`Error fetching item owner for ${item.name}.`, error);
+				throw Error(`Error fetching item owner for ${item?.name}.`, error);
 			});
 	}, []);
 
 	useEffect(() => {
-		if (!item && !item.hasOwnProperty("created_at")) return;
+		if (!item && !item?.hasOwnProperty("created_at")) return;
 
-		const resDateStr = formatDateAgo({ date: item.created_at });
+		const resDateStr = formatDateAgo({ date: item?.created_at });
 		setItemCreatedDate(resDateStr);
 	}, []);
+
+	if (!item) return;
 
 	return (
 		<>
@@ -55,18 +57,18 @@ const CardMini = (props) => {
 					handleCardClick(e);
 				}}
 			>
-				{item.images && (
+				{item?.images && (
 					<div className={styles["thumbnail"]}>
-						<img src={item.images[0]} className={styles["thumbnailIMG"]} alt="Item Cover Image" />
+						<img src={item?.images[0]} className={styles["thumbnailIMG"]} alt="Item Cover Image" />
 					</div>
 				)}
 				<div className={styles["content"]}>
 					<div className={styles["itemName"]}>
-						<span className={styles["itemValue"]}>{item.name}</span>
+						<span className={styles["itemValue"]}>{item?.name}</span>
 					</div>
 					<div className={styles["itemSeller"]}>
 						<span className={styles["itemLabel"]}>Posted by:</span>
-						<span className={styles["itemValue"]}>{itemOwner.name}</span>
+						<span className={styles["itemValue"]}>{itemOwner?.name}</span>
 					</div>
 					<div className={styles["itemCreated"]}>
 						<span className={styles["itemLabel"]}>Date Posted:</span>

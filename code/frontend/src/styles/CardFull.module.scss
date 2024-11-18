@@ -46,10 +46,6 @@
 		img {
 			border-top-left-radius: var(--borderRadius);
 		}
-
-		.content {
-			justify-content: flex-start;
-		}
 	}
 
 	&:not(.cardFullWidth) {
@@ -93,8 +89,14 @@
 		flex: 1;
 		flex-flow: column;
 		align-items: flex-start;
-		justify-content: center;
+		justify-content: space-between;
 		gap: 8px;
+		overflow: hidden;
+	}
+
+	.contentTop {
+		width: 100%;
+		position: relative;
 		overflow: hidden;
 	}
 

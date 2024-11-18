@@ -123,7 +123,7 @@ const AddEditNewItemWindow = (props) => {
 
 					dispatch({
 						type: "SET_ALL_ITEMS",
-						payload: allItems.push(res),
+						payload: [...allItems, res],
 					});
 				} else {
 					throw new Error("Error adding the item.");

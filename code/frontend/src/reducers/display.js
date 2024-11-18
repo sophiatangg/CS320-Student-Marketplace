@@ -4,6 +4,7 @@ const initial = {
 	addEditNewItemDisplayed: false,
 	cartDisplayed: false,
 	tradeDisplayed: false,
+	tradeManageDisplay: false,
 };
 
 export const displayReducer = (state = initial, action) => {
@@ -32,6 +33,12 @@ export const displayReducer = (state = initial, action) => {
 			return {
 				...state,
 				tradeDisplayed: action.payload,
+			};
+
+		case "SET_TRADE_MANAGE_DISPLAYED":
+			return {
+				...state,
+				tradeManageDisplay: action.payload,
 			};
 		default:
 			return state;

@@ -123,33 +123,34 @@ const CardFull = (props) => {
 				<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
 			</div>
 			<div className={styles["content"]}>
-				<h2
-					className={styles["name"]}
-					onClick={(e) => {
-						handleSelectItem({ id: item.id });
-					}}
-				>
-					{renderItemName({
-						text: item.name,
-						highlight: searchQuery,
-					})}
-				</h2>
-				<div
-					className={cns(styles["ownerInfo"], {
-						[styles["ownerInfoFull"]]: isFullWidth,
-						[styles["ownerDataFetching"]]: !owner,
-					})}
-				>
-					{owner ? (
-						<>
-							<span>Posted by</span>
-							<span>{owner}</span>
-						</>
-					) : (
-						<span>Fetching seller name...</span>
-					)}
+				<div className={styles["contentTop"]}>
+					<h2
+						className={styles["name"]}
+						onClick={(e) => {
+							handleSelectItem({ id: item.id });
+						}}
+					>
+						{renderItemName({
+							text: item.name,
+							highlight: searchQuery,
+						})}
+					</h2>
+					<div
+						className={cns(styles["ownerInfo"], {
+							[styles["ownerInfoFull"]]: isFullWidth,
+							[styles["ownerDataFetching"]]: !owner,
+						})}
+					>
+						{owner ? (
+							<>
+								<span>Posted by</span>
+								<span>{owner}</span>
+							</>
+						) : (
+							<span>Fetching seller name...</span>
+						)}
+					</div>
 				</div>
-
 				<div className={styles["buttons"]}>
 					<div className={styles["price-cart-trade"]}>
 						<span className={styles["price"]}>${item.price}</span>

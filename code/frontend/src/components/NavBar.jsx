@@ -1,5 +1,6 @@
 import AccountButton from "@components/AccountButton";
 import SearchBar from "@components/SearchBar";
+import TradeCenterButton from "@components/TradeCenterButton";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import navBarStyles from "@styles/NavBar.module.scss";
@@ -115,21 +116,24 @@ const NavBar = (props) => {
 		return (
 			<div className={navBarStyles["component"]}>
 				{currentUser && (
-					<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
-						<div className={navBarStyles["icon"]}>
-							<TiShoppingCart
-								onClick={handleOpenCart}
-								style={{
-									fill: cartAmount ? "#90ee90" : "#fff",
-								}}
-							/>
-						</div>
-						{cartAmount > 0 && (
-							<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
-								{cartAmount}
+					<>
+						<TradeCenterButton />
+						<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
+							<div className={navBarStyles["icon"]}>
+								<TiShoppingCart
+									onClick={handleOpenCart}
+									style={{
+										fill: cartAmount ? "#90ee90" : "#fff",
+									}}
+								/>
 							</div>
-						)}
-					</div>
+							{cartAmount > 0 && (
+								<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
+									{cartAmount}
+								</div>
+							)}
+						</div>
+					</>
 				)}
 				<AccountButton userAvatar={userAvatar} />
 			</div>
