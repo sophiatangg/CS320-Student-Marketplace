@@ -120,6 +120,11 @@ const AddEditNewItemWindow = (props) => {
 
 				if (res) {
 					toast.success(`Item successfully added!`, toastProps);
+
+					dispatch({
+						type: "SET_ALL_ITEMS",
+						payload: allItems.push(res),
+					});
 				} else {
 					throw new Error("Error adding the item.");
 				}
