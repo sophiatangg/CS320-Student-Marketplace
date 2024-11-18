@@ -63,9 +63,7 @@ const App = () => {
 				} else {
 					console.error("Failed to fetch wishlist items:", res.error);
 				}
-			} catch (error) {
-				console.error("Error fetching wishlist items:", error);
-			}
+			} catch (error) {}
 		};
 
 		fetchWishlistItems();
