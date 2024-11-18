@@ -128,8 +128,6 @@ export const getItemByItemId = async (itemId) => {
 };
 
 export const getItemInTrade = async (itemId) => {
-	if (!itemId) return;
-
 	const { data: itemData, error: itemError } = await supabase.from(itemTableName).select("in_trade").eq("id", itemId).single();
 
 	if (itemError) {

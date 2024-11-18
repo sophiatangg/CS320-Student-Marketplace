@@ -1,6 +1,7 @@
 import { getItemByItemId, getItemImagesByItemId, getItemInTrade } from "@database/items";
 import { supabase } from "@database/supabaseClient";
 import { getUser } from "@database/users";
+import { updateInTrade } from "../../../middleware/Trade/trade.js";
 
 const tradeTableName = "Trade";
 
@@ -65,10 +66,17 @@ export const fetchTradeRequests = async ({ userId }) => {
 };
 
 export const storeTradeInDatabase = async ({ data }) => {
-	for (let i = 0; i < data.offer_items_ids.length; i++) {
-		if (getItemInTrade(parseInt(data.offer_items_ids[i]))) {
-			//toast.error(`${offer_items_ids[i].name} is already in a trade. Pick something else`);
-			throw Error("Offered item is already in trade.");
+	updateInTrade(data.target_item_id);
+	for (let i = 0; i < data?.offer_items_ids.length; i++) {
+		let itemID = data.offer_items_ids[i];
+		console.log(`${itemID} is offered.`);
+		if (getItemInTrade(itemID)) {
+			console.log(getItemInTrade(itemID));
+			return Error("Offered item is already in trade.");
+		} else {
+			updateInTrade(itemID);
+			console.log("The final test");
+			console.log(getItemInTrade(itemID));
 		}
 	}
 

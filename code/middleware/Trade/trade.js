@@ -1,5 +1,21 @@
 import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
+export const updateInTrade = async (itemId) => {
+	try {
+		const { data, error } = await supabase.from("Item").update({ in_trade: true }).eq("id", itemId);
+		if (error) {
+			console.error("Error updating item:", error);
+			//alert(`Error updating item: ${error.message}`);
+		} else {
+			console.log("Item updating successfully:", data);
+			//alert("Item updating successfully!");
+		}
+	} catch (err) {
+		console.error("Unexpected error:", err);
+		//alert("An unexpected error occurred. Please try again later.");
+	}
+};
+
 export const storeTradeInDatabase = async (tradeEntry) => {
 	try {
 		const { data, error } = await supabase.from("Trade").insert([tradeEntry]);
