@@ -1,6 +1,6 @@
 import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
-export const storeTradeInDatabase = async (newItem) => {
+export const storeTradeInDatabase = async (tradeEntry) => {
 	try {
 		const { data, error } = await supabase.from("Trade").insert([tradeEntry]);
 		if (error) {

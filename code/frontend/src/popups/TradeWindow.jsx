@@ -82,6 +82,14 @@ const TradeWindow = (props) => {
 			target_item_id: selectedItem.id,
 		};
 
+		//HERE
+		for (let i = 0; i < offer_items_ids.length; i++) {
+			if (getItemInTrade(parseInt(tradeData.offer_items_ids[i]))) {
+				toast.error(`${offer_items_ids[i].name} is already in a trade. Pick something else`);
+				throw Error("Offered item is already in trade.");
+			}
+		}
+
 		const tradeRes = await storeTradeInDatabase({ data: tradeData });
 		if (!tradeRes) {
 			const message = `Error initiating trade to ${sellerData.name}.`;
