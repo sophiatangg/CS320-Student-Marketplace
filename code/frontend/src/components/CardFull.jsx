@@ -38,7 +38,7 @@ const CardFull = (props) => {
 
 	const handleSelectItem = ({ id }) => {
 		const clickedItem = allItems?.find((_item) => {
-			return _item.id === id;
+			return _item?.id === id;
 		});
 
 		dispatch({
@@ -56,7 +56,7 @@ const CardFull = (props) => {
 		}
 
 		const hoveredItem = allItems?.find((item) => {
-			return item.id === id;
+			return item?.id === id;
 		});
 
 		dispatch({
@@ -66,14 +66,14 @@ const CardFull = (props) => {
 	};
 
 	useEffect(() => {
-		if (!item || !item.seller_id) return;
+		if (!item || !item?.seller_id) return;
 
-		getUser(item.seller_id)
+		getUser(item?.seller_id)
 			.then((res) => {
 				setOwner(res.name);
 			})
 			.catch((error) => {
-				console.error("Error finding owner of the item. Check the code!");
+				console.error("Error finding owner of the item?. Check the code!");
 			});
 	}, [item, owner]);
 
@@ -93,7 +93,7 @@ const CardFull = (props) => {
 		);
 	};
 
-	const isOwnItem = item.seller_id === currentUser.id;
+	const isOwnItem = item?.seller_id === currentUser.id;
 
 	return (
 		<motion.div
@@ -102,12 +102,12 @@ const CardFull = (props) => {
 				[styles["cardFullOwnItem"]]: isOwnItem,
 			})}
 			onMouseEnter={(e) => {
-				handleCurrentHoveredItem({ id: item.id });
+				handleCurrentHoveredItem({ id: item?.id });
 			}}
 			onMouseLeave={(e) => {
-				handleCurrentHoveredItem({ id: item.id });
+				handleCurrentHoveredItem({ id: item?.id });
 			}}
-			id={item.id}
+			id={item?.id}
 			style={{ margin: 0, padding: 0 }}
 			variants={variants}
 			initial="initial"
@@ -117,21 +117,21 @@ const CardFull = (props) => {
 			<div
 				className={styles["thumbnail"]}
 				onClick={(e) => {
-					handleSelectItem({ id: item.id });
+					handleSelectItem({ id: item?.id });
 				}}
 			>
-				<img src={item.images[0]} className={styles["img"]} alt="Item Cover Image" />
+				<img src={item?.images[0]} className={styles["img"]} alt="Item Cover Image" />
 			</div>
 			<div className={styles["content"]}>
 				<div className={styles["contentTop"]}>
 					<h2
 						className={styles["name"]}
 						onClick={(e) => {
-							handleSelectItem({ id: item.id });
+							handleSelectItem({ id: item?.id });
 						}}
 					>
 						{renderItemName({
-							text: item.name,
+							text: item?.name,
 							highlight: searchQuery,
 						})}
 					</h2>
@@ -153,7 +153,7 @@ const CardFull = (props) => {
 				</div>
 				<div className={styles["buttons"]}>
 					<div className={styles["price-cart-trade"]}>
-						<span className={styles["price"]}>${item.price}</span>
+						<span className={styles["price"]}>${item?.price}</span>
 						{!isOwnItem && (
 							<div className={styles["cart-trade"]}>
 								<AddToCartButton item={item} isBig={false} />
