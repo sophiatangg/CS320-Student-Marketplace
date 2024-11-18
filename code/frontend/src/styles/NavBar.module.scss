@@ -104,8 +104,8 @@
 		color: var(--colorPrimaryForeground);
 		font-size: 10px;
 		font-family: "GT Bold";
-		background-color: red;
-		border-radius: var(--borderRadius);
+		background-color: var(--umassColor);
+		border-radius: calc(var(--borderRadius) - 5px);
 		padding: 3px 5px;
 		position: absolute;
 		inset: 0 0 auto auto;

@@ -53,10 +53,12 @@ const Browse = (props) => {
 
 	const renderCounter = () => {
 		return (
-			<div className={styles["counterContainer"]}>
-				<span>{shownItems.length + 1}</span>
-				<span>{shownItems.length > 0 ? "Items" : "Item"}</span>
-			</div>
+			shownItems.length > 0 && (
+				<div className={styles["counterContainer"]}>
+					<span>{shownItems.length}</span>
+					<span>{shownItems.length > 1 ? "Items" : "Item"}</span>
+				</div>
+			)
 		);
 	};
 

@@ -11,6 +11,7 @@ import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddEditNewItemWindow from "@popups/AddEditNewItemWindow";
 import CartWindow from "@popups/CartWindow";
+import TradeManageWindow from "@popups/TradeManageWindow";
 import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
@@ -21,7 +22,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed } =
+	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed, tradeManageDisplay } =
 		useContextSelector("displayStore");
 
 	const dispatch = useContextDispatch();
@@ -103,7 +104,8 @@ const App = () => {
 		<>
 			<div
 				className={cns(appStyles["app"], {
-					[appStyles["hasWindowDisplay"]]: cartDisplayed || tradeDisplayed || isAddItemWindowOpen || accountProfileDisplayed,
+					[appStyles["hasWindowDisplay"]]:
+						cartDisplayed || tradeDisplayed || tradeManageDisplay || isAddItemWindowOpen || accountProfileDisplayed,
 				})}
 			>
 				<NavBar />
@@ -135,6 +137,7 @@ const App = () => {
 				{isAddItemWindowOpen && <AddEditNewItemWindow />}
 				{cartDisplayed && <CartWindow />}
 				{tradeDisplayed && <TradeWindow />}
+				{tradeManageDisplay && <TradeManageWindow />}
 				<Footer />
 			</div>
 			<ToastContainer />
