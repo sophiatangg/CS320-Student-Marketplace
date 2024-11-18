@@ -65,6 +65,13 @@ export const fetchTradeRequests = async ({ userId }) => {
 };
 
 export const storeTradeInDatabase = async ({ data }) => {
+	for (let i = 0; i < data.offer_items_ids.length; i++) {
+		if (getItemInTrade(parseInt(data.offer_items_ids[i]))) {
+			toast.error(`${offer_items_ids[i].name} is already in a trade. Pick something else`);
+			throw Error("Offered item is already in trade.");
+		}
+	}
+
 	const res = await supabase.from(tradeTableName).insert(data).select();
 	const { data: tradeData } = res;
 
