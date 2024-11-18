@@ -156,7 +156,7 @@ const CardFull = (props) => {
 						{!isOwnItem && (
 							<div className={styles["cart-trade"]}>
 								<AddToCartButton item={item} isBig={false} />
-								<TradeButton handleTradeOpen={handleTradeOpen} />
+								<TradeButton handleTradeOpen={handleTradeOpen} item={item} />
 							</div>
 						)}
 					</div>

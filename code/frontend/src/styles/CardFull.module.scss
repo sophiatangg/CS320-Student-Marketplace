@@ -46,6 +46,10 @@
 		img {
 			border-top-left-radius: var(--borderRadius);
 		}
+
+		.content {
+			justify-content: flex-start;
+		}
 	}
 
 	&:not(.cardFullWidth) {
@@ -89,7 +93,7 @@
 		flex: 1;
 		flex-flow: column;
 		align-items: flex-start;
-		justify-content: flex-start;
+		justify-content: center;
 		gap: 8px;
 		overflow: hidden;
 	}
@@ -99,8 +103,20 @@
 		cursor: pointer;
 	}
 
+	.name {
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.img {
+		object-fit: cover;
+		object-position: top center;
+	}
+
 	.buttons {
 		width: 100%;
+		margin: 10px 0 0 0;
 		display: flex;
 		flex-flow: row;
 		align-items: flex-end;
@@ -148,15 +164,15 @@
 	}
 
 	@media screen and (max-width: 600px) {
-		font-size: 40px;
+		font-size: 25px;
 	}
 
 	@media screen and (max-width: 475px) {
-		font-size: 34px;
+		font-size: 25px;
 	}
 
 	@media screen and (max-width: 375px) {
-		font-size: 26px;
+		font-size: 25px;
 	}
 
 	.highlight {

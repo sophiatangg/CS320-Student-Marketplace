@@ -1,13 +1,15 @@
 import CardMini from "@components/CardMini";
+import { storeTradeInDatabase } from "@database/trade";
+import { getUser } from "@database/users";
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider.jsx";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/TradeWindow.module.scss";
+import { toastProps } from "@utils/toastProps.js";
 import { useEffect, useState } from "react";
 import { IoChatbubble, IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
 import { toast } from "react-toastify";
-import { storeTradeInDatabase } from "../../../middleware/Trade/trade.js";
 
 const TradeWindow = (props) => {
 	const { currentUser } = useAuth();
@@ -17,7 +19,7 @@ const TradeWindow = (props) => {
 	const dispatch = useContextDispatch();
 
 	const [inventoryItems, setInventoryItems] = useState([]);
-	const [selectedOfferedItems, setSelectedOfferedItems] = useState([]);
+	const [selectedOfferItems, setSelectedOfferItems] = useState([]);
 
 	const handleTradeOpen = (bool) => {
 		dispatch({
@@ -31,21 +33,23 @@ const TradeWindow = (props) => {
 	};
 
 	const handleItemOfferSelected = (e, item) => {
-		if (selectedOfferedItems.includes(item)) {
-			const newList = selectedOfferedItems.filter((i) => {
+		e.preventDefault();
+
+		if (selectedOfferItems.includes(item)) {
+			const newList = selectedOfferItems.filter((i) => {
 				return i !== item;
 			});
 
-			setSelectedOfferedItems(newList);
+			setSelectedOfferItems(newList);
 		} else {
-			setSelectedOfferedItems((prev) => {
+			setSelectedOfferItems((prev) => {
 				return [...prev, item];
 			});
 		}
 	};
 
 	const handleOfferReset = (e) => {
-		setSelectedOfferedItems([]);
+		setSelectedOfferItems([]);
 	};
 
 	const handleInitiateChat = (e) => {
@@ -53,81 +57,52 @@ const TradeWindow = (props) => {
 	};
 
 	const handleOfferSubmit = async (e) => {
-		console.log(selectedOfferedItems);
-
 		e.preventDefault();
-		if (selectedOfferedItems.length === 0) {
-			//prevents nothing from being traded
-			toast.error("Please select at least one item to offer.");
+
+		if (selectedOfferItems.length === 0) {
+			// prevents traded if there are no selected items
+			toast.error("Please select at least one item to offer.", toastProps);
 			return;
 		}
 
-		const newOffer = {
-			userInitiator: currentUser.id,
-			userReceiver: selectedItem.ownerId,
-			items_in_trade: selectedOfferedItems.map((item) => item.id),
-			item_id : selectedItem.id,
+		const selectedOfferItemIds = selectedOfferItems.map((item) => {
+			return item.id;
+		});
 
-		};
-		try {
-			storeTradeInDatabase(newOffer);
-			toast.success("Trade offer sent!", {
-				position: "top-center",
-				autoClose: 5000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: "dark",
-				transition: Bounce,
-			});
-
-			dispatch({
-				type: "SET_TRADE_DISPLAYED",
-				payload: false,
-			});
-		} catch (error) {
-			console.error("Error initiating trade:", error);
-			toast.error("An error occurred. Please try again.");
+		const sellerData = await getUser(selectedItem.seller_id);
+		if (!sellerData || !sellerData.name) {
+			toast.error(`Error fetching trade info.`);
+			throw Error("Error while fetching trade info. Check code");
 		}
 
+		const tradeData = {
+			buyer_id: currentUser.id,
+			seller_id: selectedItem.seller_id,
+			offer_items_ids: selectedOfferItemIds,
+			target_item_id: selectedItem.id,
+		};
+
+		const tradeRes = await storeTradeInDatabase({ data: tradeData });
+		if (!tradeRes) {
+			const message = `Error initiating trade to ${sellerData.name}.`;
+			toast.error(message, toastProps);
+			throw Error(message + " Check code!");
+		}
+
+		// Update the allItems global state to mark the item as traded.
+		// Otherwise, users would have to refresh the page to have show the updates
+		dispatch({
+			type: "SET_ALL_ITEMS",
+			payload: allItems.map((item) => {
+				const newItem = { ...item, isTraded: true };
+
+				return item.id === selectedItem.id ? newItem : item;
+			}),
+		});
+
+		toast.success(`Trade offer sent to ${sellerData.name}!`, toastProps);
+
 		handleRemoveWindow(e);
-
-		// try {
-		// 	const response = await fetch("/https://localhost:6969/trade", {
-		// 		method: "POST",
-		// 		headers: { "Content-Type": "application/json" },
-		// 		body: JSON.stringify({
-		// 			itemIds: selectedOfferedItems.map((item) => item.id), //hope and prayers
-		// 			userInitiator: "initiatorUserId",
-		// 			userReceiver: selectedItem.ownerId,
-		// 			timestamp: new Date().toISOString(),
-		// 		}),
-		// 	});
-
-		// 	if (response.ok) {
-		// 		//wrapped from previously written code
-		// 		toast.success("Trade offer sent!", {
-		// 			position: "top-center",
-		// 			autoClose: 5000,
-		// 			hideProgressBar: false,
-		// 			closeOnClick: true,
-		// 			pauseOnHover: true,
-		// 			draggable: true,
-		// 			progress: undefined,
-		// 			theme: "dark",
-		// 			transition: Bounce,
-		// 		});
-
-		// 		dispatch({
-		// 			type: "SET_TRADE_DISPLAYED",
-		// 			payload: false,
-		// 		});
-		// 	} else {
-		// 		console.error("Failed to store trade");
-		// 		toast.error("Failed to send trade offer. Please try again.");
-		// 	}
 	};
 
 	useEffect(() => {
@@ -170,9 +145,9 @@ const TradeWindow = (props) => {
 										<CardMini
 											key={itemIndex}
 											item={item}
-											isDefaultSelected={selectedOfferedItems.includes(item)}
+											isDefaultSelected={selectedOfferItems.includes(item)}
 											handleItemOfferSelected={handleItemOfferSelected}
-											selectedOfferedItems={selectedOfferedItems}
+											selectedOfferedItems={selectedOfferItems}
 										/>
 									);
 								})}
@@ -196,8 +171,8 @@ const TradeWindow = (props) => {
 					<button
 						id="trade"
 						className={styles["button"]}
-						onClick={(e) => {
-							handleOfferSubmit(e);
+						onClick={async (e) => {
+							await handleOfferSubmit(e);
 						}}
 					>
 						<span className={styles["icon"]}>

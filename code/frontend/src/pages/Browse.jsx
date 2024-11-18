@@ -56,7 +56,7 @@ const Browse = (props) => {
 			shownItems.length > 0 && (
 				<div className={styles["counterContainer"]}>
 					<span>{shownItems.length}</span>
-					<span>{shownItems.length === 1 ? "Items" : "Item"}</span>
+					<span>{shownItems.length > 1 ? "Items" : "Item"}</span>
 				</div>
 			)
 		);

@@ -4,6 +4,7 @@ import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
+import { toastProps } from "@utils/toastProps";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BsBagPlusFill } from "react-icons/bs";
@@ -12,7 +13,7 @@ import { HiLogin } from "react-icons/hi";
 import { PiUserCircleFill } from "react-icons/pi";
 import ScrollBar from "react-perfect-scrollbar";
 import { useNavigate } from "react-router-dom";
-import { Bounce, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const animationVariants = {
 	visible: {
@@ -120,17 +121,7 @@ const AccountOptionsWindow = () => {
 					const { error } = logOut;
 
 					if (error) {
-						toast.error("Error signing out.", {
-							position: "top-center",
-							autoClose: 5000,
-							hideProgressBar: false,
-							closeOnClick: true,
-							pauseOnHover: true,
-							draggable: true,
-							progress: undefined,
-							theme: "dark",
-							transition: Bounce,
-						});
+						toast.error("Error signing out.", toastProps);
 					} else {
 						navigate(0);
 					}

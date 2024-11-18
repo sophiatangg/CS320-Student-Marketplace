@@ -19,11 +19,11 @@ export const storeTradeInDatabase = async (newItem) => {
 };
 
 export const updateExpiration = async (tradeID, time) => {
-	try{
+	try {
 		let initialTime = new Date(time);
-		const newExpiration= new Date(initialTime);
-		newExpiration.setHours(newExpiration.getHours()+72);
-		const {data, error} = await supabase.from("Trade").update({expiration_date: newExpiration}).eq("id",tradeID);
+		const newExpiration = new Date(initialTime);
+		newExpiration.setHours(newExpiration.getHours() + 72);
+		const { data, error } = await supabase.from("Trade").update({ expiration_date: newExpiration }).eq("id", tradeID);
 		if (error) {
 			console.error("Error updating expiration time", error);
 			alert(`Error updating expiration time: ${error.message}`);
@@ -35,12 +35,12 @@ export const updateExpiration = async (tradeID, time) => {
 		console.error("Unexpected error:", err);
 		alert("An unexpected error occurred. Please try again later.");
 	}
-}
+};
 
 export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
-	try{
-		const {data, error}= await supabase.from("Trade").update({items_in_trade: newItemsinTrade}).eq("id", tradeId);
-		
+	try {
+		const { data, error } = await supabase.from("Trade").update({ items_in_trade: newItemsinTrade }).eq("id", tradeId);
+
 		if (error) {
 			console.error("Error updating trade items:", updateError);
 			alert(`Error updating trade items: ${updateError.message}`);
@@ -53,4 +53,4 @@ export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
 		console.error("Unexpected error:", err);
 		alert("An unexpected error occurred. Please try again later.");
 	}
-}
+};
