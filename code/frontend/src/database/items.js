@@ -93,24 +93,22 @@ export const selectAllWishlistItemsByUser = async () => {
 		data: { user },
 	} = await supabase.auth.getUser();
 
-	const userId = user.id;
+	if (!user.hasOwnProperty("id")) {
+		throw Error("Error fetching wishlisted items from user.");
+	}
 
+	const userId = user.id;
 	const res = await supabase.from(wishlistTableName).select("*").eq("user_id", userId);
 
 	if (!res) {
 		console.error("Error fetching wishlist items from database:", res.error);
-		return {
-			data: null,
-			error: res.error,
-			status: res.status,
-		};
-	} else {
-		return {
-			data: res.data,
-			error: res.error,
-			status: res.status,
-		};
 	}
+
+	return {
+		data: res.hasOwnProperty("data") ? res.data : null,
+		error: res.error,
+		status: res.status,
+	};
 };
 
 export const getItemByItemId = async (itemId) => {
