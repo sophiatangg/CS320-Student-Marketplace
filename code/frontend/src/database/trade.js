@@ -5,17 +5,19 @@ import { updateInTrade } from "../../../middleware/Trade/trade.js";
 
 const tradeTableName = "Trade";
 
-export const fetchTradeRequests = async ({ userId }) => {
+export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 	if (!userId) {
-		throw new Error("User id is required.");
+		throw new Error("User ID is required.");
 	}
 
+	const queryColumn = type === "RECEIVED" ? "seller_id" : "buyer_id";
+
 	try {
-		// Query the Trade table for trades where the user is the seller
-		const { data: tradeData, error: tradeError } = await supabase.from(tradeTableName).select("*").eq("seller_id", userId);
+		// Query the Trade table based on the type
+		const { data: tradeData, error: tradeError } = await supabase.from(tradeTableName).select("*").eq(queryColumn, userId);
 
 		if (tradeError) {
-			throw new Error("Error fetching trade requests.");
+			throw new Error(`Error fetching ${type.toLowerCase()} trade requests.`);
 		}
 
 		if (!tradeData || tradeData.length === 0) {
@@ -27,24 +29,19 @@ export const fetchTradeRequests = async ({ userId }) => {
 
 			return {
 				...itemDetails,
-				images: itemImages.map((item) => {
-					return item.image_url;
-				}),
+				images: itemImages.map((item) => item.image_url),
 			};
 		};
 
-		// Process each trade to fetch items and trader info
+		// Process each trade to fetch items and user info
 		const tradeRequests = await Promise.all(
 			tradeData.map(async (trade) => {
 				// Fetch all items offered in the trade
-				const tradeOffers = await Promise.all(
-					trade.offer_items_ids.map(async (itemId) => {
-						return await fetchData(itemId);
-					}),
-				);
+				const tradeOffers = await Promise.all(trade.offer_items_ids.map(async (itemId) => fetchData(itemId)));
 
 				// Fetch the trader's user info
-				const trader = await getUser(trade.buyer_id);
+				const traderId = type === "RECEIVED" ? trade.buyer_id : trade.seller_id;
+				const trader = await getUser(traderId);
 
 				// Fetch the target item
 				const tradeGoal = await fetchData(trade.target_item_id);
@@ -60,7 +57,7 @@ export const fetchTradeRequests = async ({ userId }) => {
 
 		return tradeRequests;
 	} catch (error) {
-		console.error("Error in fetchTradeRequests:", error);
+		console.error(`Error in fetchTradeRequests (${type}):`, error);
 		throw error;
 	}
 };

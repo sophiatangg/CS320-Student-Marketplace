@@ -1,3 +1,5 @@
+@use "_variables" as v;
+
 .tradeManageWindowContainer {
 	--bottomComponent: 20px;
 	width: 80%;
@@ -13,6 +15,8 @@
 	inset: 50% auto auto 50%;
 	transform: translate(-50%, -50%);
 	overflow: hidden;
+
+	@include v.scrollbar(var(--popOutBgColorAlt1), #555, 20px);
 
 	> div {
 		width: 100%;
@@ -58,11 +62,68 @@
 		}
 	}
 }
-
 .inner {
 	position: relative;
 	flex: 1;
-	overflow-y: auto;
+	overflow-y: scroll;
+}
+
+.tabContainer {
+	--gap: 5px;
+	min-width: max-content;
+	max-width: max-content;
+	height: 50px;
+	background-color: var(--popOutBgColorAlt1);
+	border-radius: var(--borderRadius);
+	padding: calc(var(--gap) * 3) var(--gap);
+	margin: 0 auto calc(var(--gap) * 3) auto;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gap);
+
+	.tabItem {
+		height: 40px;
+		color: var(--colorDarkForeground);
+		font-family: "GT Bold";
+		padding: 0 10px;
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		user-select: none;
+		cursor: pointer;
+		transition: color 100ms linear;
+		z-index: 2;
+
+		&:hover,
+		&.activeTab {
+			color: var(--colorPrimaryForeground) !important;
+		}
+	}
+
+	.tabItemBadge {
+		color: var(--colorPrimaryForeground);
+		font-size: 12px;
+		background-color: var(--umassColor);
+		border-radius: calc(var(--borderRadius) - 2px);
+		padding: 5px 8px;
+		margin: 0 0 0 8px;
+	}
+
+	.tabSlider {
+		height: 40px;
+		background-color: var(--popOutBgColorAlt2);
+		border-radius: calc(var(--borderRadius) - 2px);
+		position: absolute;
+		inset: 50% auto auto 0;
+		transition:
+			transform 0.3s ease-in-out,
+			width 0.3s ease-in-out;
+		pointer-events: none;
+		z-index: 1;
+	}
 }
 
 .innerContent {
@@ -70,6 +131,15 @@
 	position: relative;
 	display: flex;
 	flex-flow: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 20px;
+
+	&.contentLoading,
+	&.contentEmpty {
+		align-items: center;
+		justify-content: center;
+	}
 }
 
 .tradeRequestCard {
@@ -80,12 +150,17 @@
 	flex-flow: column;
 	align-items: flex-start;
 	justify-content: flex-start;
+	overflow: hidden;
 
 	h2 {
 		width: 100%;
-		font-family: "GT Bold";
-		text-align: center;
 		color: var(--colorPrimaryForeground);
+		font-family: "GT Bold";
+		font-size: 25px;
+		text-align: center;
+
+		@media screen and (min-width: 600px) {
+		}
 	}
 }
 
@@ -176,7 +251,7 @@
 	padding: 30px;
 	display: flex;
 	flex-flow: row wrap;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	gap: 50px;
 }
@@ -191,8 +266,24 @@
 
 .tradeOfferItems {
 	width: 100%;
+	display: flex;
+	flex-flow: column;
+	gap: 20px;
 }
 
 .offeredItem {
 	width: 100%;
+}
+
+.tradeRequestPlaceholder,
+.tradeRequestEmpty {
+	margin: 20px 0;
+	position: relative;
+	display: inline-flex;
+
+	p {
+		color: var(--colorPrimaryForeground);
+		font-family: "GT Bold";
+		font-size: 30px;
+	}
 }

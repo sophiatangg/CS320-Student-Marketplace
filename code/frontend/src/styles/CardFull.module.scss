@@ -203,12 +203,16 @@
 		position: relative;
 	}
 
+	p {
+		width: 100%;
+	}
+
 	span {
 		color: var(--colorPrimaryForeground);
 		flex: 1;
 		display: block;
 		cursor: default;
-		--labelWidth: 62px;
+		--labelWidth: 65px;
 		--valueWidth: calc(100% - var(--labelWidth) - var(--gapWidth));
 
 		&:first-child {

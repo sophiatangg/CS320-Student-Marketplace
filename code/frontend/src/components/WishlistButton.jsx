@@ -2,6 +2,7 @@ import { addWishlistItemByUser, removeWishlistItemByUser } from "@database/items
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/LikeButton.module.scss";
+import cns from "@utils/classNames";
 import { toastProps } from "@utils/toastProps";
 import { useEffect, useState } from "react";
 import { TiHeartFullOutline, TiHeartOutline } from "react-icons/ti";
@@ -74,20 +75,21 @@ const WishlistButton = (props) => {
 
 	useEffect(() => {
 		if (!currentUser) return;
+		if (!Array.isArray(ownWishlistItems)) return;
 
-		const hasFoundWishlistedItem =
-			Array.isArray(ownWishlistItems) &&
-			ownWishlistItems.some((wishlistItem) => {
-				return wishlistItem.item_id === item.id && wishlistItem.user_id == currentUser.id;
-			});
+		const hasFoundWishlistedItem = ownWishlistItems.some((wishlistItem) => {
+			return wishlistItem.item_id === item.id && wishlistItem.user_id == currentUser.id;
+		});
 
 		setIsItemWishlisted(hasFoundWishlistedItem);
-	}, [currentUser, isItemWishlisted, ownWishlistItems]);
+	}, [currentUser, ownWishlistItems]);
 
 	return (
 		<div className={styles["like-container"]} id={item.id}>
 			<button
-				className={styles["like"]}
+				className={cns(styles["like"], {
+					[styles["red"]]: isItemWishlisted,
+				})}
 				id={item.id}
 				aria-label="Like"
 				onClick={(e) => {
