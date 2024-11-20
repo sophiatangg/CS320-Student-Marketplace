@@ -11,6 +11,7 @@ import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddEditNewItemWindow from "@popups/AddEditNewItemWindow";
 import CartWindow from "@popups/CartWindow";
+import ChatWindow from "@popups/ChatWindow";
 import TradeManageWindow from "@popups/TradeManageWindow";
 import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -137,6 +138,7 @@ const App = () => {
 				{tradeDisplayed && <TradeWindow />}
 				{tradeManageDisplay && <TradeManageWindow />}
 				<Footer />
+				<ChatWindow />
 			</div>
 			<ToastContainer />
 		</>
