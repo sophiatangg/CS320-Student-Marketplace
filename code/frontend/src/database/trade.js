@@ -1,4 +1,4 @@
-import { getItemByItemId, getItemImagesByItemId, getItemInTrade } from "@database/items";
+import { getItemByItemId, getItemImagesByItemId, getItemInTradeVariable } from "@database/items";
 import { supabase } from "@database/supabaseClient";
 import { getUser } from "@database/users";
 import { updateInTrade } from "../../../middleware/Trade/trade.js";
@@ -67,13 +67,15 @@ export const storeTradeInDatabase = async ({ data }) => {
 	for (let i = 0; i < data?.offer_items_ids.length; i++) {
 		let itemID = data.offer_items_ids[i];
 		console.log(`${itemID} is offered.`);
-		if (getItemInTrade(itemID)) {
-			console.log(getItemInTrade(itemID));
-			return Error("Offered item is already in trade.");
+		let TrueORFalse = await getItemInTradeVariable(itemID);
+		if (TrueORFalse) {
+			console.log("This should be true and an error should be returned: ", TrueORFalse);
+			throw Error("Offered item is already in trade.");
 		} else {
-			updateInTrade(itemID);
+			await updateInTrade(itemID);
 			console.log("The final test");
-			console.log(getItemInTrade(itemID));
+			TrueORFalse = await getItemInTradeVariable(itemID);
+			console.log(TrueORFalse);
 		}
 	}
 

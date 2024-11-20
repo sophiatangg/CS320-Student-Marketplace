@@ -135,6 +135,16 @@ export const getItemInTrade = async (itemId) => {
 	return itemData;
 };
 
+export const getItemInTradeVariable = async (itemId) => {
+	const { data: itemData, error: itemError } = await supabase.from(itemTableName).select("in_trade").eq("id", itemId).single();
+
+	if (itemError) {
+		throw Error(`Error fetching item by ${itemId}`);
+	}
+
+	return itemData.in_trade;
+};
+
 export const getItemImagesByItemId = async (itemId) => {
 	if (!itemId) return;
 
