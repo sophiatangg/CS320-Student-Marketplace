@@ -28,7 +28,7 @@ const Window = (props) => {
 
 	return (
 		<div className={styles["window"]}>
-			<div className={styles["windowBG"]} onClick={handleCloseWindow}></div>
+			<div className={styles["windowBG"]} onClick={handleCloseWindow} />
 			<AnimatePresence key={dispatchType}>
 				{isVisible && (
 					<motion.div

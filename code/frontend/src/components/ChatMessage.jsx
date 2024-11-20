@@ -1,19 +1,12 @@
 import styles from "@styles/ChatMessage.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
 
-const ChatMessageWindow = (props) => {
+const ChatMessage = (props) => {
 	const { activeUser, setActiveUser } = props;
 
-	const [isMinimized, setIsMinimized] = useState(false);
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
-
-	const toggleMinimize = () => {
-		setIsMinimized(!isMinimized);
-	};
 
 	const removeMessageWindow = () => {
 		setActiveUser(null);
@@ -28,37 +21,11 @@ const ChatMessageWindow = (props) => {
 		setNewMessage("");
 	};
 
-	const renderHeader = () => {
-		return (
-			<div className={styles["chatMessageHeader"]}>
-				<div className={styles["avatarContainer"]}>
-					{activeUser.avatar_url && <img src={activeUser.avatar_url} alt="User Avatar" className={styles["avatar"]} />}
-				</div>
-				<span className={styles["title"]}>{activeUser.name}</span>
-				<div className={styles["chatMessageButtons"]}>
-					<div className={cns(styles["button"])} onClick={toggleMinimize}>
-						{isMinimized ? <FaChevronUp /> : <FaChevronDown />}
-					</div>
-					<div className={styles["button"]} onClick={removeMessageWindow}>
-						<IoClose
-							style={{
-								width: "20px",
-								height: "20px",
-							}}
-						/>
-					</div>
-				</div>
-			</div>
-		);
-	};
-
 	const renderContent = () => {
 		return (
-			!isMinimized && (
-				<div className={styles["chatMessageContent"]}>
-					<div className={styles["messageList"]}>{renderMessages()}</div>
-				</div>
-			)
+			<div className={styles["chatMessageContent"]}>
+				<div className={styles["messageList"]}>{renderMessages()}</div>
+			</div>
 		);
 	};
 
@@ -83,6 +50,8 @@ const ChatMessageWindow = (props) => {
 			e.target.style.height = `${e.target.scrollHeight}px`;
 		};
 
+		const firstName = String(activeUser.name).split(" ")[0];
+
 		return (
 			<div className={styles["chatMessageInputArea"]}>
 				<textarea
@@ -94,24 +63,18 @@ const ChatMessageWindow = (props) => {
 					}}
 					onInput={adjustTextareaHeight}
 					onKeyDown={handleSendMessage}
-					placeholder="Type a message..."
+					placeholder={`Type a message to ${firstName}...`}
 				/>
 			</div>
 		);
 	};
 
 	return (
-		<div
-			className={cns(styles["chatMessageWindow"], {
-				[styles["minimized"]]: isMinimized,
-				[styles["maximized"]]: !isMinimized,
-			})}
-		>
-			{renderHeader()}
+		<div className={cns(styles["chatMessage"], {})}>
 			{renderContent()}
 			{renderInputArea()}
 		</div>
 	);
 };
 
-export default ChatMessageWindow;
+export default ChatMessage;

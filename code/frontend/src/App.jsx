@@ -11,7 +11,7 @@ import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddEditNewItemWindow from "@popups/AddEditNewItemWindow";
 import CartWindow from "@popups/CartWindow";
-import ChatWindow from "@popups/ChatWindow";
+import ChatListWindow from "@popups/ChatListWindow";
 import TradeManageWindow from "@popups/TradeManageWindow";
 import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -23,8 +23,15 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed, tradeManageDisplay } =
-		useContextSelector("displayStore");
+	const {
+		accountInfoDisplayed,
+		accountProfileDisplayed,
+		addEditNewItemDisplayed,
+		cartDisplayed,
+		chatDisplayed,
+		tradeDisplayed,
+		tradeManageDisplay,
+	} = useContextSelector("displayStore");
 
 	const dispatch = useContextDispatch();
 
@@ -104,7 +111,7 @@ const App = () => {
 			<div
 				className={cns(appStyles["app"], {
 					[appStyles["hasWindowDisplay"]]:
-						cartDisplayed || tradeDisplayed || tradeManageDisplay || isAddItemWindowOpen || accountProfileDisplayed,
+						cartDisplayed || chatDisplayed || tradeDisplayed || tradeManageDisplay || isAddItemWindowOpen || accountProfileDisplayed,
 				})}
 			>
 				<NavBar />
@@ -138,7 +145,7 @@ const App = () => {
 				{tradeDisplayed && <TradeWindow />}
 				{tradeManageDisplay && <TradeManageWindow />}
 				<Footer />
-				<ChatWindow />
+				{chatDisplayed && <ChatListWindow />}
 			</div>
 			<ToastContainer />
 		</>
