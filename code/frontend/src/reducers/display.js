@@ -2,6 +2,7 @@ const initial = {
 	accountInfoDisplayed: false,
 	accountProfileDisplayed: false,
 	addEditNewItemDisplayed: false,
+	chatDisplayed: false,
 	cartDisplayed: false,
 	tradeDisplayed: false,
 	tradeManageDisplay: false,
@@ -23,6 +24,11 @@ export const displayReducer = (state = initial, action) => {
 			return {
 				...state,
 				addEditNewItemDisplayed: action.payload,
+			};
+		case "SET_CHAT_DISPLAYED":
+			return {
+				...state,
+				chatDisplayed: action.payload,
 			};
 		case "SET_CART_DISPLAYED":
 			return {

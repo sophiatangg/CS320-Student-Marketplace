@@ -1,4 +1,5 @@
 import AccountButton from "@components/AccountButton";
+import ChatButton from "@components/ChatButton";
 import SearchBar from "@components/SearchBar";
 import TradeCenterButton from "@components/TradeCenterButton";
 import { useAuth } from "@providers/AuthProvider";
@@ -117,6 +118,7 @@ const NavBar = (props) => {
 			<div className={navBarStyles["component"]}>
 				{currentUser && (
 					<>
+						<ChatButton />
 						<TradeCenterButton />
 						<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
 							<div className={navBarStyles["icon"]}>
