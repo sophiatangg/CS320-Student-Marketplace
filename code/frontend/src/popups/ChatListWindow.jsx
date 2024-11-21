@@ -1,6 +1,7 @@
 import ChatMessage from "@components/ChatMessage";
+import { fetchChatsByUserId } from "@database/chats";
 import { useAuth } from "@providers/AuthProvider";
-import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/ChatListWindow.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence, motion } from "framer-motion";
@@ -30,17 +31,15 @@ const animations = {
 };
 
 const ChatListWindow = (props) => {
-	const { chatDisplayed } = useContextSelector("displayStore");
-	const dispatch = useContextDispatch();
-
-	const { currentUser } = useAuth();
-
 	const chatListContentRef = useRef(null);
 
 	const [chatList, setChatList] = useState([]);
 	const [activeChat, setActiveChat] = useState(null);
 	const [isExiting, setIsExiting] = useState(false);
 	const [hoveredItemId, setHoveredItemId] = useState(null);
+
+	const { currentUser } = useAuth();
+	const dispatch = useContextDispatch();
 
 	const handleExiting = () => {
 		setIsExiting(!isExiting);
@@ -55,27 +54,15 @@ const ChatListWindow = (props) => {
 	};
 
 	useEffect(() => {
-		const fetchChats = async () => {
-			const chats = [
-				{
-					id: 1,
-					name: "User 1",
-					avatar_url: "",
-					lastMessage: "Hi!!",
-				},
-				{
-					id: 2,
-					name: "User 2",
-					avatar_url: "",
-					lastMessage: "Hello~",
-				},
-			];
+		const loadChats = async () => {
+			if (!currentUser || !currentUser.id) return;
 
+			const chats = await fetchChatsByUserId(currentUser.id);
 			setChatList(chats);
 		};
 
-		fetchChats();
-	}, []);
+		loadChats();
+	}, [currentUser]);
 
 	const isChatListEmpty = chatList.length === 0;
 
@@ -182,7 +169,7 @@ const ChatListWindow = (props) => {
 								<span>{chat.lastMessage}</span>
 							</div>
 						</div>
-						{hoveredItemId === chat.id && renderButtons()}
+						{/* {hoveredItemId === chat.id && renderButtons()} */}
 					</div>
 				))}
 			</div>

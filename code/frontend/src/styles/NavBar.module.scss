@@ -91,25 +91,3 @@
 		gap: 20px;
 	}
 }
-
-.cartComponent {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 10px;
-	cursor: pointer;
-
-	.badge {
-		color: var(--colorPrimaryForeground);
-		font-size: 10px;
-		font-family: "GT Bold";
-		background-color: var(--umassColor);
-		border-radius: calc(var(--borderRadius) - 5px);
-		padding: 3px 5px;
-		position: absolute;
-		inset: 0 0 auto auto;
-		cursor: pointer;
-		z-index: 9;
-	}
-}

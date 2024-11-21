@@ -167,7 +167,6 @@
 	justify-content: flex-start;
 	gap: 15px;
 	transition: background-color 100ms linear;
-	cursor: pointer;
 
 	&:hover {
 		background-color: rgba(#000, 0.2);
@@ -180,6 +179,7 @@
 	background-color: var(--umassColor);
 	border-radius: 50%;
 	overflow: hidden;
+	cursor: pointer;
 
 	.chatAvatar {
 		width: 100%;
@@ -195,6 +195,7 @@
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 10px;
+	cursor: pointer;
 }
 
 .chatName {

@@ -1,4 +1,5 @@
 import AccountButton from "@components/AccountButton";
+import CartButton from "@components/CartButton";
 import ChatButton from "@components/ChatButton";
 import SearchBar from "@components/SearchBar";
 import TradeCenterButton from "@components/TradeCenterButton";
@@ -9,7 +10,6 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaShoppingBasket } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
-import { TiShoppingCart } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navBarVariants = {
@@ -116,25 +116,11 @@ const NavBar = (props) => {
 	const renderNavRight = () => {
 		return (
 			<div className={navBarStyles["component"]}>
-				{currentUser && (
+				{browsing && currentUser && (
 					<>
 						<ChatButton />
 						<TradeCenterButton />
-						<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
-							<div className={navBarStyles["icon"]}>
-								<TiShoppingCart
-									onClick={handleOpenCart}
-									style={{
-										fill: cartAmount ? "#90ee90" : "#fff",
-									}}
-								/>
-							</div>
-							{cartAmount > 0 && (
-								<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
-									{cartAmount}
-								</div>
-							)}
-						</div>
+						<CartButton cartAmount={cartAmount} handleOpenCart={handleOpenCart} />
 					</>
 				)}
 				<AccountButton userAvatar={userAvatar} />

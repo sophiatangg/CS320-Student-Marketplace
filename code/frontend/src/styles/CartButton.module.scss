@@ -1,11 +1,10 @@
-.chatButton {
+.cartButton {
 	height: 50px;
 	position: relative;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
 	justify-content: space-between;
-	gap: 5px;
 	cursor: pointer;
 
 	&:hover {
@@ -15,8 +14,16 @@
 	}
 }
 
-.iconContainer {
+.iconComponent {
 	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon {
+	width: 28px;
+	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -32,16 +39,7 @@
 	position: absolute;
 	inset: 0 -5px auto auto;
 	cursor: pointer;
-	z-index: 2;
-	pointer-events: none;
-}
-
-.icon {
-	width: 25px;
-	height: 25px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	z-index: 9;
 }
 
 .title {

@@ -1,11 +1,12 @@
 import CardMini from "@components/CardMini";
-import { fetchTradeRequests } from "@database/trade"; // Assuming fetchTradeRequests is here
+import { fetchTradeRequestCounts, fetchTradeRequests } from "@database/trade"; // Assuming fetchTradeRequests is here
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider"; // Assuming you have an auth provider
 import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/TradeManageWindow.module.scss";
 import cns from "@utils/classNames";
 import { useEffect, useRef, useState } from "react";
+import { BsChatQuoteFill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { LuCheck } from "react-icons/lu";
 
@@ -21,6 +22,8 @@ const TradeManageWindow = () => {
 		received: 0,
 		sent: 0,
 	});
+
+	const [showBadges, setShowBadges] = useState(false);
 
 	const [tradeRequests, setTradeRequests] = useState([]);
 
@@ -47,18 +50,35 @@ const TradeManageWindow = () => {
 					type: activeTab,
 				});
 
-				setRequestCounterBadge((prev) => {
-					return {
-						...prev,
-						[activeTab.toLowerCase()]: requests.length,
-					};
-				});
-
 				setTradeRequests(requests);
 			} catch (error) {
 				console.error(`Error loading ${activeTab.toLowerCase()} trade requests:`, error);
 			} finally {
 				setIsLoading(false);
+			}
+		};
+
+		loadTradeRequests();
+	}, [activeTab, currentUser]);
+
+	useEffect(() => {
+		const loadTradeRequests = async () => {
+			if (!currentUser || !currentUser.id) return;
+
+			try {
+				const requestCount = await fetchTradeRequestCounts({
+					userId: currentUser.id,
+					type: activeTab,
+				});
+
+				setRequestCounterBadge((prev) => {
+					return {
+						...prev,
+						[activeTab.toLowerCase()]: requestCount.length || 0,
+					};
+				});
+			} catch (error) {
+				console.error(`Error loading ${activeTab.toLowerCase()} trade request counter:`, error);
 			}
 		};
 
@@ -148,7 +168,7 @@ const TradeManageWindow = () => {
 					onClick={() => setActiveTab("RECEIVED")}
 				>
 					<span>Received</span>
-					{renderBadgeCounter("received")}
+					{showBadges && renderBadgeCounter("received")}
 				</div>
 				<div
 					className={cns(styles["tabItem"], {
@@ -157,7 +177,7 @@ const TradeManageWindow = () => {
 					onClick={() => setActiveTab("SENT")}
 				>
 					<span>Sent</span>
-					{renderBadgeCounter("sent")}
+					{showBadges && renderBadgeCounter("sent")}
 				</div>
 				<div ref={sliderRef} className={styles["tabSlider"]} />
 			</div>
@@ -166,6 +186,14 @@ const TradeManageWindow = () => {
 
 	const renderButtons = () => {
 		const buttonOpt = [
+			{
+				name: "chat",
+				className: "chatButton",
+				onClick: (e) => {},
+				icon: () => {
+					return <BsChatQuoteFill />;
+				},
+			},
 			{
 				name: "accept",
 				className: "acceptButton",
@@ -188,7 +216,7 @@ const TradeManageWindow = () => {
 			<div className={styles["tradeInfoButtons"]}>
 				{buttonOpt.map((button, buttonIdx) => {
 					return (
-						<div key={buttonIdx} className={styles[button.className]} tabIndex={0}>
+						<div key={buttonIdx} id={button.name} className={styles["tradeInfoButton"]} tabIndex={0}>
 							<span>{button.icon()}</span>
 						</div>
 					);

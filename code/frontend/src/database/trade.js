@@ -61,6 +61,31 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 	}
 };
 
+export const fetchTradeRequestCounts = async ({ userId, type = "RECEIVED" }) => {
+	if (!userId) {
+		throw new Error("User ID is required.");
+	}
+
+	const queryColumn = type === "RECEIVED" ? "seller_id" : "buyer_id";
+
+	try {
+		// Query the Trade table for the count of rows
+		const { count, error } = await supabase
+			.from(tradeTableName)
+			.select("*", { count: "exact", head: true }) // Fetch only the count
+			.eq(queryColumn, userId);
+
+		if (error) {
+			throw new Error(`Error fetching ${type.toLowerCase()} trade request count.`);
+		}
+
+		return count || 0; // Return the count or 0 if no rows match
+	} catch (error) {
+		console.error(`Error in fetchTradeRequestCounts (${type}):`, error);
+		throw error;
+	}
+};
+
 export const storeTradeInDatabase = async ({ data }) => {
 	const res = await supabase.from(tradeTableName).insert(data).select();
 	const { data: tradeData } = res;
