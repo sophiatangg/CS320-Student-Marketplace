@@ -27,6 +27,11 @@
 	--logoWidth: 170px;
 	--cartWidth: 140px;
 	--headerHeight: 70px;
+
+	@media screen and (max-width: 600px) {
+		--headerHeight: 140px;
+	}
+
 	--sidebarSpaceOffset: 50px;
 	--chatListHeight: 50px;
 

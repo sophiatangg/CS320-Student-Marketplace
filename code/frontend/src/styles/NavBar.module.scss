@@ -12,6 +12,16 @@
 	backdrop-filter: blur(10px);
 	z-index: 10;
 
+	@media screen and (max-width: 600px) {
+		position: relative;
+	}
+
+	&.navBarNarrow {
+		flex-flow: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
 	&[id="home"] {
 		background-color: transparent;
 	}
@@ -50,7 +60,7 @@
 		transition: 100ms;
 	}
 
-	.path {
+	.middle {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -60,6 +70,29 @@
 			flex: 1;
 		}
 	}
+}
+
+.navBarNarrowTop,
+.middle {
+	width: 100%;
+	flex: 1;
+	overflow: hidden;
+}
+
+.navBarNarrowTop {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: space-between;
+
+	.logo {
+		margin: 0;
+		flex-grow: 1;
+	}
+}
+
+.middle {
+	height: 100%;
 }
 
 .icon {

@@ -115,29 +115,31 @@ const App = () => {
 				})}
 			>
 				<NavBar />
-				<AnimatePresence exitBeforeEnter>
-					<Routes key={animationKey()} location={location}>
-						<Route path="/" element={<Home />} />
-						<Route path="/login/" element={<Login />} />
-						<Route
-							path="/browse/*"
-							element={
-								<ProtectedRoute>
-									<Browse />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path="/store/:itemId"
-							element={
-								<ProtectedRoute>
-									<ItemPage />
-								</ProtectedRoute>
-							}
-						/>
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</AnimatePresence>
+				<div className={appStyles["appContent"]}>
+					<AnimatePresence exitBeforeEnter>
+						<Routes key={animationKey()} location={location}>
+							<Route path="/" element={<Home />} />
+							<Route path="/login/" element={<Login />} />
+							<Route
+								path="/browse/*"
+								element={
+									<ProtectedRoute>
+										<Browse />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/store/:itemId"
+								element={
+									<ProtectedRoute>
+										<ItemPage />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</AnimatePresence>
+				</div>
 				{accountInfoDisplayed && <AccountOptionsWindow />}
 				{accountProfileDisplayed && <AccountProfileWindow />}
 				{isAddItemWindowOpen && <AddEditNewItemWindow />}
