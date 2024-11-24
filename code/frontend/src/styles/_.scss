@@ -28,10 +28,6 @@
 	--cartWidth: 140px;
 	--headerHeight: 70px;
 
-	@media screen and (max-width: 600px) {
-		--headerHeight: 140px;
-	}
-
 	--sidebarSpaceOffset: 50px;
 	--chatListHeight: 50px;
 
@@ -86,6 +82,10 @@
 
 	--scaleUpFactor: 1.1;
 	--scaleDownFactor: 0.95;
+
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+		--headerHeight: 140px;
+	}
 }
 
 ::selection {

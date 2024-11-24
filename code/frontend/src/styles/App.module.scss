@@ -1,3 +1,5 @@
+@use "_variables" as v;
+
 body {
 	&:has(.hasWindowDisplay) {
 		overflow: hidden;
@@ -13,7 +15,7 @@ body {
 	margin-top: var(--headerHeight);
 	position: relative;
 
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 		margin-top: 0;
 	}
 }

@@ -12,7 +12,7 @@
 	backdrop-filter: blur(10px);
 	z-index: 10;
 
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 		position: relative;
 	}
 
@@ -38,8 +38,25 @@
 		min-width: var(--logoWidth);
 		max-width: var(--logoWidth);
 		height: 40px;
-		margin-right: var(--sidebarSpaceOffset);
 		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+
+		&.atStore {
+			margin-right: var(--sidebarSpaceOffset);
+
+			@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+				margin-right: 0;
+			}
+		}
+	}
+
+	.logoInner {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-flow: row;
 		align-items: center;
 		justify-content: flex-start;
 		gap: 15px;
@@ -76,7 +93,6 @@
 .middle {
 	width: 100%;
 	flex: 1;
-	overflow: hidden;
 }
 
 .navBarNarrowTop {

@@ -22,7 +22,8 @@
 	}
 
 	.icon {
-		width: var(--searchIconsDimension);
+		min-width: var(--searchIconsDimension);
+		max-width: var(--searchIconsDimension);
 		height: var(--searchIconsDimension);
 		margin: 0 10px;
 		transition: opacity 100ms linear;

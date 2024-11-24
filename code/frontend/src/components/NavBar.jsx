@@ -48,7 +48,8 @@ const NavBar = (props) => {
 		});
 	};
 
-	const handleBrowse = async () => {
+	const handleBrowse = (e) => {
+		e.stopPropagation();
 		navigate("/browse");
 
 		dispatch({
@@ -81,7 +82,7 @@ const NavBar = (props) => {
 		const componentElemDimension = componentElem.getBoundingClientRect();
 
 		const { width: componentElemWidth } = componentElemDimension;
-		setIsSmallScreen(componentElemWidth <= 600);
+		setIsSmallScreen(componentElemWidth <= 670);
 	};
 
 	useEffect(() => {
@@ -106,35 +107,47 @@ const NavBar = (props) => {
 
 	const renderNavLeft = () => {
 		return (
-			<div className={styles["logo"]} onClick={handleHome}>
-				<div className={styles["icon"]}>
-					<PiStudentBold style={{ fill: "#fff" }} />
+			<div
+				className={cns(styles["logo"], {
+					[styles["atStore"]]: browsing,
+				})}
+				onClick={handleHome}
+			>
+				<div className={styles["logoInner"]}>
+					<div className={styles["icon"]}>
+						<PiStudentBold style={{ fill: "#fff" }} />
+					</div>
+					<h3>
+						<span>Student</span>
+						<span>Marketplace</span>
+					</h3>
 				</div>
-				<h3>
-					<span>Student</span>
-					<span>Marketplace</span>
-				</h3>
+				{!browsing && currentUser && (
+					<motion.div
+						key={"browseComponent"}
+						animate={"visible"}
+						initial={"visible"}
+						variants={navBarVariants}
+						transition={{ y: { type: "spring" }, duration: 0.01 }}
+						className={styles["component"]}
+						id="browseStore"
+						onClick={handleBrowse}
+					>
+						<div className={styles["icon"]}>
+							<FaShoppingBasket style={{ fill: "#fff" }} />
+						</div>
+						<h3>
+							<span>Browse</span>
+							<span>Store</span>
+						</h3>
+					</motion.div>
+				)}
 			</div>
 		);
 	};
 
 	const renderNavCenter = () => {
-		return (
-			<div className={styles["middle"]}>
-				{browsing && currentUser && <SearchBar />}
-				{!browsing && currentUser && (
-					<div className={styles["component"]} id="browseStore">
-						<div className={styles["icon"]}>
-							<FaShoppingBasket style={{ fill: "#fff" }} />
-						</div>
-						<h3 onClick={handleBrowse}>
-							<span>Browse</span>
-							<span>Store</span>
-						</h3>
-					</div>
-				)}
-			</div>
-		);
+		return <div className={styles["middle"]}>{browsing && currentUser && <SearchBar />}</div>;
 	};
 
 	const renderNavRight = () => {
