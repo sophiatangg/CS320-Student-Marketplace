@@ -1,13 +1,16 @@
 import AccountButton from "@components/AccountButton";
+import CartButton from "@components/CartButton";
+import ChatButton from "@components/ChatButton";
 import SearchBar from "@components/SearchBar";
-import { setUser } from "@database/users";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
-import navBarStyles from "@styles/NavBar.module.scss";
+import TradeCenterButton from "@components/TradeCenterButton";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
+import styles from "@styles/NavBar.module.scss";
+import cns from "@utils/classNames";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaShoppingBasket } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
-import { TiShoppingCart } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navBarVariants = {
@@ -16,10 +19,15 @@ const navBarVariants = {
 };
 
 const NavBar = (props) => {
-	const [isAuthorized, setIsAuthorized] = useState(false);
+	const componentRef = useRef();
+
 	const [browsing, setBrowsing] = useState(true);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	const [userAvatar, setUserAvatar] = useState("");
 
 	const navigate = useNavigate();
+
+	const { currentUser } = useAuth();
 
 	const { cartAmount } = useContextSelector("cartStore");
 	const dispatch = useContextDispatch();
@@ -40,7 +48,8 @@ const NavBar = (props) => {
 		});
 	};
 
-	const handleBrowse = async () => {
+	const handleBrowse = (e) => {
+		e.stopPropagation();
 		navigate("/browse");
 
 		dispatch({
@@ -66,75 +75,92 @@ const NavBar = (props) => {
 		});
 	};
 
+	const handleResize = () => {
+		if (!componentRef.current) return;
+
+		const componentElem = componentRef.current;
+		const componentElemDimension = componentElem.getBoundingClientRect();
+
+		const { width: componentElemWidth } = componentElemDimension;
+		setIsSmallScreen(componentElemWidth <= 670);
+	};
+
 	useEffect(() => {
 		setBrowsing(!(pathname === "/"));
 	}, [pathname]);
 
 	useEffect(() => {
-		const authListener = setUser((session) => {
-			setIsAuthorized(session?.user?.email || false);
-		});
+		if (currentUser) {
+			setUserAvatar(currentUser.user_metadata.avatar_url);
+		}
+	}, [currentUser]);
+
+	useEffect(() => {
+		handleResize();
+
+		window.addEventListener("resize", handleResize);
 
 		return () => {
-			authListener?.unsubscribe();
+			window.removeEventListener("resize", handleResize);
 		};
-	}, []);
+	}, [window]);
 
 	const renderNavLeft = () => {
 		return (
-			<div className={navBarStyles["logo"]} onClick={handleHome}>
-				<div className={navBarStyles["icon"]}>
-					<PiStudentBold className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
+			<div
+				className={cns(styles["logo"], {
+					[styles["atStore"]]: browsing,
+				})}
+				onClick={handleHome}
+			>
+				<div className={styles["logoInner"]}>
+					<div className={styles["icon"]}>
+						<PiStudentBold style={{ fill: "#fff" }} />
+					</div>
+					<h3>
+						<span>Student</span>
+						<span>Marketplace</span>
+					</h3>
 				</div>
-				<h3>
-					<span>Student</span>
-					<span>Marketplace</span>
-				</h3>
+				{!browsing && currentUser && (
+					<motion.div
+						key={"browseComponent"}
+						animate={"visible"}
+						initial={"visible"}
+						variants={navBarVariants}
+						transition={{ y: { type: "spring" }, duration: 0.01 }}
+						className={styles["component"]}
+						id="browseStore"
+						onClick={handleBrowse}
+					>
+						<div className={styles["icon"]}>
+							<FaShoppingBasket style={{ fill: "#fff" }} />
+						</div>
+						<h3>
+							<span>Browse</span>
+							<span>Store</span>
+						</h3>
+					</motion.div>
+				)}
 			</div>
 		);
 	};
 
 	const renderNavCenter = () => {
-		return (
-			<div className={navBarStyles["path"]}>
-				{browsing && isAuthorized && <SearchBar />}
-				{!browsing && isAuthorized && (
-					<div className={navBarStyles["component"]} id="browseStore">
-						<div className={navBarStyles["icon"]}>
-							<FaShoppingBasket className={navBarStyles["svg"]} style={{ fill: "#fff" }} />
-						</div>
-						<h3 onClick={handleBrowse}>
-							<span>Browse</span>
-							<span>Store</span>
-						</h3>
-					</div>
-				)}
-			</div>
-		);
+		return <div className={styles["middle"]}>{browsing && currentUser && <SearchBar />}</div>;
 	};
 
 	const renderNavRight = () => {
 		return (
-			<div className={navBarStyles["component"]}>
-				{isAuthorized && (
-					<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
-						<div className={navBarStyles["icon"]}>
-							<TiShoppingCart
-								onClick={handleOpenCart}
-								className={navBarStyles["svg"]}
-								style={{
-									fill: cartAmount ? "#90ee90" : "#fff",
-								}}
-							/>
-						</div>
-						{cartAmount > 0 && (
-							<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
-								{cartAmount}
-							</div>
-						)}
-					</div>
+			<div className={styles["component"]}>
+				{browsing && currentUser && (
+					<>
+						<ChatButton />
+						<TradeCenterButton />
+						<CartButton cartAmount={cartAmount} handleOpenCart={handleOpenCart} />
+					</>
 				)}
-				<AccountButton />
+				<AccountButton userAvatar={userAvatar} />
 			</div>
 		);
 	};
@@ -143,16 +169,31 @@ const NavBar = (props) => {
 		<>
 			<motion.div
 				key="navBar-component"
-				className={navBarStyles["navbar"]}
+				ref={componentRef}
+				className={cns(styles["navbar"], {
+					[styles["navBarNarrow"]]: isSmallScreen,
+				})}
 				id={props.component}
 				animate={"visible"}
 				initial={"visible"}
 				variants={navBarVariants}
 				transition={{ y: { type: "spring" }, duration: 0.01 }}
 			>
-				{renderNavLeft()}
-				{renderNavCenter()}
-				{renderNavRight()}
+				{!isSmallScreen ? (
+					<>
+						{renderNavLeft()}
+						{renderNavCenter()}
+						{renderNavRight()}
+					</>
+				) : (
+					<>
+						<div className={styles["navBarNarrowTop"]}>
+							{renderNavLeft()}
+							{renderNavRight()}
+						</div>
+						{renderNavCenter()}
+					</>
+				)}
 			</motion.div>
 		</>
 	);

@@ -30,5 +30,6 @@
 	"javascript.preferences.importModuleSpecifier": "non-relative",
 	"javascript.updateImportsOnFileMove.enabled": "always",
 	"liveSassCompile.settings.watchOnLaunch": false,
-	"prettier.resolveGlobalModules": false
+	"prettier.resolveGlobalModules": false,
+	"cSpell.words": ["toastify", "wishlisted"]
 }

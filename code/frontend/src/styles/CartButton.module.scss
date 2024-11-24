@@ -1,0 +1,52 @@
+.cartButton {
+	height: 50px;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+
+	&:hover {
+		svg {
+			fill: var(--colorDarkForeground) !important;
+		}
+	}
+}
+
+.iconComponent {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon {
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.badge {
+	color: var(--colorPrimaryForeground);
+	font-size: 10px;
+	font-family: "GT Bold";
+	background-color: var(--umassColor);
+	border-radius: calc(var(--borderRadius) - 5px);
+	padding: 3px 5px;
+	position: absolute;
+	inset: 0 -5px auto auto;
+	cursor: pointer;
+	z-index: 9;
+}
+
+.title {
+	width: 100%;
+	font-family: "GT Bold";
+	color: var(--colorPrimaryForeground);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

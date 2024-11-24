@@ -1,16 +1,16 @@
+import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
 import Sidebar from "@components/Sidebar";
-import { setUser } from "@database/users";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { MdOutlineTableRows } from "react-icons/md";
 import { TbLayoutGridFilled } from "react-icons/tb";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const animations = {
 	initial: { opacity: 0, x: -150 },
@@ -19,47 +19,24 @@ const animations = {
 };
 
 const Browse = (props) => {
-	const [isAuthorized, setIsAuthorized] = useState(false);
-
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
 	const { gridDisplay } = useContextSelector("globalStore");
+	const { shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
-	const navigate = useNavigate();
-
-	const handleAddNewItemOpen = (bool) => {
+	const handleLayoutSwitch = (e, bool) => {
 		dispatch({
-			type: "SET_ADD_NEW_ITEM_DISPLAYED",
+			type: "SET_DISPLAY",
 			payload: bool,
 		});
-	};
-
-	const handleLayoutSwitch = (e, bool) => {
-		dispatch({ type: "SET_DISPLAY", payload: bool });
 	};
 
 	useEffect(() => {
 		document.title = `${PROJECT_NAME} — Store`;
 	}, []);
-
-	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
-
-			setIsAuthorized(isUserAuthorized || false);
-
-			if (!isUserAuthorized) {
-				navigate("/login");
-			}
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, [isAuthorized]);
 
 	const renderPlaceHolder = () => {
 		return (
@@ -71,6 +48,17 @@ const Browse = (props) => {
 					<span>Back</span>
 				</button>
 			</div>
+		);
+	};
+
+	const renderCounter = () => {
+		return (
+			shownItems.length > 0 && (
+				<div className={styles["counterContainer"]}>
+					<span>{shownItems.length}</span>
+					<span>{shownItems.length > 1 ? "Items" : "Item"}</span>
+				</div>
+			)
 		);
 	};
 
@@ -86,18 +74,8 @@ const Browse = (props) => {
 							<div className={styles["applied"]}>
 								<div className={styles["left"]}>
 									{isNotDefaultItemsPage && renderPlaceHolder()}
-									{categoryName === "my-items" && (
-										<div className={styles["addNewItem"]}>
-											<button
-												className={styles["textButton"]}
-												onClick={(e) => {
-													if (handleAddNewItemOpen) handleAddNewItemOpen(true);
-												}}
-											>
-												Add Item
-											</button>
-										</div>
-									)}
+									{categoryName === "my-items" && <AddNewItemButton />}
+									{renderCounter()}
 								</div>
 								<div className={styles["displayStyle"]}>
 									<span>Display options:</span>

@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AddToCartButton.module.scss";
 import cns from "@utils/classNames";
 import { useRef, useState } from "react";
@@ -25,7 +25,7 @@ const AddToCartButton = (props) => {
 	};
 
 	const handleHoverItem = (e) => {
-		const handledHoveredItem = allItems.map((item, i) => {
+		const handledHoveredItem = allItems?.map((item, i) => {
 			if (e.target.id === i) {
 				item.isHovered = !item.isHovered;
 				return item;

@@ -1,2 +1,27 @@
 $bgColor: #0f1011;
 $umassColor: #881c1c;
+
+$navBarTwoRowsWidth: 690px;
+
+@mixin scrollbar($backgroundColor, $backgroundColorHover, $width) {
+	::-webkit-scrollbar {
+		width: $width;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+		box-sizing: content-box;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: $backgroundColor;
+		background-clip: padding-box;
+		border: calc(#{$width} - 13px) solid transparent;
+		border-radius: var(--borderRadius);
+		transition: background-color 100ms linear;
+
+		&:hover {
+			background-color: #555;
+		}
+	}
+}

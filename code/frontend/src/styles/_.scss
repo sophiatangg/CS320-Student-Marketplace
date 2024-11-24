@@ -18,7 +18,6 @@
 		padding: 0;
 		box-sizing: border-box;
 		text-rendering: optimizeLegibility;
-		backface-visibility: hidden;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
@@ -28,7 +27,9 @@
 	--logoWidth: 170px;
 	--cartWidth: 140px;
 	--headerHeight: 70px;
+
 	--sidebarSpaceOffset: 50px;
+	--chatListHeight: 50px;
 
 	--borderRadius: 8px;
 
@@ -69,14 +70,22 @@
 	--colorTransparent: transparent;
 	--colorPrimaryForeground: #fff;
 	--colorSecondaryForeground: #eee;
+	--colorTertiaryForeground: #dddddd;
+	--colorDarkForeground: #b9b9b9;
 
 	--colorDark: #000;
 
 	--cardFullBackground: #202020;
 	--cardFullHoverBackground: #2d2d2d;
+	--cardOwnFullBackground: #3d2626;
+	--cardOwnFullHoverBackground: #523333;
 
 	--scaleUpFactor: 1.1;
 	--scaleDownFactor: 0.95;
+
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+		--headerHeight: 140px;
+	}
 }
 
 ::selection {
@@ -94,6 +103,10 @@
 	to {
 		--border-angle: 1turn;
 	}
+}
+
+html {
+	@include v.scrollbar(var(--popOutBgColorAlt1), #555, 20px);
 }
 
 li {

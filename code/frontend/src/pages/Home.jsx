@@ -1,4 +1,4 @@
-import { useContextSelector } from "@stores/StoreProvider";
+import { useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Home.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
@@ -37,7 +37,7 @@ const Home = (props) => {
 	};
 
 	const handlePlayDice = () => {
-		const randomIndex = Math.floor(Math.random() * allItems.length);
+		const randomIndex = Math.floor(Math.random() * allItems?.length);
 		const randomSurname = allItems[randomIndex]?.surname || allItems[randomIndex]?.surName;
 
 		setOverlap(true);
@@ -68,8 +68,8 @@ const Home = (props) => {
 							<div className={cns(styles["intro"])}>
 								<p>
 									<span>Your personalized</span>
-									<span className={styles["umass"]}> UMass</span>
-									<span className={styles["colorize"]}>Student Marketplace</span>.
+									<span className={styles["umass"]}> UMass Amherst </span>
+									<span className={styles["colorize"]}>Student Marketplace</span>
 								</p>
 							</div>
 						</div>

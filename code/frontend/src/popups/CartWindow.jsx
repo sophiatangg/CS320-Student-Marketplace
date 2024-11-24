@@ -1,5 +1,5 @@
 import Window from "@popups/Window";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/CartWindow.module.scss";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";

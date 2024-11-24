@@ -1,0 +1,32 @@
+.addNewItem {
+	height: 100%;
+	position: relative;
+}
+
+.textButton {
+	padding: 8px 22px;
+	height: 40px;
+	background-color: var(--buttonBackground);
+	color: var(--colorPrimaryForeground);
+	font-family: "GT Light";
+	font-size: 0.95em;
+	border: 1px transparent;
+	border-radius: var(--borderRadius);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	transition: background-color 100ms linear;
+
+	&:hover {
+		background-color: var(--buttonHoverBackground);
+	}
+
+	&:active {
+		transform: scale(var(--scaleDownFactor));
+	}
+
+	@at-root .addNewItem & {
+		font-weight: 700;
+	}
+}

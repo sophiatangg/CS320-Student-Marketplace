@@ -15,4 +15,3 @@ export const storeItemInDatabase = async (newItem) => {
 		alert("An unexpected error occurred. Please try again later.");
 	}
 };
-//export default storeItemInDatabase;

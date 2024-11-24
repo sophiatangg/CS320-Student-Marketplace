@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
 import { useState } from "react";
@@ -18,11 +18,14 @@ const Sidebar = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))]
-		.map((category) => category.charAt(0).toUpperCase() + category.slice(1))
+	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))];
+	const sortedUniqueCategories = uniqueCategoriesFromList
+		.map((category) => {
+			return String(category).charAt(0).toUpperCase() + String(category).slice(1);
+		})
 		.sort();
 
-	const categoryList = ["All", "My Items", "Wishlist", ...uniqueCategoriesFromList];
+	const categoryList = ["All", "My Items", "Wishlist", ...sortedUniqueCategories];
 
 	const [hoverStates, setHoverStates] = useState(Array(categoryList.length).fill(false));
 

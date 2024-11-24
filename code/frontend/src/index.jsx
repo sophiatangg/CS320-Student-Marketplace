@@ -1,9 +1,11 @@
 import DissolveFilter from "@components/DissolveFilter";
+import ScrollPageToTop from "@components/ScrollPageToTop";
 import "@media/fonts/walsheim/GTWalsheimPro-Bold.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Light.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Medium.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Regular.ttf";
-import { StoreProvider } from "@stores/StoreProvider";
+import { AuthProvider } from "@providers/AuthProvider";
+import { StoreProvider } from "@providers/StoreProvider";
 import "@styles/_.scss";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -19,9 +21,12 @@ root.render(
 	<StrictMode>
 		<StoreProvider>
 			<BrowserRouter>
-				<App />
-				<DissolveFilter />
+				<AuthProvider>
+					<ScrollPageToTop />
+					<App />
+				</AuthProvider>
 			</BrowserRouter>
 		</StoreProvider>
+		<DissolveFilter />
 	</StrictMode>,
 );

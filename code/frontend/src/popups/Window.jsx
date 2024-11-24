@@ -1,5 +1,5 @@
-import { useContextDispatch } from "@stores/StoreProvider";
-import styles from "@styles/WIndow.module.scss";
+import { useContextDispatch } from "@providers/StoreProvider";
+import styles from "@styles/Window.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
@@ -28,7 +28,7 @@ const Window = (props) => {
 
 	return (
 		<div className={styles["window"]}>
-			<div className={styles["windowBG"]} onClick={handleCloseWindow}></div>
+			<div className={styles["windowBG"]} onClick={handleCloseWindow} />
 			<AnimatePresence key={dispatchType}>
 				{isVisible && (
 					<motion.div
@@ -38,9 +38,16 @@ const Window = (props) => {
 						exit="exit"
 						onAnimationComplete={(definition) => {
 							if (definition === "exit") {
+								// default dispatch
 								dispatch({
 									type: dispatchType,
 									payload: false,
+								});
+
+								// setting the "selectedItemIdToEdit" to -1
+								dispatch({
+									type: "SET_SELECTED_ITEM_ID_TO_EDIT",
+									payload: -1,
 								});
 							}
 						}}

@@ -1,7 +1,6 @@
 .browse {
 	background-color: var(--bgColor);
 	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
-	margin-top: var(--headerHeight);
 	position: relative;
 }
 
@@ -53,6 +52,8 @@
 	.left {
 		position: relative;
 		display: flex;
+		align-items: center;
+		gap: 15px;
 	}
 
 	.placeholder {
@@ -83,33 +84,14 @@
 	}
 }
 
-.addNewItem {
-	height: 100%;
+.counterContainer {
 	position: relative;
-}
+	display: flex;
+	gap: 5px;
 
-.textButton {
-	padding: 8px 22px;
-	height: 40px;
-	background-color: transparent;
-	color: var(--colorPrimaryForeground);
-	font-family: "GT Light";
-	font-size: 0.95em;
-	border: 1px transparent;
-	border-radius: var(--borderRadius);
-	cursor: pointer;
-	transition: all 100ms;
-
-	&:hover {
-		background-color: var(--buttonHoverBackground);
-	}
-
-	&:active {
-		transform: scale(0.9);
-	}
-
-	@at-root .addNewItem & {
+	span {
 		font-weight: 700;
+		color: var(--colorGraySecondary);
 	}
 }
 
@@ -161,10 +143,4 @@
 .displayItem {
 	transform: scale(0.9);
 	transition: 100ms linear;
-}
-
-@media screen and (max-width: 320px) {
-	.filterButton {
-		font-size: 12px;
-	}
 }

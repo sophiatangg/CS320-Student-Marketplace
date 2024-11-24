@@ -28,10 +28,15 @@
 	align-items: center;
 	justify-content: space-between;
 
-	h1 {
+	.headerTitle {
+		max-width: 95%;
 		color: var(--colorPrimaryForeground);
 		font-family: "GT Ultrabold";
 		font-size: 40px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
+		overflow: hidden;
 	}
 }
 
@@ -71,11 +76,6 @@
 	overflow-y: auto;
 }
 
-.content {
-	flex: 1;
-	height: 100%;
-}
-
 .bottom {
 	width: 100%;
 	height: var(--bottomComponent);
@@ -88,6 +88,10 @@
 	justify-content: center;
 	gap: 25px;
 	z-index: 2;
+
+	.label {
+		margin-bottom: 0;
+	}
 }
 
 .button {
@@ -142,22 +146,22 @@
 
 	> div {
 		width: 100%;
-		display: flex;
 
 		&:last-child {
 			margin-bottom: 40px;
 		}
 	}
+}
 
-	.label {
-		color: var(--colorGrayQuaternary);
-		font-family: "GT Bold";
-		font-size: 18px;
-		margin-bottom: 5px;
-	}
+.label {
+	color: var(--colorGrayQuaternary);
+	font-family: "GT Bold";
+	font-size: 18px;
+	margin-bottom: 5px;
 }
 
 .single {
+	display: flex;
 	position: relative;
 
 	&.singleRow {
@@ -165,13 +169,8 @@
 	}
 }
 
-.imageItem {
-	width: 100%;
-	flex: 1;
-}
-
 .double {
-	position: relative;
+	display: flex;
 	gap: 20px;
 }
 
@@ -218,30 +217,148 @@
 	}
 }
 
-.addedImages {
-	margin-top: 10px;
+.choiceContainer {
+	padding: 20px;
 	position: relative;
 	display: flex;
-	flex-flow: column;
+	flex-flow: row wrap;
 	gap: 10px;
+	align-items: flex-start;
+	justify-content: flex-start;
+
+	.choiceItem {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--colorPrimaryForeground);
+		border: 3px solid var(--popOutBgColorAlt1);
+		border-radius: var(--borderRadius);
+		padding: 8px 15px;
+		cursor: pointer;
+		transition: background-color 100ms linear;
+		user-select: none;
+
+		&.choiceItemSelected {
+			background-color: var(--popOutBgColorAlt1);
+		}
+	}
 }
 
-.imageItem {
-	color: var(--colorPrimaryForeground);
+.imagesElem {
+	margin-bottom: 30px;
+
+	.label {
+		margin-bottom: 15px;
+	}
+}
+
+.imagesInner {
+	gap: 20px;
+}
+
+.dropZone {
+	--dropZoneHeight: 300px;
+	min-height: var(--dropZoneHeight);
+	max-height: var(--dropZoneHeight);
+	background-color: var(--popOutBgColorAlt1);
+	border: 3px dashed transparent;
+	border-radius: var(--borderRadius);
+	position: relative;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	cursor: pointer;
+	transition:
+		background-color 100ms linear,
+		border-color 100ms linear;
+
+	&.dropZoneHover {
+		background-color: var(--popOutBgColorAlt2);
+		border-color: var(--popOutBgColorAlt1);
+	}
+
+	p {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
+.previewImages {
+	width: 100%;
+	max-height: 300px;
+	border: 3px dashed var(--popOutBgColorAlt1);
+	border-radius: var(--borderRadius);
+	padding: 10px;
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	overflow: hidden;
+}
+
+.previewImagesInner {
+	flex: 1;
 	display: flex;
 	flex-flow: row;
 	align-items: center;
-	justify-content: flex-start;
-	gap: 10px;
+	justify-content: center;
+}
 
-	.removeIMGButton {
-		width: 20px;
-		height: 20px;
-		background-color: transparent !important;
-		padding: 3px;
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+.imageItem {
+	height: 100%;
+	position: relative;
+
+	&:hover {
+		.removeIMGButton {
+			opacity: 1;
+		}
 	}
+}
+
+.imageThumbnailContainer {
+	width: 120px;
+	min-height: max-content;
+	position: relative;
+
+	img {
+		width: 100%;
+		height: auto;
+		border: 5px solid transparent;
+		border-radius: var(--borderRadius);
+		aspect-ratio: 1;
+		object-fit: cover;
+		cursor: pointer;
+		transition: border-color 100ms linear;
+	}
+
+	&:hover {
+		img {
+			border-color: var(--popOutBgColorAlt1);
+		}
+	}
+}
+
+.removeIMGButton {
+	width: 25px;
+	height: 25px;
+	background-color: var(--popOutBgColorAlt1);
+	border: none;
+	border-radius: 0 var(--borderRadius) 0 var(--borderRadius);
+	position: absolute;
+	inset: 0 0 auto auto;
+	opacity: 0;
+	transition: opacity 100ms linear;
+	cursor: pointer;
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
+.previewImagesNotice {
+	color: var(--colorPrimaryForeground);
+	font-size: 12px;
+	opacity: 0.5;
 }

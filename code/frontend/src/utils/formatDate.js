@@ -1,10 +1,10 @@
-const isISODate = (date) => {
-	const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
-	return typeof date === "string" && isoRegex.test(date);
+export const isValidISODate = (date) => {
+	const _date = new Date(date);
+	return !isNaN(_date.getTime());
 };
 
-export const formatDate = ({ date }) => {
-	if (!isISODate(date)) {
+export const formatDateAgo = ({ date }) => {
+	if (!isValidISODate(date)) {
 		return date;
 	}
 
@@ -31,4 +31,25 @@ export const formatDate = ({ date }) => {
 		const ordinals = ["st", "nd", "rd"][((day % 10) - 1) % 3] || "th";
 		return `${month} ${day}${ordinals}, ${year}`;
 	}
+};
+
+export const formattedDate = (date) => {
+	const _date = new Date(date);
+
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	const addOrdinalSuffix = (day) => {
+		if (day % 10 === 1 && day !== 11) return `${day}st`;
+		if (day % 10 === 2 && day !== 12) return `${day}nd`;
+		if (day % 10 === 3 && day !== 13) return `${day}rd`;
+		return `${day}th`;
+	};
+
+	const formattedDate = `${monthNames[_date.getMonth()]} ${addOrdinalSuffix(_date.getDate()).padStart(2, "0")}, ${_date.getFullYear()}`;
+	const formattedTime = _date.toTimeString().slice(0, 8);
+
+	return {
+		date: formattedDate,
+		time: formattedTime,
+	};
 };

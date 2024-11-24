@@ -1,10 +1,14 @@
+import { getUser } from "@database/users";
 import styles from "@styles/CardMini.module.scss";
 import cns from "@utils/classNames";
-import { useState } from "react";
+import { formatDateAgo } from "@utils/formatDate";
+import { useEffect, useState } from "react";
 
 const CardMini = (props) => {
 	const { item, isDefaultSelected, handleItemOfferSelected, selectedOfferedItems } = props;
 
+	const [itemOwner, setItemOwner] = useState("");
+	const [itemCreateDate, setItemCreatedDate] = useState("");
 	const [cardStateHover, setCardStateHover] = useState(false);
 
 	const handleCardHover = (e) => {
@@ -14,6 +18,27 @@ const CardMini = (props) => {
 	const handleCardClick = (e) => {
 		if (handleItemOfferSelected) handleItemOfferSelected(e, item);
 	};
+
+	useEffect(() => {
+		if (!item && !item?.seller_id) return;
+
+		getUser(item?.seller_id)
+			.then((res) => {
+				setItemOwner(res);
+			})
+			.catch((error) => {
+				throw Error(`Error fetching item owner for ${item?.name}.`, error);
+			});
+	}, []);
+
+	useEffect(() => {
+		if (!item && !item?.hasOwnProperty("created_at")) return;
+
+		const resDateStr = formatDateAgo({ date: item?.created_at });
+		setItemCreatedDate(resDateStr);
+	}, []);
+
+	if (!item) return;
 
 	return (
 		<>
@@ -32,11 +57,23 @@ const CardMini = (props) => {
 					handleCardClick(e);
 				}}
 			>
-				<div className={styles["thumbnail"]}>
-					<img src={item.cover} className={styles["img"]} alt="Item Cover Image" />
-				</div>
+				{item?.images && (
+					<div className={styles["thumbnail"]}>
+						<img src={item?.images[0]} className={styles["thumbnailIMG"]} alt="Item Cover Image" />
+					</div>
+				)}
 				<div className={styles["content"]}>
-					<span className={styles["primary"]}>{item.name}</span>
+					<div className={styles["itemName"]}>
+						<span className={styles["itemValue"]}>{item?.name}</span>
+					</div>
+					<div className={styles["itemSeller"]}>
+						<span className={styles["itemLabel"]}>Posted by:</span>
+						<span className={styles["itemValue"]}>{itemOwner?.name}</span>
+					</div>
+					<div className={styles["itemCreated"]}>
+						<span className={styles["itemLabel"]}>Date Posted:</span>
+						<span className={styles["itemValue"]}>{itemCreateDate}</span>
+					</div>
 				</div>
 			</div>
 		</>

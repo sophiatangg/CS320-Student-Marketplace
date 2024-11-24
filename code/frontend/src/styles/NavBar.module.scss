@@ -12,6 +12,16 @@
 	backdrop-filter: blur(10px);
 	z-index: 10;
 
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+		position: relative;
+	}
+
+	&.navBarNarrow {
+		flex-flow: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
 	&[id="home"] {
 		background-color: transparent;
 	}
@@ -28,8 +38,25 @@
 		min-width: var(--logoWidth);
 		max-width: var(--logoWidth);
 		height: 40px;
-		margin-right: var(--sidebarSpaceOffset);
 		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+
+		&.atStore {
+			margin-right: var(--sidebarSpaceOffset);
+
+			@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+				margin-right: 0;
+			}
+		}
+	}
+
+	.logoInner {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-flow: row;
 		align-items: center;
 		justify-content: flex-start;
 		gap: 15px;
@@ -41,6 +68,7 @@
 		display: flex;
 		flex-flow: column;
 		cursor: pointer;
+		user-select: none;
 	}
 
 	svg {
@@ -49,7 +77,7 @@
 		transition: 100ms;
 	}
 
-	.path {
+	.middle {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -59,6 +87,28 @@
 			flex: 1;
 		}
 	}
+}
+
+.navBarNarrowTop,
+.middle {
+	width: 100%;
+	flex: 1;
+}
+
+.navBarNarrowTop {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: space-between;
+
+	.logo {
+		margin: 0;
+		flex-grow: 1;
+	}
+}
+
+.middle {
+	height: 100%;
 }
 
 .icon {
@@ -81,34 +131,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	gap: 10px;
+	gap: 15px;
 	transition: ease-in-out 0.2s;
 	z-index: 9;
 
 	&[id="browseStore"] {
 		font-size: 14px;
 		gap: 20px;
-	}
-}
-
-.cartComponent {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 10px;
-	cursor: pointer;
-
-	.badge {
-		color: var(--colorPrimaryForeground);
-		font-size: 10px;
-		font-family: "GT Bold";
-		background-color: red;
-		border-radius: var(--borderRadius);
-		padding: 3px 5px;
-		position: absolute;
-		inset: 0 0 auto auto;
-		cursor: pointer;
-		z-index: 9;
 	}
 }

@@ -1,0 +1,27 @@
+.editItemButton {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	cursor: pointer;
+	user-select: none;
+
+	&:not(.isBig) {
+		height: 20px;
+	}
+
+	&.isBig {
+		h4 {
+			font-size: 15px;
+		}
+	}
+
+	* {
+		transition: 100ms linear;
+	}
+
+	h4 {
+		font-family: "GT Light";
+	}
+}

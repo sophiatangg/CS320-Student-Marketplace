@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Slider.module.scss";
 import cns from "@utils/classNames";
 import React, { useEffect } from "react";
@@ -19,7 +19,7 @@ const Slider = (props) => {
 	const location = useLocation();
 
 	useEffect(() => {
-		const selectedGameIndex = allItems.findIndex((_item) => "/store/" + _item.surname === location.pathname);
+		const selectedGameIndex = allItems?.findIndex((_item) => "/store/" + _item.surname === location.pathname);
 
 		const selectedItemElem = allItems[selectedGameIndex];
 
@@ -67,23 +67,28 @@ const Slider = (props) => {
 	};
 
 	if (!selectedItem) return null;
+	if (!selectedItem.images) return null;
 
 	return (
 		<div className={styles["slider"]}>
 			<Slide ref={slideRef} {...properties}>
 				{selectedItem
-					? selectedItem.footage.map((each, index) => (
-							<div key={index} className={styles["slide"]}>
-								<img className={styles["currentImg"]} src={each} alt="sample" />
-							</div>
-						))
-					: selectedItem.footage.map((each, index) => (
-							<div key={index} className={styles["slide"]}>
-								<img className={styles["currentImg"]} src={each} alt="sample" />
-							</div>
-						))}
+					? selectedItem.images.map((each, index) => {
+							return (
+								<div key={index} className={styles["slide"]}>
+									<img className={styles["currentImg"]} src={each} alt="sample" />
+								</div>
+							);
+						})
+					: selectedItem.images.map((each, index) => {
+							return (
+								<div key={index} className={styles["slide"]}>
+									<img className={styles["currentImg"]} src={each} alt="sample" />
+								</div>
+							);
+						})}
 			</Slide>
-			{selectedItem.footage.length > 1 && (
+			{selectedItem.images.length > 1 && (
 				<>
 					<div className={styles["pageButtons"]}>
 						<button
@@ -104,7 +109,7 @@ const Slider = (props) => {
 						</button>
 					</div>
 					<div className={styles["selectorContainer"]}>
-						{selectedItem.footage.map((item, itemIndex) => {
+						{selectedItem.images.map((item, itemIndex) => {
 							return (
 								<button
 									key={itemIndex}

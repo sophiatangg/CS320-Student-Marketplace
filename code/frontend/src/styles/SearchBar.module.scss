@@ -1,5 +1,5 @@
 .search {
-	height: calc(var(--headerHeight) - 20px);
+	height: calc(100% - 20px);
 	border-radius: var(--borderRadius);
 	background-color: var(--buttonBackground);
 	transition: width 100ms linear;
@@ -22,7 +22,8 @@
 	}
 
 	.icon {
-		width: var(--searchIconsDimension);
+		min-width: var(--searchIconsDimension);
+		max-width: var(--searchIconsDimension);
 		height: var(--searchIconsDimension);
 		margin: 0 10px;
 		transition: opacity 100ms linear;

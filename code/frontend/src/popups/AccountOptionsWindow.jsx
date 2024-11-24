@@ -1,8 +1,10 @@
 import LoginButton from "@components/LoginButton";
-import { setUser } from "@database/users";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { signOut } from "@database/users";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountOptionsWindow.module.scss";
 import cns from "@utils/classNames";
+import { toastProps } from "@utils/toastProps";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BsBagPlusFill } from "react-icons/bs";
@@ -10,6 +12,8 @@ import { FaTrashCan } from "react-icons/fa6";
 import { HiLogin } from "react-icons/hi";
 import { PiUserCircleFill } from "react-icons/pi";
 import ScrollBar from "react-perfect-scrollbar";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const animationVariants = {
 	visible: {
@@ -33,12 +37,14 @@ const animationVariants = {
 const AccountOptionsWindow = () => {
 	const windowRef = useRef(null);
 	const [isExiting, setIsExiting] = useState(false);
-	const [isAuthorized, setIsAuthorized] = useState(false);
-	const [session, setSession] = useState(null);
+
+	const { currentUser, setCurrentUser } = useAuth();
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
+
+	const navigate = useNavigate();
 
 	const handleWindowRemoval = (e) => {
 		if (windowRef.current && !windowRef.current.contains(e.target)) {
@@ -70,25 +76,27 @@ const AccountOptionsWindow = () => {
 		};
 	}, [accountInfoDisplayed, dispatch]);
 
-	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
-
-			setSession(session);
-			setIsAuthorized(isUserAuthorized);
-		});
-
-		return () => {
-			authListener?.unsubscribe();
-		};
-	}, []);
-
 	const renderAccountOptions = () => {
 		const optionsList = [
 			{
 				name: "Profile",
 				icon: () => {
 					return <PiUserCircleFill />;
+				},
+				onClick: async (e) => {
+					e.preventDefault();
+
+					dispatch({
+						type: "SET_ACCOUNT_OPTIONS_DISPLAYED",
+						payload: false,
+					});
+
+					setTimeout(() => {
+						dispatch({
+							type: "SET_ACCOUNT_PROFILE_DISPLAYED",
+							payload: true,
+						});
+					}, 10);
 				},
 			},
 			{
@@ -108,6 +116,16 @@ const AccountOptionsWindow = () => {
 				icon: () => {
 					return <HiLogin />;
 				},
+				onClick: async (e) => {
+					const logOut = await signOut(e);
+					const { error } = logOut;
+
+					if (error) {
+						toast.error("Error signing out.", toastProps);
+					} else {
+						navigate(0);
+					}
+				},
 			},
 		];
 
@@ -124,6 +142,10 @@ const AccountOptionsWindow = () => {
 										[styles["delete-item"]]: option.name === "Delete Account",
 										[styles["logout-item"]]: option.name === "Logout",
 									})}
+									onClick={async (e) => {
+										if (!option.onClick) return;
+										await option.onClick(e);
+									}}
 								>
 									<div className={styles["list-item-inner"]}>
 										<span className={styles["list-icon"]}>{option.icon && option.icon()}</span>
@@ -197,9 +219,9 @@ const AccountOptionsWindow = () => {
 					>
 						<div className={styles["inner"]}>
 							<div className={styles["header"]}>
-								<span>Hello, {isAuthorized ? session.user.user_metadata.name.split(" ")[0] : "sign in!"}</span>
+								<span>Hello, {currentUser ? currentUser.user_metadata.name.split(" ")[0] : "sign in!"}</span>
 							</div>
-							{isAuthorized ? renderAccountOptions() : <LoginButton />}
+							{currentUser ? renderAccountOptions() : <LoginButton />}
 							<hr />
 							{renderThemeSwitcher()}
 						</div>

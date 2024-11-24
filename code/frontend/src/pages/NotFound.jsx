@@ -1,5 +1,5 @@
 import _404 from "@media/image/404.png";
-import { useContextDispatch } from "@stores/StoreProvider";
+import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/NotFound.module.scss";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
@@ -60,7 +60,7 @@ const NotFound = (props) => {
 						</h2>
 						<p>
 							The page you tried to access is not available. You will be redirected to our browse section shortly. If you think this is
-							an error, <span className={styles["contact"]}>contact us!</span>
+							an error, <span>contact us!</span>
 						</p>
 					</div>
 				</div>

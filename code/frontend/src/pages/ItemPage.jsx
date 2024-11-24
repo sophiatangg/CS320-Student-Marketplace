@@ -1,12 +1,15 @@
 import AddToCartButton from "@components/AddToCartButton";
-import LikeButton from "@components/LikeButton";
+import DeleteItemButton from "@components/DeleteItemButton";
+import EditItemButton from "@components/EditItemButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
-import { setUser } from "@database/users";
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import WishlistButton from "@components/WishlistButton";
+import { getUser } from "@database/users";
+import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
-import { formatDate } from "@utils/formatDate";
+import { formatDateAgo } from "@utils/formatDate";
 import { PROJECT_NAME } from "@utils/main";
 import templateGame from "@utils/templateGame";
 import { motion } from "framer-motion";
@@ -43,23 +46,24 @@ const AnimatedText = ({ children }) => {
 };
 
 const ItemPage = (props) => {
+	const { currentUser } = useAuth();
+
 	const navigate = useNavigate();
 
-	const [isAuthorized, setIsAuthorized] = useState(false);
-	const [extended, setExtended] = useState(false);
-	const [textExtended, setTextExtended] = useState(false);
+	const [isInfoExtended, setIsInfoExtended] = useState({
+		container: true,
+		text: true,
+	});
+
 	const [carouselState, setCarouselState] = useState(0);
 	const [isHover, setIsHover] = useState(false);
 	const [isError, setIsError] = useState(false);
+	const [sellerData, setSellerData] = useState(null);
 
 	const { pathname } = useLocation();
 
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
-
-	const extendText = () => {
-		setTextExtended(!textExtended);
-	};
 
 	const handleBrowse = async () => {
 		navigate("/browse");
@@ -75,18 +79,32 @@ const ItemPage = (props) => {
 		});
 	};
 
-	const handleExtend = (e) => {
-		if (document.getElementById("20").innerHTML === "More") {
-			document.getElementById("20").className = styles["aboutBottom"];
-		} else if (document.getElementById("20").innerHTML === "Hide") {
-			document.getElementById("20").className = "aboutBottomClosed";
-		}
+	const handleExtendedText = () => {
+		setIsInfoExtended((prev) => {
+			return {
+				...prev,
+				text: !isInfoExtended.text,
+			};
+		});
+	};
 
-		setExtended(!extended);
-		if (textExtended === false) {
-			setTimeout(extendText, 500);
+	const handleExtend = (e) => {
+		setIsInfoExtended((prev) => {
+			return {
+				...prev,
+				container: !isInfoExtended.container,
+			};
+		});
+
+		if (!isInfoExtended.text) {
+			setTimeout(handleExtendedText, 500);
 		} else {
-			setTextExtended(!textExtended);
+			setIsInfoExtended((prev) => {
+				return {
+					...prev,
+					text: !isInfoExtended.text,
+				};
+			});
 		}
 	};
 
@@ -97,11 +115,18 @@ const ItemPage = (props) => {
 		});
 	};
 
+	const handleNavigateCategory = (categoryName) => {
+		if (!categoryName) return;
+		if (categoryName === "") return;
+
+		navigate(`/browse?cat=${String(categoryName).toLowerCase()}`);
+	};
+
 	useEffect(() => {
 		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
 			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
 
-			const currentItem = allItems.find((item) => {
+			const currentItem = allItems?.find((item) => {
 				return item.surName === surname || item.surname === surname;
 			});
 
@@ -119,21 +144,124 @@ const ItemPage = (props) => {
 	}, [pathname, selectedItem, allItems, dispatch]);
 
 	useEffect(() => {
-		const authListener = setUser((session) => {
-			const isUserAuthorized = session?.user?.email || false;
+		if (!selectedItem || !selectedItem.hasOwnProperty("seller_id")) return;
 
-			setIsAuthorized(isUserAuthorized || false);
-
-			if (!isUserAuthorized) {
-				navigate("/login");
+		const fetchUser = async () => {
+			if (!selectedItem?.seller_id) {
+				setSellerData(null);
+				return;
 			}
-		});
-		return () => {
-			authListener?.unsubscribe();
+
+			try {
+				const res = await getUser(selectedItem.seller_id);
+				setSellerData(res ?? null);
+			} catch (error) {
+				console.error("Error fetching seller data:", error);
+				setSellerData(null);
+			}
 		};
-	}, [isAuthorized]);
+
+		fetchUser();
+	}, [selectedItem?.seller_id]);
+
+	const renderMoreBottom = () => {
+		return (
+			<div
+				className={cns(styles["moreBottom"], {
+					[styles["conditionalOpen"]]: isInfoExtended.container,
+					[styles["conditionalClose"]]: !isInfoExtended.container,
+				})}
+				id="about"
+			>
+				<AnimatedText>
+					<div
+						className={cns({
+							[styles["open"]]: isInfoExtended.text,
+							[styles["closed"]]: !isInfoExtended.text,
+						})}
+					>
+						<h4>
+							<span>Date Added:</span>
+							<span>{formatDateAgo({ date: selectedItem?.created_at })}</span>
+						</h4>
+						<h4 className={styles["valueClickable"]}>
+							<span>Seller:</span>
+							<span>{sellerData?.name}</span>
+						</h4>
+						<h4 className={styles["valueClickable"]}>
+							<span>Category:</span>
+							<span
+								onClick={(e) => {
+									handleNavigateCategory(selectedItem?.category);
+								}}
+							>
+								{selectedItem?.category}
+							</span>
+						</h4>
+						<h4>
+							<span>Condition:</span>
+							<span>{selectedItem?.condition}</span>
+						</h4>
+					</div>
+				</AnimatedText>
+				<button
+					onClick={handleExtend}
+					className={cns(styles["moreBottomButton"], {
+						[styles["aboutBottom"]]: isInfoExtended.container,
+						[styles["aboutBottomClosed"]]: !isInfoExtended.container,
+					})}
+					aria-label="Extend"
+				>
+					<span>{isInfoExtended.container ? "Hide Details" : "More Details"}</span>
+					{isInfoExtended.container ? (
+						<FaChevronUp className={styles["up"]} style={{ fill: isHover ? "#fff" : "#cccccc" }} />
+					) : (
+						<FaChevronUp className={styles["down"]} style={{ fill: isHover ? "#fff" : "#cccccc" }} />
+					)}
+				</button>
+			</div>
+		);
+	};
+
+	const renderAbout = () => {
+		return (
+			<div className={styles["about"]}>
+				<div className={styles["aboutTop"]}>
+					<h1 className={styles["itemName"]}>{selectedItem ? selectedItem?.name : templateGame.name}</h1>
+					<p>{selectedItem ? selectedItem?.desc : templateGame.desc}</p>
+				</div>
+				{renderMoreBottom()}
+			</div>
+		);
+	};
+
+	const renderButtons = () => {
+		return (
+			<div className={cns(styles["buttonContainer"], {})}>
+				<div className={styles["infos"]}>
+					<h3>${selectedItem ? selectedItem?.price : templateGame.price}</h3>
+					{!isOwnItem && (
+						<div className={styles["cart-trade"]}>
+							<AddToCartButton item={selectedItem} isBig={true} />
+							<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
+						</div>
+					)}
+				</div>
+				{!isOwnItem ? (
+					<WishlistButton item={selectedItem ?? templateGame} />
+				) : (
+					<div className={styles["delete-edit"]}>
+						<DeleteItemButton isBig={true} itemId={selectedItem?.id} />
+						<EditItemButton isBig={true} itemId={selectedItem?.id} />
+					</div>
+				)}
+			</div>
+		);
+	};
 
 	if (!selectedItem) return null;
+
+	const isOwnItem = selectedItem?.seller_id === currentUser?.id;
 
 	return (
 		<>
@@ -145,7 +273,7 @@ const ItemPage = (props) => {
 				<motion.div variants={pageAnimations} initial="initial" animate="animate" exit="exit">
 					<div className={styles["itemPageContent"]}>
 						<>
-							<header>
+							<header className={styles["itemPageHeader"]}>
 								<button className={styles["goBack"]} onClick={handleBrowse} id="19" aria-label="Back">
 									<FaArrowLeftLong className={styles["arrow"]} />
 									Store
@@ -153,74 +281,9 @@ const ItemPage = (props) => {
 							</header>
 							<section className={styles["item"]}>
 								{<Slider carouselState={carouselState} setCarouselState={setCarouselState} />}
-								<div className={styles["gameInfo"]}>
-									<div className={styles["about"]}>
-										<div className={styles["aboutTop"]}>
-											<h1 className={styles["itemName"]}>{selectedItem ? selectedItem?.name : templateGame.name}</h1>
-											<p>{selectedItem ? selectedItem?.desc : templateGame.desc}</p>
-										</div>
-										<div
-											className={cns(styles["moreBottom"], {
-												[styles["conditionalOpen"]]: extended,
-												[styles["conditionalClose"]]: !extended,
-											})}
-											id="about"
-										>
-											<AnimatedText>
-												<div
-													className={cns({
-														[styles["open"]]: textExtended,
-														[styles["closed"]]: !textExtended,
-													})}
-												>
-													<h4>
-														<span>Date Added:</span>
-														<span>{formatDate({ date: selectedItem?.date })}</span>
-													</h4>
-													<h4>
-														<span>Seller:</span>
-														<span>{selectedItem?.seller}</span>
-													</h4>
-													<h4>
-														<span>Category:</span>
-														<span>{selectedItem?.category}</span>
-													</h4>
-													<h4>
-														<span>Condition:</span>
-														<span>{selectedItem?.condition}</span>
-													</h4>
-												</div>
-											</AnimatedText>
-											<button
-												id="20"
-												onClick={handleExtend}
-												className={cns(styles["moreBottomButton"], {
-													[styles["buttonHovered"]]: isHover,
-													[styles["buttonNotHovered"]]: !isHover,
-												})}
-												aria-label="Extend"
-											>
-												{extended ? "Hide Details" : "More Details"}
-												{extended ? (
-													<FaChevronUp className={styles["up"]} style={{ fill: isHover ? "#fff" : "#cccccc" }} />
-												) : (
-													<FaChevronUp className={styles["down"]} style={{ fill: isHover ? "#fff" : "#cccccc" }} />
-												)}
-											</button>
-										</div>
-									</div>
-
-									<div className={styles["addToCart"]}>
-										<div className={styles["infos"]}>
-											<h3>${selectedItem ? selectedItem?.price : templateGame.price}</h3>
-											<div className={styles["cart-trade"]}>
-												<AddToCartButton item={selectedItem} isBig={true} />
-												<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
-											</div>
-										</div>
-
-										<LikeButton item={selectedItem ?? templateGame} />
-									</div>
+								<div className={styles["itemInfo"]}>
+									{renderAbout()}
+									{renderButtons()}
 								</div>
 							</section>
 						</>

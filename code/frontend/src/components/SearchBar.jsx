@@ -1,4 +1,4 @@
-import { useContextDispatch, useContextSelector } from "@stores/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/SearchBar.module.scss";
 import cns from "@utils/classNames";
 import { motion } from "framer-motion";
@@ -7,6 +7,11 @@ import { HiSearch } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { MdOutlineManageSearch } from "react-icons/md";
 import { useLocation, useSearchParams } from "react-router-dom";
+
+const searchVariants = {
+	hidden: { opacity: 0 },
+	visible: { opacity: 1 },
+};
 
 const SearchBar = (props) => {
 	const [searchVal, setSearchVal] = useState("");
@@ -21,11 +26,6 @@ const SearchBar = (props) => {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const { pathname } = useLocation();
-
-	const searchVariants = {
-		hidden: { opacity: 0 },
-		visible: { opacity: 1 },
-	};
 
 	const handleSearch = (e) => {
 		const val = e.target.value;
@@ -161,7 +161,7 @@ const SearchBar = (props) => {
 							[styles["hasQuery"]]: searchQuery,
 						})}
 					>
-						<HiSearch className={styles["svg"]} style={{ fill: searchHover ? "#fff" : "#cccccc" }} id="7" aria-label="Search" />
+						<HiSearch style={{ fill: searchHover ? "#fff" : "#cccccc" }} id="7" aria-label="Search" />
 					</div>
 					{searchQuery ? (
 						<div className={styles["submittedQuery"]}>
@@ -174,7 +174,7 @@ const SearchBar = (props) => {
 								</div>
 							</div>
 							<div ref={queryButtonRemoveRef} onClick={handleRemoveSearchQuery} className={styles["removeQueryButton"]}>
-								<IoClose className={styles["svg"]} />
+								<IoClose />
 							</div>
 						</div>
 					) : (
