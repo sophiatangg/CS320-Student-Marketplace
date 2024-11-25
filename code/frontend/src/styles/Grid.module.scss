@@ -1,5 +1,5 @@
 .gridContainer {
-	max-width: 1500px;
+	max-width: var(--contentMaxWidth);
 	margin-top: 25px;
 
 	&.withGrid {

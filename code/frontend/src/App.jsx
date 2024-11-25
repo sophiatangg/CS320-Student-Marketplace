@@ -1,4 +1,5 @@
 import Footer from "@components/Footer";
+import LoadingBar from "@components/LoadingBar";
 import NavBar from "@components/NavBar";
 import { selectAllItemsWithImages, selectAllWishlistItemsByUser } from "@database/items";
 import Browse from "@pages/Browse";
@@ -17,6 +18,7 @@ import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
 import cns from "@utils/classNames";
+import { usePrevious } from "@utils/usePrevious";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
@@ -35,9 +37,23 @@ const App = () => {
 
 	const dispatch = useContextDispatch();
 
-	const { theme } = useContextSelector("globalStore");
+	const { loading, theme } = useContextSelector("globalStore");
 	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
-	const { pathname } = useLocation();
+
+	const location = useLocation();
+
+	const prevPathname = usePrevious(location.pathname);
+
+	useEffect(() => {
+		const hasPathChanged = prevPathname !== location.pathname;
+
+		if (hasPathChanged) {
+			dispatch({
+				type: "SET_LOADING",
+				payload: true,
+			});
+		}
+	}, [location.pathname, prevPathname, dispatch]);
 
 	useEffect(() => {
 		const fetchItems = async () => {
@@ -100,7 +116,7 @@ const App = () => {
 	}, [theme]);
 
 	const animationKey = () => {
-		const key = pathname.split("/").filter(Boolean).join("-");
+		const key = location.pathname.split("/").filter(Boolean).join("-");
 		return key || "home";
 	};
 
@@ -108,6 +124,7 @@ const App = () => {
 
 	return (
 		<>
+			{loading && <LoadingBar />}
 			<div
 				className={cns(appStyles["app"], {
 					[appStyles["hasWindowDisplay"]]:
@@ -129,7 +146,7 @@ const App = () => {
 								}
 							/>
 							<Route
-								path="/store/:itemId"
+								path="/store/:surname"
 								element={
 									<ProtectedRoute>
 										<ItemPage />

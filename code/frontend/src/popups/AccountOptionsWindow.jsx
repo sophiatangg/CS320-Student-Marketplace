@@ -38,7 +38,7 @@ const AccountOptionsWindow = () => {
 	const windowRef = useRef(null);
 	const [isExiting, setIsExiting] = useState(false);
 
-	const { currentUser, setCurrentUser } = useAuth();
+	const { currentUser } = useAuth();
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const { theme: currentTheme } = useContextSelector("globalStore");
@@ -95,6 +95,11 @@ const AccountOptionsWindow = () => {
 						dispatch({
 							type: "SET_ACCOUNT_PROFILE_DISPLAYED",
 							payload: true,
+						});
+
+						dispatch({
+							type: "SET_SELECTED_USER_ID",
+							payload: currentUser.id,
 						});
 					}, 10);
 				},

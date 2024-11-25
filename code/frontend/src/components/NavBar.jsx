@@ -166,19 +166,19 @@ const NavBar = (props) => {
 	};
 
 	return (
-		<>
-			<motion.div
-				key="navBar-component"
-				ref={componentRef}
-				className={cns(styles["navbar"], {
-					[styles["navBarNarrow"]]: isSmallScreen,
-				})}
-				id={props.component}
-				animate={"visible"}
-				initial={"visible"}
-				variants={navBarVariants}
-				transition={{ y: { type: "spring" }, duration: 0.01 }}
-			>
+		<motion.div
+			key="navBar-component"
+			ref={componentRef}
+			className={cns(styles["navbar"], {
+				[styles["navBarNarrow"]]: isSmallScreen,
+			})}
+			id={props.component}
+			animate={"visible"}
+			initial={"visible"}
+			variants={navBarVariants}
+			transition={{ y: { type: "spring" }, duration: 0.01 }}
+		>
+			<div className={styles["navBarInner"]}>
 				{!isSmallScreen ? (
 					<>
 						{renderNavLeft()}
@@ -194,8 +194,8 @@ const NavBar = (props) => {
 						{renderNavCenter()}
 					</>
 				)}
-			</motion.div>
-		</>
+			</div>
+		</motion.div>
 	);
 };
 

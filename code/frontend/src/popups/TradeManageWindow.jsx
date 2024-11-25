@@ -38,6 +38,22 @@ const TradeManageWindow = () => {
 		});
 	};
 
+	const handleChat = (e) => {
+		e.preventDefault();
+
+		dispatch({
+			type: "SET_TRADE_MANAGE_DISPLAYED",
+			payload: false,
+		});
+
+		setTimeout(() => {
+			dispatch({
+				type: "SET_CHAT_DISPLAYED",
+				payload: true,
+			});
+		}, 10);
+	};
+
 	useEffect(() => {
 		const loadTradeRequests = async () => {
 			if (!currentUser || !currentUser.id) return;
@@ -189,7 +205,9 @@ const TradeManageWindow = () => {
 			{
 				name: "chat",
 				className: "chatButton",
-				onClick: (e) => {},
+				onClick: (e) => {
+					handleChat(e);
+				},
 				icon: () => {
 					return <BsChatQuoteFill />;
 				},
@@ -216,7 +234,7 @@ const TradeManageWindow = () => {
 			<div className={styles["tradeInfoButtons"]}>
 				{buttonOpt.map((button, buttonIdx) => {
 					return (
-						<div key={buttonIdx} id={button.name} className={styles["tradeInfoButton"]} tabIndex={0}>
+						<div key={buttonIdx} id={button.name} className={styles["tradeInfoButton"]} tabIndex={0} onClick={button.onClick}>
 							<span>{button.icon()}</span>
 						</div>
 					);

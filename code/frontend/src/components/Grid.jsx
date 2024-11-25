@@ -14,52 +14,55 @@ const Grid = (props) => {
 	const categoryName = params.get("cat") || "";
 
 	const { allItems, ownWishlistItems, shownItems } = useContextSelector("itemsStore");
-	const { gridDisplay, items: localStorageItems } = useContextSelector("globalStore");
+	const { gridDisplay } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
 	const dispatch = useContextDispatch();
 
 	useEffect(() => {
-		let items;
-		if (!searchQuery) {
-			if (!categoryName || categoryName === "all") {
-				items = allItems;
-			} else if (categoryName === "my-items") {
-				items = allItems.filter((item) => {
-					return item.seller_id === currentUser.id;
-				});
-			} else if (categoryName === "wishlist") {
-				const matchedItems = allItems.filter((item) => {
-					return ownWishlistItems.some((wishlistItem) => {
-						return wishlistItem.item_id === item.id;
-					});
-				});
-
-				items = matchedItems;
-			} else {
-				items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
-			}
-		} else {
-			// this is for when a user is searching with a query
-			const foundItems = allItems?.filter((item, i) => {
-				// safe checking for items without names
-				// this should only happen in development and not during production
-				if (!item?.name) return false;
-
-				const name = item.name.toLowerCase().replace(/\s+/g, ""); // Safely access `name` and replace all spaces
-				const query = searchQuery.toLowerCase().replace(/\s+/g, ""); // Replace all spaces in query
-
-				return name.includes(query);
+		const updateItems = async () => {
+			dispatch({
+				type: "SET_LOADING",
+				payload: true,
 			});
 
-			items = foundItems;
-		}
+			try {
+				let items;
+				if (!searchQuery) {
+					if (!categoryName || categoryName === "all") {
+						items = allItems;
+					} else if (categoryName === "my-items") {
+						items = allItems.filter((item) => item.seller_id === currentUser.id);
+					} else if (categoryName === "wishlist") {
+						items = allItems.filter((item) => ownWishlistItems.some((wishlistItem) => wishlistItem.item_id === item.id));
+					} else {
+						items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
+					}
+				} else {
+					items = allItems?.filter((item) => {
+						if (!item?.name) return false;
+						const name = item.name.toLowerCase().replace(/\s+/g, "");
+						const query = searchQuery.toLowerCase().replace(/\s+/g, "");
+						return name.includes(query);
+					});
+				}
 
-		dispatch({
-			type: "SET_SHOWN_ITEMS",
-			payload: items,
-		});
-	}, [allItems, categoryName, localStorageItems, searchQuery]);
+				dispatch({
+					type: "SET_SHOWN_ITEMS",
+					payload: items,
+				});
+			} catch (error) {
+				console.error("Error processing items in Grid:", error);
+			} finally {
+				dispatch({
+					type: "SET_LOADING",
+					payload: false,
+				});
+			}
+		};
+
+		updateItems();
+	}, [allItems, categoryName, searchQuery, currentUser, ownWishlistItems, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
@@ -70,6 +73,8 @@ const Grid = (props) => {
 			message = "No Items";
 		} else if (categoryName === "wishlist") {
 			message = "Empty Wishlist";
+		} else {
+			message = `No results for ${searchQuery}.`;
 		}
 
 		return (
@@ -89,7 +94,7 @@ const Grid = (props) => {
 				})}
 				id="gridContainer"
 			>
-				{!shownItems?.length && renderPlaceHolder()}
+				{shownItems.length === 0 && renderPlaceHolder()}
 				{shownItems?.map((item, i) => {
 					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
 				})}

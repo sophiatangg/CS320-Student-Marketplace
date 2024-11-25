@@ -5,10 +5,19 @@
 .footer {
 	width: 100%;
 	background-color: var(--colorDark);
-	padding: 40px calc(var(--sidebarSpaceOffset) - 20px) 0 calc(var(--sidebarSpaceOffset) - 20px);
+}
+
+.footerInner {
+	max-width: calc(var(--filterListWidth) + var(--contentMaxWidth) + var(--browseContentGap));
+	padding: 40px 0 0 0;
+	margin: 0 auto;
 	position: relative;
 	display: flex;
 	flex-direction: column;
+
+	@media screen and (max-width: 1800px) {
+		padding: 40px calc(var(--sidebarSpaceOffset) - 20px) 0 calc(var(--sidebarSpaceOffset) - 20px);
+	}
 }
 
 .footerTop {

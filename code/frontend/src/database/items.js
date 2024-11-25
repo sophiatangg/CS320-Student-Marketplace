@@ -125,6 +125,43 @@ export const getItemByItemId = async (itemId) => {
 	}
 };
 
+export const getItemWithImagesBySurname = async (surname) => {
+	if (!surname) {
+		throw new Error("Surname is required to fetch item details.");
+	}
+
+	try {
+		// Fetch the item details using the provided surname
+		const { data: itemData, error: itemError } = await supabase.from(itemTableName).select("*").eq("surname", surname).single();
+
+		if (itemError) {
+			console.error("Error fetching item by surname:", itemError);
+			throw new Error("Failed to fetch item details.");
+		}
+
+		if (!itemData) {
+			return null; // Item not found
+		}
+
+		// Fetch the associated images for the item
+		const { data: itemImages, error: imagesError } = await supabase.from(itemImagesTableName).select("image_url").eq("itemid", itemData.id);
+
+		if (imagesError) {
+			console.error("Error fetching images for item:", imagesError);
+			throw new Error("Failed to fetch item images.");
+		}
+
+		// Combine the item data with its images
+		return {
+			...itemData,
+			images: itemImages?.map((img) => img.image_url) || [], // Add the images as an array
+		};
+	} catch (error) {
+		console.error("Unexpected error in getItemBySurname:", error);
+		throw error;
+	}
+};
+
 export const getItemImagesByItemId = async (itemId) => {
 	if (!itemId) return;
 
@@ -168,9 +205,10 @@ export const generateUniqueSurname = async (itemName) => {
 	};
 };
 
-export const uploadAndHostItemImage = async ({ file, expiration = 604800 }) => {
+export const uploadAndHostItemImage = async ({ file }) => {
 	const uniqueFileName = `${uuidv4()}-${file.name}`;
 
+	// Upload the file to the public bucket
 	const { data: uploadData, error: uploadError } = await supabase.storage.from(itemImagesStorageName).upload(`images/${uniqueFileName}`, file, {
 		cacheControl: "3600",
 		upsert: false,
@@ -181,26 +219,24 @@ export const uploadAndHostItemImage = async ({ file, expiration = 604800 }) => {
 		return null;
 	}
 
-	// URL valid for 604800 seconds (1 week)
-	const { data: signedUrl, error: signedError } = await supabase.storage
-		.from(itemImagesStorageName)
-		.createSignedUrl(`images/${uniqueFileName}`, expiration);
+	// Construct the public URL for the uploaded file
+	const publicData = supabase.storage.from(itemImagesStorageName).getPublicUrl(uploadData.path);
 
-	if (signedError) {
-		console.error("Error creating signed URL:", signedError);
+	if (!publicData.data || !publicData.data.publicUrl) {
+		console.error("Error fetching image public URL after upload");
 		return null;
 	}
 
 	const returnObj = {
 		path: uploadData.path,
-		fullPath: signedUrl.signedUrl,
+		fullPath: publicData.data.publicUrl,
 	};
 
 	return returnObj;
 };
 
 export const removeUploadedItemImage = async (imageURL) => {
-	const res = await supabase.storage.from("item-images").remove([imageURL]);
+	const res = await supabase.storage.from(itemImagesStorageName).remove([imageURL]);
 
 	if (res.error) {
 		console.error("Failed to delete image from Supabase:", error);

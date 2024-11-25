@@ -4,6 +4,7 @@ import EditItemButton from "@components/EditItemButton";
 import Slider from "@components/Slider";
 import TradeButton from "@components/TradeButton";
 import WishlistButton from "@components/WishlistButton";
+import { getItemWithImagesBySurname } from "@database/items";
 import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -11,12 +12,11 @@ import styles from "@styles/ItemPage.module.scss";
 import cns from "@utils/classNames";
 import { formatDateAgo } from "@utils/formatDate";
 import { PROJECT_NAME } from "@utils/main";
-import templateGame from "@utils/templateGame";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaChevronUp } from "react-icons/fa";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const pageAnimations = {
 	initial: { opacity: 0, x: -200 },
@@ -46,6 +46,7 @@ const AnimatedText = ({ children }) => {
 };
 
 const ItemPage = (props) => {
+	const { surname } = useParams();
 	const { currentUser } = useAuth();
 
 	const navigate = useNavigate();
@@ -54,15 +55,13 @@ const ItemPage = (props) => {
 		container: true,
 		text: true,
 	});
-
 	const [carouselState, setCarouselState] = useState(0);
 	const [isHover, setIsHover] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const [sellerData, setSellerData] = useState(null);
 
-	const { pathname } = useLocation();
-
-	const { allItems, selectedItem } = useContextSelector("itemsStore");
+	const { loading } = useContextSelector("globalStore");
+	const { selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
 	const handleBrowse = async () => {
@@ -123,25 +122,41 @@ const ItemPage = (props) => {
 	};
 
 	useEffect(() => {
-		if (pathname !== "/" && pathname !== "/browse" && !selectedItem) {
-			const surname = pathname.match(/(?<=\/[^\/]+\/)[^\/]+/);
+		const fetchItem = async () => {
+			try {
+				if (!surname) {
+					navigate("/not-found");
+					return;
+				}
 
-			const currentItem = allItems?.find((item) => {
-				return item.surName === surname || item.surname === surname;
-			});
+				// Fetch item from the database by surname
+				const fetchedItem = await getItemWithImagesBySurname(surname);
 
-			const item = currentItem ?? templateGame;
+				if (fetchedItem) {
+					document.title = `${PROJECT_NAME} — ${fetchedItem.name}`;
 
-			document.title = `${PROJECT_NAME} — ${surname}`;
+					dispatch({
+						type: "SET_SELECTED_ITEM",
+						payload: fetchedItem,
+					});
+				} else {
+					// If no item found, redirect to Not Found
+					navigate("/not-found");
+				}
+			} catch (error) {
+				console.error("Error fetching item:", error);
+				navigate("/not-found");
+			} finally {
+				// Stop loading
+				dispatch({
+					type: "SET_LOADING",
+					payload: false,
+				});
+			}
+		};
 
-			dispatch({
-				type: "SET_SELECTED_ITEM",
-				payload: item,
-			});
-		} else {
-			document.title = `${PROJECT_NAME} — ${selectedItem.name || selectedItem.name}`;
-		}
-	}, [pathname, selectedItem, allItems, dispatch]);
+		fetchItem();
+	}, [surname, dispatch, navigate]);
 
 	useEffect(() => {
 		if (!selectedItem || !selectedItem.hasOwnProperty("seller_id")) return;
@@ -186,7 +201,7 @@ const ItemPage = (props) => {
 						</h4>
 						<h4 className={styles["valueClickable"]}>
 							<span>Seller:</span>
-							<span>{sellerData?.name}</span>
+							<span>{selectedItem.seller_id === currentUser.id ? "You" : sellerData?.name}</span>
 						</h4>
 						<h4 className={styles["valueClickable"]}>
 							<span>Category:</span>
@@ -227,8 +242,8 @@ const ItemPage = (props) => {
 		return (
 			<div className={styles["about"]}>
 				<div className={styles["aboutTop"]}>
-					<h1 className={styles["itemName"]}>{selectedItem ? selectedItem?.name : templateGame.name}</h1>
-					<p>{selectedItem ? selectedItem?.desc : templateGame.desc}</p>
+					<h1 className={styles["itemName"]}>{selectedItem?.name}</h1>
+					<p>{selectedItem?.desc}</p>
 				</div>
 				{renderMoreBottom()}
 			</div>
@@ -239,7 +254,7 @@ const ItemPage = (props) => {
 		return (
 			<div className={cns(styles["buttonContainer"], {})}>
 				<div className={styles["infos"]}>
-					<h3>${selectedItem ? selectedItem?.price : templateGame.price}</h3>
+					<h3>${selectedItem?.price}</h3>
 					{!isOwnItem && (
 						<div className={styles["cart-trade"]}>
 							<AddToCartButton item={selectedItem} isBig={true} />
@@ -248,7 +263,7 @@ const ItemPage = (props) => {
 					)}
 				</div>
 				{!isOwnItem ? (
-					<WishlistButton item={selectedItem ?? templateGame} />
+					<WishlistButton item={selectedItem} />
 				) : (
 					<div className={styles["delete-edit"]}>
 						<DeleteItemButton isBig={true} itemId={selectedItem?.id} />
@@ -259,8 +274,6 @@ const ItemPage = (props) => {
 		);
 	};
 
-	if (!selectedItem) return null;
-
 	const isOwnItem = selectedItem?.seller_id === currentUser?.id;
 
 	return (
@@ -268,27 +281,34 @@ const ItemPage = (props) => {
 			<div
 				className={cns(styles["itemPage"], {
 					[styles["notFound"]]: isError,
+					[styles["isWaiting"]]: loading,
 				})}
 			>
-				<motion.div variants={pageAnimations} initial="initial" animate="animate" exit="exit">
-					<div className={styles["itemPageContent"]}>
-						<>
-							<header className={styles["itemPageHeader"]}>
-								<button className={styles["goBack"]} onClick={handleBrowse} id="19" aria-label="Back">
-									<FaArrowLeftLong className={styles["arrow"]} />
-									Store
-								</button>
-							</header>
-							<section className={styles["item"]}>
-								{<Slider carouselState={carouselState} setCarouselState={setCarouselState} />}
-								<div className={styles["itemInfo"]}>
-									{renderAbout()}
-									{renderButtons()}
-								</div>
-							</section>
-						</>
+				{loading ? (
+					<div className={styles["itemLoading"]}>
+						<span>Loading...</span>
 					</div>
-				</motion.div>
+				) : (
+					<motion.div variants={pageAnimations} initial="initial" animate="animate" exit="exit">
+						<div className={styles["itemPageContent"]}>
+							<>
+								<header className={styles["itemPageHeader"]}>
+									<button className={styles["goBack"]} onClick={handleBrowse} id="19" aria-label="Back">
+										<FaArrowLeftLong className={styles["arrow"]} />
+										Store
+									</button>
+								</header>
+								<section className={styles["item"]}>
+									{<Slider carouselState={carouselState} setCarouselState={setCarouselState} />}
+									<div className={styles["itemInfo"]}>
+										{renderAbout()}
+										{renderButtons()}
+									</div>
+								</section>
+							</>
+						</div>
+					</motion.div>
+				)}
 			</div>
 		</>
 	);

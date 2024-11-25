@@ -117,6 +117,7 @@ const Browse = (props) => {
 									</button>
 								</div>
 							</div>
+
 							<Grid />
 						</div>
 					</div>

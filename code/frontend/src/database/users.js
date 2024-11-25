@@ -1,6 +1,7 @@
 import { supabase } from "@database/supabaseClient";
 
 const tableName = "User";
+const authTableName = "auth.users";
 
 const signInWithGoogle = async () => {
 	const { data, error } = await supabase.auth.signInWithOAuth({
@@ -46,6 +47,17 @@ const getUser = async (userId) => {
 	if (userData) {
 		return userData;
 	}
+};
+
+const getAuthUser = async (userId) => {
+	const { data, error } = await supabase.from(authTableName).select("*").eq("id", userId).single();
+
+	if (error) {
+		console.error("Error fetching user:", error);
+		return null;
+	}
+
+	return data;
 };
 
 const insertUserData = async () => {
@@ -114,4 +126,4 @@ const signOut = async (e) => {
 	return data;
 };
 
-export { getUser, insertUserData, setUser, signInWithGoogle, signOut };
+export { getAuthUser, getUser, insertUserData, setUser, signInWithGoogle, signOut };

@@ -3,10 +3,6 @@
 .navbar {
 	width: 100%;
 	height: var(--headerHeight);
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	position: fixed;
 	inset: 0 auto auto 0;
 	backdrop-filter: blur(10px);
@@ -14,12 +10,6 @@
 
 	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 		position: relative;
-	}
-
-	&.navBarNarrow {
-		flex-flow: column;
-		align-items: flex-start;
-		justify-content: flex-start;
 	}
 
 	&[id="home"] {
@@ -30,8 +20,8 @@
 		background-color: #{rgba(v.$bgColor, 0.7)};
 	}
 
-	> div {
-		flex: 1;
+	@media screen and (max-width: 1800px) {
+		padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	}
 
 	.logo {
@@ -89,6 +79,25 @@
 	}
 }
 
+.navBarInner {
+	max-width: calc(var(--filterListWidth) + var(--contentMaxWidth) + var(--browseContentGap));
+	height: 100%;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+
+	@at-root .navBarNarrow & {
+		flex-flow: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
+	> div {
+		flex: 1;
+	}
+}
+
 .navBarNarrowTop,
 .middle {
 	width: 100%;
@@ -138,5 +147,13 @@
 	&[id="browseStore"] {
 		font-size: 14px;
 		gap: 20px;
+	}
+
+	span {
+		&:not([class]) {
+			&:last-child {
+				user-select: none;
+			}
+		}
 	}
 }

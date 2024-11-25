@@ -135,6 +135,12 @@
 	}
 }
 
+.cardFetchingInfo {
+	> div {
+		filter: blur(8px);
+	}
+}
+
 .name {
 	width: max-content;
 	max-width: 100%;
@@ -212,7 +218,7 @@
 		flex: 1;
 		display: block;
 		cursor: default;
-		--labelWidth: 65px;
+		--labelWidth: 61px;
 		--valueWidth: calc(100% - var(--labelWidth) - var(--gapWidth));
 
 		&:first-child {

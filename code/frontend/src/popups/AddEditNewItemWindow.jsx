@@ -214,6 +214,8 @@ const AddEditNewItemWindow = (props) => {
 
 			if (imageURLPath) {
 				uploadedImages.push(imageURLPath);
+			} else {
+				toast.error("Failed to upload image.");
 			}
 		}
 

@@ -1,28 +1,53 @@
+import { getUser } from "@database/users";
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountProfileWindow.module.scss";
 import cns from "@utils/classNames";
 import { formattedDate, isValidISODate } from "@utils/formatDate";
 import { useEffect, useState } from "react";
 
 const AccountProfileWindow = (props) => {
-	const [userInfo, setUserInfo] = useState({});
-
 	const { currentUser } = useAuth();
 
-	useEffect(() => {
-		if (!currentUser) return;
+	const [userInfo, setUserInfo] = useState({});
 
-		setUserInfo({
-			id: currentUser.id,
-			email: currentUser.user_metadata.email,
-			name: currentUser.user_metadata.full_name,
-			avatarURL: currentUser.user_metadata.avatar_url,
-			createdAt: currentUser.created_at,
-			emailConfirmedAt: currentUser.email_confirmed_at,
-			lastSignInAt: currentUser.last_sign_in_at,
-		});
-	}, [currentUser]);
+	const { selectedUserId } = useContextSelector("globalStore");
+	const dispatch = useContextDispatch();
+
+	const isOwnProfile = currentUser.id === selectedUserId;
+
+	useEffect(() => {
+		if (!selectedUserId) return;
+
+		if (isOwnProfile) {
+			setUserInfo({
+				id: currentUser.id,
+				email: currentUser.user_metadata.email,
+				name: currentUser.user_metadata.full_name,
+				avatarURL: currentUser.user_metadata.avatar_url,
+				createdAt: currentUser.created_at,
+				lastSignInAt: currentUser.last_sign_in_at,
+			});
+		} else {
+			getUser(selectedUserId)
+				.then((res) => {
+					setUserInfo({
+						id: res.id,
+						email: res.email,
+						name: res.name,
+						avatarURL: res.avatar_url,
+						createdAt: res.created_at,
+					});
+				})
+				.catch((error) => {
+					dispatch({
+						type: "SET_SELECTED_USER_ID",
+						payload: null,
+					});
+				});
+		}
+	}, [currentUser, selectedUserId]);
 
 	const renderPropIcon = (prop) => {};
 
@@ -72,10 +97,11 @@ const AccountProfileWindow = (props) => {
 							</div>
 						</div>
 						<div className={styles["misc"]}>
-							{renderDetailWithLabel({
-								prop: userInfo.email,
-								label: "Email",
-							})}
+							{isOwnProfile &&
+								renderDetailWithLabel({
+									prop: userInfo.email,
+									label: "Email",
+								})}
 							{renderDetailWithLabel({
 								prop: userInfo.createdAt,
 								label: "Member Since",
@@ -84,10 +110,11 @@ const AccountProfileWindow = (props) => {
 								prop: userInfo.createdAt,
 								label: "Email Confirmed Since",
 							})}
-							{renderDetailWithLabel({
-								prop: userInfo.lastSignInAt,
-								label: "Last Sign In",
-							})}
+							{userInfo.lastSignInAt &&
+								renderDetailWithLabel({
+									prop: userInfo.lastSignInAt,
+									label: "Last Sign In",
+								})}
 						</div>
 					</div>
 				</div>

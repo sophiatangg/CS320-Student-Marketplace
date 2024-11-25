@@ -1,4 +1,5 @@
 import { getUser } from "@database/users";
+import { useAuth } from "@providers/AuthProvider";
 import styles from "@styles/CardMini.module.scss";
 import cns from "@utils/classNames";
 import { formatDateAgo } from "@utils/formatDate";
@@ -6,6 +7,8 @@ import { useEffect, useState } from "react";
 
 const CardMini = (props) => {
 	const { item, isDefaultSelected, handleItemOfferSelected, selectedOfferedItems } = props;
+
+	const { currentUser } = useAuth();
 
 	const [itemOwner, setItemOwner] = useState("");
 	const [itemCreateDate, setItemCreatedDate] = useState("");
@@ -68,7 +71,7 @@ const CardMini = (props) => {
 					</div>
 					<div className={styles["itemSeller"]}>
 						<span className={styles["itemLabel"]}>Posted by:</span>
-						<span className={styles["itemValue"]}>{itemOwner?.name}</span>
+						<span className={styles["itemValue"]}>{itemOwner.seller_id === currentUser.id ? "You" : itemOwner?.name}</span>
 					</div>
 					<div className={styles["itemCreated"]}>
 						<span className={styles["itemLabel"]}>Date Posted:</span>
