@@ -168,7 +168,7 @@ const ItemPage = (props) => {
 			}
 
 			try {
-				const res = await getUser(selectedItem.seller_id);
+				const res = await getUser(selectedItem?.seller_id);
 				setSellerData(res ?? null);
 			} catch (error) {
 				console.error("Error fetching seller data:", error);
@@ -201,7 +201,7 @@ const ItemPage = (props) => {
 						</h4>
 						<h4 className={styles["valueClickable"]}>
 							<span>Seller:</span>
-							<span>{selectedItem.seller_id === currentUser.id ? "You" : sellerData?.name}</span>
+							<span>{selectedItem?.seller_id === currentUser.id ? "You" : sellerData?.name}</span>
 						</h4>
 						<h4 className={styles["valueClickable"]}>
 							<span>Category:</span>

@@ -50,7 +50,7 @@ const App = () => {
 		if (hasPathChanged) {
 			dispatch({
 				type: "SET_LOADING",
-				payload: true,
+				payload: false,
 			});
 		}
 	}, [location.pathname, prevPathname, dispatch]);

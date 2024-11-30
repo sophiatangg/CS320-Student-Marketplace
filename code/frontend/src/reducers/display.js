@@ -4,6 +4,7 @@ const initial = {
 	addEditNewItemDisplayed: false,
 	chatDisplayed: false,
 	cartDisplayed: false,
+	gridSortDisplayed: false,
 	tradeDisplayed: false,
 	tradeManageDisplay: false,
 };
@@ -25,6 +26,7 @@ export const displayReducer = (state = initial, action) => {
 				...state,
 				addEditNewItemDisplayed: action.payload,
 			};
+
 		case "SET_CHAT_DISPLAYED":
 			return {
 				...state,
@@ -34,6 +36,11 @@ export const displayReducer = (state = initial, action) => {
 			return {
 				...state,
 				cartDisplayed: action.payload,
+			};
+		case "SET_GRID_SORT_DISPLAYED":
+			return {
+				...state,
+				gridSortDisplayed: action.payload,
 			};
 		case "SET_TRADE_DISPLAYED":
 			return {

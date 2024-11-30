@@ -25,6 +25,7 @@
 	}
 
 	.logo {
+		--logoWidth: calc(var(--filterListWidth) + var(--browseContentGap));
 		min-width: var(--logoWidth);
 		max-width: var(--logoWidth);
 		height: 40px;
@@ -34,8 +35,6 @@
 		gap: 10px;
 
 		&.atStore {
-			margin-right: var(--sidebarSpaceOffset);
-
 			@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 				margin-right: 0;
 			}

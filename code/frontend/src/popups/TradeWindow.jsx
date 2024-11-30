@@ -70,17 +70,17 @@ const TradeWindow = (props) => {
 			return item.id;
 		});
 
-		const sellerData = await getUser(selectedItem.seller_id);
+		const sellerData = await getUser(selectedItem?.seller_id);
 		if (!sellerData || !sellerData.name) {
 			toast.error(`Error fetching trade info.`);
 			throw Error("Error while fetching trade info. Check code");
 		}
 
 		const tradeData = {
-			buyer_id: currentUser.id,
-			seller_id: selectedItem.seller_id,
+			buyer_id: currentUser?.id,
+			seller_id: selectedItem?.seller_id,
 			offer_items_ids: selectedOfferItemIds,
-			target_item_id: selectedItem.id,
+			target_item_id: selectedItem?.id,
 		};
 
 		const tradeRes = await storeTradeInDatabase({ data: tradeData });

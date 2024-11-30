@@ -1,25 +1,67 @@
 .filters {
 	width: var(--filterListWidth);
+}
+
+.filterList {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+
+	&.filerListHidden {
+		position: relative;
+	}
+
+	&:not(:last-child) {
+		margin-bottom: 25px;
+	}
+}
+
+.filterListHeader {
+	width: 100%;
+	margin-bottom: 22px;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: flex-start;
+
+	&.filterListHeaderClickable {
+		cursor: pointer;
+	}
 
 	h2 {
 		font-family: "GT Medium";
 		color: var(--colorPrimaryForeground);
 		font-size: 1.6em;
 		letter-spacing: 1px;
-		margin-bottom: 22px;
-	}
-
-	@media screen and (max-width: 600px) {
-		display: none;
 	}
 }
 
-.globalFilters {
-	margin-bottom: 24px;
+.filterListHeaderIcon {
+	--iconDimension: 18px;
+	width: var(--iconDimension);
+	height: var(--iconDimension);
+	margin: 0 25px 0 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 100ms linear;
+
+	&.contentVisible {
+		transform: rotate(90deg);
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+	}
 }
 
-.categoryFilters {
-	position: relative;
+.filerListHidden {
+	.filterListHeader {
+		margin: 0;
+	}
 }
 
 .filterDiv {
@@ -27,11 +69,15 @@
 	font-family: "GT Regular";
 	font-size: 1.2em;
 	margin-bottom: 10px;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 15px;
 	cursor: pointer;
 	user-select: none;
+
+	&.hovered {
+		position: relative;
+	}
 
 	&.selected {
 		position: relative;
@@ -44,6 +90,12 @@
 	* {
 		pointer-events: none;
 	}
+}
+
+.filterDivSpacer {
+	height: 10px;
+	position: relative;
+	margin: 5px 0;
 }
 
 .filterBtn {

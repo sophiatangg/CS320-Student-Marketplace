@@ -1,15 +1,23 @@
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSolidFridge, BiSolidShoppingBags } from "react-icons/bi";
 import { BsBagPlusFill } from "react-icons/bs";
+import { FaBarsStaggered, FaCalendarDays, FaChevronRight } from "react-icons/fa6";
 import { GiLaptop, GiPoloShirt } from "react-icons/gi";
+import { PiListNumbers } from "react-icons/pi";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { SiMicrosoftacademic, SiWish } from "react-icons/si";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import { useLocation, useNavigate } from "react-router-dom";
 
+const defaultBGColor = "#2d2d2d";
+const defaultSelectedBGColor = "#ffffff";
+const defaultHoverIconColor = "#000000";
+
 const Sidebar = (props) => {
+	const { sidebarViews } = useContextSelector("globalStore");
 	const { allItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
@@ -27,22 +35,149 @@ const Sidebar = (props) => {
 
 	const categoryList = ["All", "My Items", "Wishlist", ...sortedUniqueCategories];
 
-	const [hoverStates, setHoverStates] = useState(Array(categoryList.length).fill(false));
+	const sortSelection = [
+		{
+			name: "Default",
+			icon: PiListNumbers,
+		},
+		{
+			name: "Date",
+			icon: FaCalendarDays,
+		},
+		{
+			name: "Name",
+			icon: FaBarsStaggered,
+		},
+	];
 
-	const handleItemHover = (index, isHover) => {
-		setHoverStates((prev) => {
-			return prev.map((hover, i) => {
-				return i === index ? isHover : hover;
-			});
-		});
+	const sortType = [
+		{
+			name: "Ascending",
+			icon: TbSortAscending2,
+		},
+		{
+			name: "Descending",
+			icon: TbSortDescending2,
+		},
+	];
+
+	const [hoverStates, setHoverStates] = useState({
+		categories: Array(categoryList.length).fill(false),
+		sortSelection: Array(sortSelection.length).fill(false),
+		sortType: Array(sortType.length).fill(false),
+	});
+
+	useEffect(() => {
+		// Dynamically update the length of the category list based from hover states
+		if (hoverStates.categories.length === categoryList.length) return;
+
+		setHoverStates((prev) => ({
+			...prev,
+			categories: Array(categoryList.length).fill(false),
+		}));
+	}, [categoryList.length]);
+
+	const handleItemHover = ({ propName, index, isHover }) => {
+		setHoverStates((prev) => ({
+			...prev,
+			[propName]: prev[propName].map((hover, hoverIndex) => {
+				return hoverIndex === index ? isHover : hover;
+			}),
+		}));
 	};
 
-	const handleCategorySelect = ({ id, name }) => {
+	const handleCategorySelect = ({ name }) => {
 		navigate(`/browse?cat=${name.toLowerCase().replace(" ", "-")}`);
 	};
 
-	const renderFilterSVG = (filterName, isHover) => {
-		const style = { width: 30, height: 30, fill: isHover ? "#000000" : "#fff" };
+	const handleToggleSorterList = (e) => {
+		e.preventDefault();
+
+		dispatch({
+			type: "SET_SIDEBAR_VIEW",
+			payload: {
+				key: "general",
+				value: !sidebarViews.general,
+			},
+		});
+	};
+
+	const handleToggleCategoryList = (e) => {
+		e.preventDefault();
+
+		dispatch({
+			type: "SET_SIDEBAR_VIEW",
+			payload: {
+				key: "category",
+				value: !sidebarViews.category,
+			},
+		});
+	};
+
+	const renderSorterList = (listName, arr) => {
+		return arr.map((item, itemIdx) => {
+			const isHovered = hoverStates[listName][itemIdx];
+
+			return (
+				<div
+					key={itemIdx}
+					id={itemIdx + 1}
+					className={cns(styles["filterDiv"])}
+					onMouseEnter={() => {
+						handleItemHover({
+							propName: listName,
+							index: itemIdx,
+							isHover: !isHovered,
+						});
+					}}
+					onMouseLeave={() => {
+						handleItemHover({
+							propName: listName,
+							index: itemIdx,
+							isHover: !isHovered,
+						});
+					}}
+				>
+					<button
+						className={styles["filterBtn"]}
+						style={{
+							backgroundColor: hoverStates[listName][itemIdx] ? defaultSelectedBGColor : defaultBGColor,
+						}}
+					>
+						<item.icon
+							className={styles["filterSVG"]}
+							style={{
+								width: 30,
+								height: 30,
+								color: hoverStates[listName][itemIdx] ? defaultHoverIconColor : defaultSelectedBGColor,
+								fill: hoverStates[listName][itemIdx] ? defaultHoverIconColor : defaultSelectedBGColor,
+							}}
+						/>
+					</button>
+					<span>{item.name}</span>
+				</div>
+			);
+		});
+	};
+
+	const renderSorter = () => {
+		return (
+			sidebarViews.general && (
+				<>
+					{renderSorterList("sortSelection", sortSelection)}
+					<div className={styles["filterDivSpacer"]} />
+					{renderSorterList("sortType", sortType)}
+				</>
+			)
+		);
+	};
+
+	const renderCategoryFilterSVG = (filterName, isHover) => {
+		const style = {
+			width: 30,
+			height: 30,
+			fill: isHover ? defaultHoverIconColor : defaultSelectedBGColor,
+		};
 
 		const className = styles["filterSVG"];
 
@@ -71,12 +206,13 @@ const Sidebar = (props) => {
 		}
 	};
 
-	const renderList = ({ start, end }) => {
-		const list = end ? categoryList.slice(start, end) : categoryList.slice(start);
+	const renderCategoryList = ({ start, end }) => {
+		const list = end || end === 0 ? categoryList.slice(start, end) : categoryList.slice(start);
 
-		return list.map((category, categoryIndex) => {
+		return list.map((categoryItemName, categoryIndex) => {
 			const currentIndex = start + categoryIndex;
-			const isSelected = category.toLowerCase().replace(" ", "-") === categoryName;
+			const isSelected = categoryItemName.toLowerCase().replace(" ", "-") === categoryName;
+			const isHovered = hoverStates["categories"][currentIndex];
 
 			return (
 				<div
@@ -84,24 +220,41 @@ const Sidebar = (props) => {
 					id={currentIndex}
 					className={cns(styles["filterDiv"], {
 						[styles["selected"]]: isSelected,
+						[styles["hovered"]]: isHovered,
 					})}
-					onMouseEnter={() => {
-						handleItemHover(currentIndex, true);
+					onMouseEnter={(e) => {
+						e.preventDefault();
+
+						handleItemHover({
+							propName: "categories",
+							index: currentIndex,
+							isHover: !isHovered,
+						});
 					}}
-					onMouseLeave={() => {
-						handleItemHover(currentIndex, false);
+					onMouseLeave={(e) => {
+						e.preventDefault();
+
+						handleItemHover({
+							propName: "categories",
+							index: currentIndex,
+							isHover: !isHovered,
+						});
 					}}
 					onClick={(e) => {
+						e.preventDefault();
+
 						handleCategorySelect({
-							id: currentIndex,
-							name: category,
+							name: categoryItemName,
 						});
 					}}
 				>
-					<button className={styles["filterBtn"]} style={{ backgroundColor: hoverStates[currentIndex] || isSelected ? "#fff" : "#2d2d2d" }}>
-						{renderFilterSVG(category, hoverStates[currentIndex])}
+					<button
+						className={styles["filterBtn"]}
+						style={{ backgroundColor: isHovered || isSelected ? defaultSelectedBGColor : defaultBGColor }}
+					>
+						{renderCategoryFilterSVG(categoryItemName, isHovered)}
 					</button>
-					{category}
+					<span>{categoryItemName}</span>
 				</div>
 			);
 		});
@@ -109,11 +262,54 @@ const Sidebar = (props) => {
 
 	return (
 		<div className={styles["filters"]}>
-			<div className={styles["globalFilters"]}>{renderList({ start: 0, end: 3 })}</div>
-
-			<div className={styles["categoryFilters"]}>
-				<h2>Categories</h2>
-				{renderList({ start: 3 })}
+			<div className={styles["filterList"]}>{renderCategoryList({ start: 0, end: 3 })}</div>
+			<div
+				className={cns(styles["filterList"], {
+					[styles["filerListHidden"]]: !sidebarViews.general,
+				})}
+			>
+				<div
+					className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
+					onClick={(e) => {
+						handleToggleSorterList(e);
+					}}
+				>
+					<span
+						className={cns(styles["filterListHeaderIcon"], {
+							[styles["contentVisible"]]: sidebarViews.general,
+						})}
+					>
+						<FaChevronRight
+							style={{
+								fill: "#fff",
+							}}
+						/>
+					</span>
+					<h2>Sort</h2>
+				</div>
+				{renderSorter()}
+			</div>
+			<div className={styles["filterList"]}>
+				<div
+					className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
+					onClick={(e) => {
+						handleToggleCategoryList(e);
+					}}
+				>
+					<span
+						className={cns(styles["filterListHeaderIcon"], {
+							[styles["contentVisible"]]: sidebarViews.category,
+						})}
+					>
+						<FaChevronRight
+							style={{
+								fill: "#fff",
+							}}
+						/>
+					</span>
+					<h2>Category</h2>
+				</div>
+				{sidebarViews.category && renderCategoryList({ start: 3 })}
 			</div>
 		</div>
 	);

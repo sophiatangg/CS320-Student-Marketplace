@@ -16,11 +16,11 @@
 	}
 
 	&.cardFullOwnItem {
-		background-color: var(--cardOwnFullBackground);
+		// background-color: var(--cardOwnFullBackground);
 
-		&:hover {
-			background-color: var(--cardOwnFullHoverBackground);
-		}
+		// &:hover {
+		// 	background-color: var(--cardOwnFullHoverBackground);
+		// }
 	}
 
 	&.cardFullWidth {
@@ -137,7 +137,7 @@
 
 .cardFetchingInfo {
 	> div {
-		filter: blur(8px);
+		position: relative;
 	}
 }
 
@@ -218,7 +218,7 @@
 		flex: 1;
 		display: block;
 		cursor: default;
-		--labelWidth: 61px;
+		--labelWidth: 65px;
 		--valueWidth: calc(100% - var(--labelWidth) - var(--gapWidth));
 
 		&:first-child {

@@ -21,6 +21,10 @@
 	@media screen and (max-width: 1800px) {
 		padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	}
+
+	@media screen and (max-height: 500px) {
+		min-height: 600px;
+	}
 }
 
 .container {

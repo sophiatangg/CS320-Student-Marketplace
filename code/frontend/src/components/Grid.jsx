@@ -14,7 +14,7 @@ const Grid = (props) => {
 	const categoryName = params.get("cat") || "";
 
 	const { allItems, ownWishlistItems, shownItems } = useContextSelector("itemsStore");
-	const { gridDisplay } = useContextSelector("globalStore");
+	const { gridView } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
 	const dispatch = useContextDispatch();
@@ -88,15 +88,15 @@ const Grid = (props) => {
 		<>
 			<div
 				className={cns(styles["gridContainer"], {
-					[styles["withGrid"]]: gridDisplay && shownItems?.length,
-					[styles["noGrid"]]: !gridDisplay && shownItems?.length,
+					[styles["withGrid"]]: gridView && shownItems?.length,
+					[styles["noGrid"]]: !gridView && shownItems?.length,
 					[styles["emptyGrid"]]: !shownItems?.length,
 				})}
 				id="gridContainer"
 			>
 				{shownItems.length === 0 && renderPlaceHolder()}
 				{shownItems?.map((item, i) => {
-					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
+					return <CardFull key={i} item={item} isFullWidth={gridView} />;
 				})}
 			</div>
 		</>

@@ -23,13 +23,13 @@ const Browse = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
-	const { gridDisplay } = useContextSelector("globalStore");
+	const { gridView } = useContextSelector("globalStore");
 	const { shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
 	const handleLayoutSwitch = (e, bool) => {
 		dispatch({
-			type: "SET_DISPLAY",
+			type: "SET_GRID_VIEW",
 			payload: bool,
 		});
 	};
@@ -81,11 +81,11 @@ const Browse = (props) => {
 									<span>Display options:</span>
 									<button
 										className={cns(styles["displayBtn"], {
-											[styles["isActive"]]: gridDisplay,
+											[styles["isActive"]]: gridView,
 										})}
 										id="grid"
 										style={{
-											pointerEvents: gridDisplay ? "none" : "",
+											pointerEvents: gridView ? "none" : "",
 										}}
 										aria-label="Display grids"
 										onClick={(e) => {
@@ -94,16 +94,16 @@ const Browse = (props) => {
 									>
 										<TbLayoutGridFilled
 											className={cns(styles["displayItem"], {})}
-											style={{ width: 30, height: 30, fill: gridDisplay ? "#e5e5e5" : "#6f6f6f" }}
+											style={{ width: 30, height: 30, fill: gridView ? "#e5e5e5" : "#6f6f6f" }}
 										/>
 									</button>
 									<button
 										className={cns(styles["displayBtn"], {
-											[styles["isActive"]]: !gridDisplay,
+											[styles["isActive"]]: !gridView,
 										})}
 										id="columns"
 										style={{
-											pointerEvents: !gridDisplay ? "none" : "",
+											pointerEvents: !gridView ? "none" : "",
 										}}
 										aria-label="Display columns"
 										onClick={(e) => {
@@ -112,7 +112,7 @@ const Browse = (props) => {
 									>
 										<MdOutlineTableRows
 											className={styles["displayItem"]}
-											style={{ width: 30, height: 30, fill: gridDisplay ? "#6f6f6f" : "#e5e5e5" }}
+											style={{ width: 30, height: 30, fill: gridView ? "#6f6f6f" : "#e5e5e5" }}
 										/>
 									</button>
 								</div>

@@ -13,7 +13,7 @@ const Login = () => {
 	const { currentUser } = useAuth();
 
 	useEffect(() => {
-		if (currentUser) return;
+		if (!currentUser) return;
 		navigate("/");
 	}, [currentUser]);
 
