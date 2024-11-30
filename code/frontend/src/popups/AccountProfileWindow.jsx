@@ -6,6 +6,7 @@ import styles from "@styles/AccountProfileWindow.module.scss";
 import cns from "@utils/classNames";
 import { formattedDate, isValidISODate } from "@utils/formatDate";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AccountProfileWindow = (props) => {
 	const { currentUser } = useAuth();
@@ -14,6 +15,8 @@ const AccountProfileWindow = (props) => {
 
 	const { selectedUserId } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
+
+	const navigate = useNavigate();
 
 	const isOwnProfile = currentUser.id === selectedUserId;
 
@@ -49,6 +52,19 @@ const AccountProfileWindow = (props) => {
 		}
 	}, [currentUser, selectedUserId]);
 
+	const handleWishlistRedirect = (e) => {
+		e.preventDefault();
+
+		dispatch({
+			type: "SET_ACCOUNT_PROFILE_DISPLAYED",
+			payload: false,
+		});
+
+		window.scrollTo(0, 0);
+
+		navigate(`/browse?cat=wishlist&id=${selectedUserId}`);
+	};
+
 	const renderPropIcon = (prop) => {};
 
 	const renderDetailWithLabel = ({ prop, label }) => {
@@ -75,6 +91,20 @@ const AccountProfileWindow = (props) => {
 					)}
 				</div>
 			</div>
+		);
+	};
+
+	const renderViewWishListButton = () => {
+		if (isOwnProfile) return null;
+
+		return (
+			<>
+				<div className={styles["miscButtons"]}>
+					<div className={styles["buttonLink"]} onClick={handleWishlistRedirect}>
+						<span>View {userInfo.name}'s Wishlist</span>
+					</div>
+				</div>
+			</>
 		);
 	};
 
@@ -115,6 +145,8 @@ const AccountProfileWindow = (props) => {
 									prop: userInfo.lastSignInAt,
 									label: "Last Sign In",
 								})}
+
+							{renderViewWishListButton()}
 						</div>
 					</div>
 				</div>

@@ -78,7 +78,7 @@ const App = () => {
 	useEffect(() => {
 		const fetchWishlistItems = async () => {
 			try {
-				const res = await selectAllWishlistItemsByUser();
+				const res = await selectAllWishlistItemsByUser({ userId: null });
 				if (res.data) {
 					dispatch({
 						type: "SET_WISHLIST_ITEMS",

@@ -1,4 +1,5 @@
 import CardFull from "@components/CardFull";
+import { selectAllWishlistItemsByUser } from "@database/items";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
@@ -12,8 +13,9 @@ const Grid = (props) => {
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
+	const othersUserId = params.get("id") || "";
 
-	const { allItems, ownWishlistItems, shownItems } = useContextSelector("itemsStore");
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const { gridView } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
@@ -32,11 +34,47 @@ const Grid = (props) => {
 					if (!categoryName || categoryName === "all") {
 						items = allItems;
 					} else if (categoryName === "my-items") {
-						items = allItems.filter((item) => item.seller_id === currentUser.id);
+						items = allItems?.filter((item) => {
+							return item.seller_id === currentUser.id;
+						});
 					} else if (categoryName === "wishlist") {
-						items = allItems.filter((item) => ownWishlistItems.some((wishlistItem) => wishlistItem.item_id === item.id));
+						if (othersUserId) {
+							const res = await selectAllWishlistItemsByUser({ userId: othersUserId });
+							if (!res.data) {
+								console.error(`Error fetching wishlist items!`, res.error);
+
+								items = [];
+								return;
+							}
+
+							const userWishlistItems = allItems.filter((item) =>
+								res.data.some((wishlistItem) => {
+									return wishlistItem.item_id === item.id;
+								}),
+							);
+
+							items = userWishlistItems;
+						} else {
+							const res = await selectAllWishlistItemsByUser({ userId: null });
+							if (!res.data) {
+								console.error(`Error fetching wishlist items!`, res.error);
+
+								items = [];
+								return;
+							}
+
+							const personalWishlistItems = allItems.filter((item) =>
+								res.data.some((wishlistItem) => {
+									return wishlistItem.item_id === item.id;
+								}),
+							);
+
+							items = personalWishlistItems;
+						}
 					} else {
-						items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
+						items = allItems?.filter((item) => {
+							return item.category.toLowerCase() === categoryName.toLowerCase();
+						});
 					}
 				} else {
 					items = allItems?.filter((item) => {
@@ -62,7 +100,7 @@ const Grid = (props) => {
 		};
 
 		updateItems();
-	}, [allItems, categoryName, searchQuery, currentUser, ownWishlistItems, dispatch]);
+	}, [allItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
@@ -72,7 +110,11 @@ const Grid = (props) => {
 		} else if (categoryName === "my-items") {
 			message = "No Items";
 		} else if (categoryName === "wishlist") {
-			message = "Empty Wishlist";
+			if (othersUserId && othersUserId !== currentUser.id) {
+				message = "This user has no items in their wishlist";
+			} else {
+				message = "Empty wishlist";
+			}
 		} else {
 			message = `No results for ${searchQuery}`;
 		}

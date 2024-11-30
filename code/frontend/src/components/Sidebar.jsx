@@ -25,7 +25,7 @@ const variants = {
 
 const Sidebar = (props) => {
 	const { sidebarViews } = useContextSelector("globalStore");
-	const { allItems } = useContextSelector("itemsStore");
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
 	const navigate = useNavigate();
@@ -165,7 +165,9 @@ const Sidebar = (props) => {
 				<div
 					key={itemIdx}
 					id={itemIdx + 1}
-					className={cns(styles["filterDiv"])}
+					className={cns(styles["filterDiv"], {
+						[styles["filterListDisabled"]]: shownItems.length === 0,
+					})}
 					onMouseEnter={() => {
 						handleItemHover({
 							propName: listName,
@@ -309,7 +311,7 @@ const Sidebar = (props) => {
 				<div className={styles["filterList"]}>{renderCategoryList({ start: 0, end: 3 })}</div>
 				<div
 					className={cns(styles["filterList"], {
-						[styles["filerListHidden"]]: !sidebarViews.general,
+						[styles["filterListHidden"]]: !sidebarViews.general,
 					})}
 				>
 					<div
