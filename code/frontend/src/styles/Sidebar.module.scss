@@ -1,7 +1,9 @@
-.filters {
-	width: var(--filterListWidth);
+@use "_variables" as v;
 
-	@media screen and (max-width: 600px) {
+.filters {
+	min-width: var(--filterListWidth);
+
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 		width: 100%;
 	}
 
@@ -75,11 +77,22 @@
 		cursor: pointer;
 	}
 
+	&:hover {
+		h2 {
+			color: var(--colorDarkForeground);
+		}
+
+		svg {
+			fill: var(--colorDarkForeground) !important;
+		}
+	}
+
 	h2 {
 		font-family: "GT Medium";
 		color: var(--colorPrimaryForeground);
 		font-size: 1.6em;
 		letter-spacing: 1px;
+		transition: color 100ms linear;
 	}
 }
 

@@ -74,7 +74,7 @@ const Grid = (props) => {
 		} else if (categoryName === "wishlist") {
 			message = "Empty Wishlist";
 		} else {
-			message = `No results for ${searchQuery}.`;
+			message = `No results for ${searchQuery}`;
 		}
 
 		return (

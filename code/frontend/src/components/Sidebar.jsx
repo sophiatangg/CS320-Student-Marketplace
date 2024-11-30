@@ -142,8 +142,11 @@ const Sidebar = (props) => {
 
 	const handleSetDimension = () => {
 		if (!componentRef.current) return;
+		if (!componentRef.current.parentElement) return;
 
-		const { width, height } = componentRef.current.getBoundingClientRect();
+		const { width, height } = componentRef.current.parentElement.getBoundingClientRect();
+
+		console.log(width);
 
 		setWindowDimension({
 			width: width,
@@ -366,7 +369,7 @@ const Sidebar = (props) => {
 		);
 	};
 
-	const componentCollapsible = windowDimension.width >= 420;
+	const componentCollapsible = windowDimension.width <= 610;
 
 	return (
 		<div

@@ -117,7 +117,12 @@
 }
 
 .middle {
+	min-width: 180px;
 	height: 100%;
+
+	&:not(:last-child) {
+		margin-right: 15px;
+	}
 }
 
 .icon {

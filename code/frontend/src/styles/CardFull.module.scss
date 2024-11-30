@@ -24,20 +24,12 @@
 	}
 
 	&.cardFullWidth {
-		width: 80%;
+		width: 100%;
 		min-height: 150px;
 		max-height: 400px;
 		display: flex;
 		flex-flow: row;
 		--contentHeight: 100%;
-
-		@media screen and (min-width: 600px) {
-			width: 100%;
-		}
-
-		@media screen and (max-width: 600px) {
-			width: 100%;
-		}
 
 		.thumbnail {
 			max-width: 320px;

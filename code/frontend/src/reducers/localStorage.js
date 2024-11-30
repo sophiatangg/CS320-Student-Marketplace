@@ -3,7 +3,7 @@ const initial = {
 	generalSortView: JSON.parse(localStorage.getItem("generalSortView")) ?? true,
 	gridView: JSON.parse(localStorage.getItem("gridView")) ?? true,
 	sidebarViews: JSON.parse(localStorage.getItem("sidebarViews")) || {
-		general: true,
+		general: false,
 		category: true,
 	},
 	theme: JSON.parse(localStorage.getItem("theme")) ?? "dark",
