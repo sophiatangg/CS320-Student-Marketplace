@@ -1,7 +1,8 @@
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { BiSolidFridge, BiSolidShoppingBags } from "react-icons/bi";
 import { BsBagPlusFill } from "react-icons/bs";
 import { FaBarsStaggered, FaCalendarDays, FaChevronRight } from "react-icons/fa6";
@@ -15,6 +16,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 const defaultBGColor = "#2d2d2d";
 const defaultSelectedBGColor = "#ffffff";
 const defaultHoverIconColor = "#000000";
+
+const variants = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+};
 
 const Sidebar = (props) => {
 	const { sidebarViews } = useContextSelector("globalStore");
@@ -61,11 +68,30 @@ const Sidebar = (props) => {
 		},
 	];
 
+	const [collapsedButtonShown, setCollapsedButtonShown] = useState(false);
+
 	const [hoverStates, setHoverStates] = useState({
 		categories: Array(categoryList.length).fill(false),
 		sortSelection: Array(sortSelection.length).fill(false),
 		sortType: Array(sortType.length).fill(false),
 	});
+
+	const [windowDimension, setWindowDimension] = useState({
+		width: 0,
+		height: 0,
+	});
+
+	const componentRef = useRef(null);
+
+	useEffect(() => {
+		handleSetDimension();
+
+		window.addEventListener("resize", handleSetDimension);
+
+		return () => {
+			window.removeEventListener("resize", handleSetDimension);
+		};
+	}, []);
 
 	useEffect(() => {
 		// Dynamically update the length of the category list based from hover states
@@ -112,6 +138,22 @@ const Sidebar = (props) => {
 				value: !sidebarViews.category,
 			},
 		});
+	};
+
+	const handleSetDimension = () => {
+		if (!componentRef.current) return;
+
+		const { width, height } = componentRef.current.getBoundingClientRect();
+
+		setWindowDimension({
+			width: width,
+			height: height,
+		});
+	};
+
+	const handleToggleContentVisibilityWhenCollapsed = (e) => {
+		e.preventDefault();
+		setCollapsedButtonShown(!collapsedButtonShown);
 	};
 
 	const renderSorterList = (listName, arr) => {
@@ -260,57 +302,87 @@ const Sidebar = (props) => {
 		});
 	};
 
+	const renderList = () => {
+		return (
+			<>
+				<div className={styles["filterList"]}>{renderCategoryList({ start: 0, end: 3 })}</div>
+				<div
+					className={cns(styles["filterList"], {
+						[styles["filerListHidden"]]: !sidebarViews.general,
+					})}
+				>
+					<div
+						className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
+						onClick={(e) => {
+							handleToggleSorterList(e);
+						}}
+					>
+						<span
+							className={cns(styles["filterListHeaderIcon"], {
+								[styles["contentVisible"]]: sidebarViews.general,
+							})}
+						>
+							<FaChevronRight
+								style={{
+									fill: "#fff",
+								}}
+							/>
+						</span>
+						<h2>Sort</h2>
+					</div>
+					{renderSorter()}
+				</div>
+				<div className={styles["filterList"]}>
+					<div
+						className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
+						onClick={(e) => {
+							handleToggleCategoryList(e);
+						}}
+					>
+						<span
+							className={cns(styles["filterListHeaderIcon"], {
+								[styles["contentVisible"]]: sidebarViews.category,
+							})}
+						>
+							<FaChevronRight
+								style={{
+									fill: "#fff",
+								}}
+							/>
+						</span>
+						<h2>Category</h2>
+					</div>
+					{sidebarViews.category && renderCategoryList({ start: 3 })}
+				</div>
+			</>
+		);
+	};
+
+	const renderShowButton = () => {
+		return (
+			<div className={styles["filterShowButton"]} onClick={handleToggleContentVisibilityWhenCollapsed}>
+				<span>Show Filters</span>
+			</div>
+		);
+	};
+
+	const componentCollapsible = windowDimension.width >= 420;
+
 	return (
-		<div className={styles["filters"]}>
-			<div className={styles["filterList"]}>{renderCategoryList({ start: 0, end: 3 })}</div>
-			<div
-				className={cns(styles["filterList"], {
-					[styles["filerListHidden"]]: !sidebarViews.general,
-				})}
-			>
-				<div
-					className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
-					onClick={(e) => {
-						handleToggleSorterList(e);
-					}}
-				>
-					<span
-						className={cns(styles["filterListHeaderIcon"], {
-							[styles["contentVisible"]]: sidebarViews.general,
-						})}
-					>
-						<FaChevronRight
-							style={{
-								fill: "#fff",
-							}}
-						/>
-					</span>
-					<h2>Sort</h2>
-				</div>
-				{renderSorter()}
-			</div>
-			<div className={styles["filterList"]}>
-				<div
-					className={cns(styles["filterListHeader"], styles["filterListHeaderClickable"])}
-					onClick={(e) => {
-						handleToggleCategoryList(e);
-					}}
-				>
-					<span
-						className={cns(styles["filterListHeaderIcon"], {
-							[styles["contentVisible"]]: sidebarViews.category,
-						})}
-					>
-						<FaChevronRight
-							style={{
-								fill: "#fff",
-							}}
-						/>
-					</span>
-					<h2>Category</h2>
-				</div>
-				{sidebarViews.category && renderCategoryList({ start: 3 })}
-			</div>
+		<div
+			ref={componentRef}
+			className={cns(styles["filters"], {
+				[styles["filtersCollapsed"]]: componentCollapsible,
+				[styles["filtersContentVisible"]]: collapsedButtonShown,
+			})}
+		>
+			{componentCollapsible && renderShowButton()}
+			{collapsedButtonShown && (
+				<motion.div className={styles["filterListAnimated"]} variants={variants} initial="initial">
+					{renderList()}
+				</motion.div>
+			)}
+			{!componentCollapsible && !collapsedButtonShown && renderList()}
 		</div>
 	);
 };

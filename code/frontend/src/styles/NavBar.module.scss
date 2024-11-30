@@ -87,6 +87,7 @@
 	justify-content: flex-start;
 
 	@at-root .navBarNarrow & {
+		max-width: 100%;
 		flex-flow: column;
 		align-items: flex-start;
 		justify-content: flex-start;
@@ -134,7 +135,6 @@
 .component {
 	min-width: max-content;
 	max-width: max-content;
-	margin-left: 15px;
 	position: relative;
 	display: flex;
 	align-items: center;

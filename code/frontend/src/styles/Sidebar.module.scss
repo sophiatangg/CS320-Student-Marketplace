@@ -1,5 +1,50 @@
 .filters {
 	width: var(--filterListWidth);
+
+	@media screen and (max-width: 600px) {
+		width: 100%;
+	}
+
+	&.filtersCollapsed {
+		position: relative;
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&.filtersContentVisible {
+		.filterShowButton {
+			margin-bottom: 30px;
+		}
+
+		.filterList {
+			width: 100%;
+		}
+	}
+}
+
+.filterShowButton {
+	width: max-content;
+	padding: 15px 60px;
+	background-color: var(--umassColor);
+	border-radius: calc(var(--borderRadius) + 20px);
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+
+	span {
+		color: var(--colorPrimaryForeground);
+		font-family: "GT Bold";
+		font-size: 22px;
+		user-select: none;
+	}
+}
+
+.filterListAnimated {
+	position: relative;
 }
 
 .filterList {
