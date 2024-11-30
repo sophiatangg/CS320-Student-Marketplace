@@ -5,107 +5,89 @@
 	&.withGrid {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
-		grid-template-rows: 390px;
-		grid-auto-rows: 390px;
+		grid-template-rows: var(--gridDimension);
+		grid-auto-rows: var(--gridDimension);
 		grid-gap: 20px;
 		padding-bottom: 50px;
+		--gridDimension: 390px;
 
 		@media screen and (max-width: 1700px) {
-			grid-template-rows: 370px;
-			grid-auto-rows: 370px;
+			--gridDimension: 370px;
 		}
 
 		@media screen and (max-width: 1450px) {
-			grid-template-rows: 325px;
-			grid-auto-rows: 325px;
+			--gridDimension: 350px;
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 
 		@media screen and (max-width: 1350px) {
-			grid-template-rows: 305px;
-			grid-auto-rows: 305px;
+			--gridDimension: 330px;
 		}
 
 		@media screen and (max-width: 1240px) {
-			grid-template-rows: 290px;
-			grid-auto-rows: 290px;
+			--gridDimension: 290px;
 		}
 
 		@media screen and (max-width: 1240px) {
-			grid-template-rows: 370px;
-			grid-auto-rows: 370px;
+			--gridDimension: 400px;
 			grid-template-columns: 1fr 1fr;
 		}
 
 		@media screen and (max-width: 1100px) {
-			grid-template-rows: 355px;
-			grid-auto-rows: 355px;
+			--gridDimension: 335px;
 		}
 
 		@media screen and (max-width: 1050px) {
-			grid-template-rows: 330px;
-			grid-auto-rows: 330px;
+			--gridDimension: 330px;
 		}
 
 		@media screen and (max-width: 975px) {
-			grid-template-rows: 350px;
-			grid-auto-rows: 350px;
+			--gridDimension: 350px;
 		}
 
 		@media screen and (max-width: 840px) {
-			grid-template-rows: 270px;
-			grid-auto-rows: 270px;
+			--gridDimension: 310px;
 		}
 
 		@media screen and (max-width: 800px) {
-			grid-template-rows: 250px;
-			grid-auto-rows: 250px;
+			--gridDimension: 320px;
 		}
 
 		@media screen and (max-width: 770px) {
-			grid-template-rows: 390px;
-			grid-auto-rows: 390px;
+			--gridDimension: 400px;
 			grid-template-columns: 1fr;
 		}
 
 		@media screen and (max-width: 710px) {
-			grid-template-rows: 360px;
-			grid-auto-rows: 360px;
+			--gridDimension: 460px;
 		}
 
 		@media screen and (max-width: 635px) {
-			grid-template-rows: 335px;
-			grid-auto-rows: 335px;
+			--gridDimension: 480px;
 		}
 
 		@media screen and (max-width: 600px) {
-			grid-template-rows: 450px;
-			grid-auto-rows: 450px;
+			--gridDimension: 450px;
 		}
 
 		@media screen and (max-width: 525px) {
-			grid-template-rows: 420px;
-			grid-auto-rows: 420px;
+			--gridDimension: 420px;
 		}
 
 		@media screen and (max-width: 475px) {
-			grid-template-rows: 390px;
-			grid-auto-rows: 390px;
+			--gridDimension: 390px;
 		}
 
 		@media screen and (max-width: 425px) {
-			grid-template-rows: 340px;
-			grid-auto-rows: 340px;
+			--gridDimension: 340px;
 		}
 
 		@media screen and (max-width: 375px) {
-			grid-template-rows: 310px;
-			grid-auto-rows: 310px;
+			--gridDimension: 310px;
 		}
 
 		@media screen and (max-width: 320px) {
-			grid-template-rows: 285px;
-			grid-auto-rows: 285px;
+			--gridDimension: 290px;
 		}
 	}
 

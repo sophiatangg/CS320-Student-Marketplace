@@ -146,8 +146,6 @@ const Sidebar = (props) => {
 
 		const { width, height } = componentRef.current.parentElement.getBoundingClientRect();
 
-		console.log(width);
-
 		setWindowDimension({
 			width: width,
 			height: height,
