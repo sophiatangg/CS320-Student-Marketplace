@@ -1,13 +1,15 @@
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
+import { sortItemsByAvailability, sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidFridge, BiSolidShoppingBags } from "react-icons/bi";
 import { BsBagPlusFill } from "react-icons/bs";
+import { FaLeaf } from "react-icons/fa";
 import { FaBarsStaggered, FaCalendarDays, FaChevronRight } from "react-icons/fa6";
 import { GiLaptop, GiPoloShirt } from "react-icons/gi";
-import { PiListNumbers } from "react-icons/pi";
+import { IoIosPricetags } from "react-icons/io";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { SiMicrosoftacademic, SiWish } from "react-icons/si";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
@@ -24,6 +26,16 @@ const variants = {
 };
 
 const Sidebar = (props) => {
+	const [collapsedButtonShown, setCollapsedButtonShown] = useState(false);
+	const [isAscending, setIsAscending] = useState(true);
+
+	const [windowDimension, setWindowDimension] = useState({
+		width: 0,
+		height: 0,
+	});
+
+	const componentRef = useRef(null);
+
 	const { sidebarViews } = useContextSelector("globalStore");
 	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
@@ -44,16 +56,44 @@ const Sidebar = (props) => {
 
 	const sortSelection = [
 		{
-			name: "Default",
-			icon: PiListNumbers,
-		},
-		{
 			name: "Date",
 			icon: FaCalendarDays,
+			onClick: () => {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: sortItemsByDate(allItems, isAscending),
+				});
+			},
 		},
 		{
 			name: "Name",
 			icon: FaBarsStaggered,
+			onClick: () => {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: sortItemsByName(allItems, isAscending),
+				});
+			},
+		},
+		{
+			name: "Price",
+			icon: IoIosPricetags,
+			onClick: () => {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: sortItemsByPrice(allItems, isAscending),
+				});
+			},
+		},
+		{
+			name: "Availability",
+			icon: FaLeaf,
+			onClick: () => {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: sortItemsByAvailability(allItems, isAscending),
+				});
+			},
 		},
 	];
 
@@ -68,20 +108,11 @@ const Sidebar = (props) => {
 		},
 	];
 
-	const [collapsedButtonShown, setCollapsedButtonShown] = useState(false);
-
 	const [hoverStates, setHoverStates] = useState({
 		categories: Array(categoryList.length).fill(false),
 		sortSelection: Array(sortSelection.length).fill(false),
 		sortType: Array(sortType.length).fill(false),
 	});
-
-	const [windowDimension, setWindowDimension] = useState({
-		width: 0,
-		height: 0,
-	});
-
-	const componentRef = useRef(null);
 
 	useEffect(() => {
 		handleSetDimension();
@@ -168,6 +199,13 @@ const Sidebar = (props) => {
 					className={cns(styles["filterDiv"], {
 						[styles["filterListDisabled"]]: shownItems.length === 0,
 					})}
+					onClick={(e) => {
+						e.preventDefault();
+
+						if (item.onClick) {
+							item.onClick();
+						}
+					}}
 					onMouseEnter={() => {
 						handleItemHover({
 							propName: listName,

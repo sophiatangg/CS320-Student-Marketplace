@@ -51,9 +51,19 @@
 		gap: 15px;
 	}
 
+	.logoIcon {
+		position: relative;
+
+		svg {
+			width: 40px;
+			height: 40px;
+		}
+	}
+
 	h3 {
 		color: var(--colorPrimaryForeground);
 		font-family: "GT Bold";
+		font-size: 18px;
 		display: flex;
 		flex-flow: column;
 		cursor: pointer;

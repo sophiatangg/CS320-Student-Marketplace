@@ -16,6 +16,7 @@ const Footer = (props) => {
 					className={styles["svgSeparator"]}
 					viewBox="0 0 1600 180"
 					style={{
+						height: 120,
 						display: "block",
 						pointerEvents: "none",
 					}}

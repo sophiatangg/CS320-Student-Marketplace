@@ -114,7 +114,7 @@ const NavBar = (props) => {
 				onClick={handleHome}
 			>
 				<div className={styles["logoInner"]}>
-					<div className={styles["icon"]}>
+					<div className={cns(styles["icon"], styles["logoIcon"], {})}>
 						<PiStudentBold style={{ fill: "#fff" }} />
 					</div>
 					<h3>
