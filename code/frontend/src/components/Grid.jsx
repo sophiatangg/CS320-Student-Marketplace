@@ -100,7 +100,7 @@ const Grid = (props) => {
 		};
 
 		updateItems();
-	}, [allItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
+	}, [allItems, shownItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";

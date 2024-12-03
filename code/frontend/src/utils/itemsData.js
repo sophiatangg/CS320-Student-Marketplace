@@ -18,9 +18,3 @@ export const sortItemsByPrice = (arr, isAscending = true) => {
 		return isAscending ? a.price - b.price : b.price - a.price;
 	});
 };
-
-export const sortItemsByAvailability = (arr, isAscending = true) => {
-	return arr.sort((a, b) => {
-		return isAscending ? a.in_trade - b.in_trade : b.in_trade - a.in_trade;
-	});
-};

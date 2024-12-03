@@ -1,12 +1,11 @@
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
-import { sortItemsByAvailability, sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
+import { sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidFridge, BiSolidShoppingBags } from "react-icons/bi";
 import { BsBagPlusFill } from "react-icons/bs";
-import { FaLeaf } from "react-icons/fa";
 import { FaBarsStaggered, FaCalendarDays, FaChevronRight } from "react-icons/fa6";
 import { GiLaptop, GiPoloShirt } from "react-icons/gi";
 import { IoIosPricetags } from "react-icons/io";
@@ -82,16 +81,6 @@ const Sidebar = (props) => {
 				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByPrice(allItems, isAscending),
-				});
-			},
-		},
-		{
-			name: "Availability",
-			icon: FaLeaf,
-			onClick: () => {
-				dispatch({
-					type: "SET_ALL_ITEMS",
-					payload: sortItemsByAvailability(allItems, isAscending),
 				});
 			},
 		},
