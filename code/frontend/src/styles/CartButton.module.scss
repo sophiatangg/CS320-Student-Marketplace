@@ -1,4 +1,4 @@
-.tradeButtonCenterContainer {
+.cartButton {
 	height: 50px;
 	position: relative;
 	display: flex;
@@ -14,8 +14,16 @@
 	}
 }
 
-.iconContainer {
+.iconComponent {
 	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon {
+	width: 28px;
+	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -29,17 +37,9 @@
 	border-radius: calc(var(--borderRadius) - 5px);
 	padding: 3px 5px;
 	position: absolute;
-	inset: 0px -5px auto auto;
+	inset: 0 -5px auto auto;
 	cursor: pointer;
 	z-index: 9;
-}
-
-.icon {
-	width: 28px;
-	height: 28px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 }
 
 .title {

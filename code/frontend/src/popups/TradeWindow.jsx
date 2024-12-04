@@ -7,7 +7,8 @@ import { useContextDispatch, useContextSelector } from "@providers/StoreProvider
 import styles from "@styles/TradeWindow.module.scss";
 import { toastProps } from "@utils/toastProps.js";
 import { useEffect, useState } from "react";
-import { IoChatbubble, IoClose } from "react-icons/io5";
+import { BsChatQuoteFill } from "react-icons/bs";
+import { IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
 import { toast } from "react-toastify";
 
@@ -164,7 +165,7 @@ const TradeWindow = (props) => {
 						}}
 					>
 						<span className={styles["icon"]}>
-							<IoChatbubble />
+							<BsChatQuoteFill />
 						</span>
 						<span className={styles["label"]}>Chat</span>
 					</button>

@@ -1,0 +1,83 @@
+.chatMessage {
+	width: 100%;
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	position: relative;
+	transition: height 100ms ease-in-out;
+	user-select: none;
+	overflow: hidden;
+}
+
+.chatMessageContent {
+	width: 100%;
+	position: relative;
+	flex: 1;
+	display: flex;
+}
+
+.messageList {
+	width: 100%;
+	padding: 0 0 10px 0;
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.messageItem {
+	width: 100%;
+	position: relative;
+}
+
+.messageHeader {
+	color: var(--colorPrimaryForeground);
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+}
+
+.timestamp {
+	color: var(--colorDarkForeground);
+	font-size: 12px;
+}
+
+.messageContent {
+	width: 100%;
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
+.chatMessageInputArea {
+	width: 100%;
+	display: flex;
+	flex-flow: row;
+
+	textarea {
+		width: 100%;
+		min-height: 30px;
+		max-height: 100px;
+		font-family: "GT Regular";
+		font-size: 1rem;
+		color: var(--colorPrimaryForeground);
+		background-color: var(--popOutBgColorAlt2);
+		border: none;
+		border-radius: var(--borderRadius);
+		padding: 5px 10px;
+		margin: 5px;
+		resize: none;
+		transition: background-color 100ms linear;
+
+		&:hover,
+		&:focus {
+			background-color: var(--popOutBgColorAlt1);
+		}
+	}
+}

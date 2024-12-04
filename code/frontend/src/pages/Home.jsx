@@ -68,8 +68,8 @@ const Home = (props) => {
 							<div className={cns(styles["intro"])}>
 								<p>
 									<span>Your personalized</span>
-									<span className={styles["umass"]}> UMass</span>
-									<span className={styles["colorize"]}>Student Marketplace</span>.
+									<span className={styles["umass"]}> UMass Amherst </span>
+									<span className={styles["colorize"]}>Student Marketplace</span>
 								</p>
 							</div>
 						</div>

@@ -1,4 +1,5 @@
 import DissolveFilter from "@components/DissolveFilter";
+import ScrollPageToTop from "@components/ScrollPageToTop";
 import "@media/fonts/walsheim/GTWalsheimPro-Bold.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Light.ttf";
 import "@media/fonts/walsheim/GTWalsheimPro-Medium.ttf";
@@ -21,10 +22,11 @@ root.render(
 		<StoreProvider>
 			<BrowserRouter>
 				<AuthProvider>
+					<ScrollPageToTop />
 					<App />
-					<DissolveFilter />
 				</AuthProvider>
 			</BrowserRouter>
 		</StoreProvider>
+		<DissolveFilter />
 	</StrictMode>,
 );

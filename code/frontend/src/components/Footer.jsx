@@ -82,7 +82,7 @@ const Footer = (props) => {
 						<h3>Contact</h3>
 					</div>
 					<div className={cns(styles["section"])}>
-						<h3 className={styles["first"]}>Product Help</h3>
+						<h3 className={styles["first"]}>Help</h3>
 						<h3>Support</h3>
 						<h3>File a Bug</h3>
 					</div>

@@ -11,6 +11,7 @@ import AccountOptionsWindow from "@popups/AccountOptionsWindow";
 import AccountProfileWindow from "@popups/AccountProfileWindow";
 import AddEditNewItemWindow from "@popups/AddEditNewItemWindow";
 import CartWindow from "@popups/CartWindow";
+import ChatListWindow from "@popups/ChatListWindow";
 import TradeManageWindow from "@popups/TradeManageWindow";
 import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
@@ -22,8 +23,15 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-	const { accountInfoDisplayed, accountProfileDisplayed, addEditNewItemDisplayed, cartDisplayed, tradeDisplayed, tradeManageDisplay } =
-		useContextSelector("displayStore");
+	const {
+		accountInfoDisplayed,
+		accountProfileDisplayed,
+		addEditNewItemDisplayed,
+		cartDisplayed,
+		chatDisplayed,
+		tradeDisplayed,
+		tradeManageDisplay,
+	} = useContextSelector("displayStore");
 
 	const dispatch = useContextDispatch();
 
@@ -63,9 +71,7 @@ const App = () => {
 				} else {
 					console.error("Failed to fetch wishlist items:", res.error);
 				}
-			} catch (error) {
-				console.error("Error fetching wishlist items:", error);
-			}
+			} catch (error) {}
 		};
 
 		fetchWishlistItems();
@@ -105,33 +111,35 @@ const App = () => {
 			<div
 				className={cns(appStyles["app"], {
 					[appStyles["hasWindowDisplay"]]:
-						cartDisplayed || tradeDisplayed || tradeManageDisplay || isAddItemWindowOpen || accountProfileDisplayed,
+						cartDisplayed || chatDisplayed || tradeDisplayed || tradeManageDisplay || isAddItemWindowOpen || accountProfileDisplayed,
 				})}
 			>
 				<NavBar />
-				<AnimatePresence exitBeforeEnter>
-					<Routes key={animationKey()} location={location}>
-						<Route path="/" element={<Home />} />
-						<Route path="/login/" element={<Login />} />
-						<Route
-							path="/browse/*"
-							element={
-								<ProtectedRoute>
-									<Browse />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path="/store/:itemId"
-							element={
-								<ProtectedRoute>
-									<ItemPage />
-								</ProtectedRoute>
-							}
-						/>
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</AnimatePresence>
+				<div className={appStyles["appContent"]}>
+					<AnimatePresence exitBeforeEnter>
+						<Routes key={animationKey()} location={location}>
+							<Route path="/" element={<Home />} />
+							<Route path="/login/" element={<Login />} />
+							<Route
+								path="/browse/*"
+								element={
+									<ProtectedRoute>
+										<Browse />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/store/:itemId"
+								element={
+									<ProtectedRoute>
+										<ItemPage />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</AnimatePresence>
+				</div>
 				{accountInfoDisplayed && <AccountOptionsWindow />}
 				{accountProfileDisplayed && <AccountProfileWindow />}
 				{isAddItemWindowOpen && <AddEditNewItemWindow />}
@@ -139,6 +147,7 @@ const App = () => {
 				{tradeDisplayed && <TradeWindow />}
 				{tradeManageDisplay && <TradeManageWindow />}
 				<Footer />
+				{chatDisplayed && <ChatListWindow />}
 			</div>
 			<ToastContainer />
 		</>

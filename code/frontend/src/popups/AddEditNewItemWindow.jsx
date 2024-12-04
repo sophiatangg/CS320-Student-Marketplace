@@ -131,6 +131,7 @@ const AddEditNewItemWindow = (props) => {
 
 				// Clear after posting an item
 				handleReset();
+				navigate(0);
 			}
 
 			// Editing an existing item

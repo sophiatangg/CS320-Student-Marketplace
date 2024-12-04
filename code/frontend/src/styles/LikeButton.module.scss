@@ -13,6 +13,10 @@
 	transition: 100ms;
 	cursor: pointer;
 
+	&.red {
+		position: relative;
+	}
+
 	.likeSVG {
 		width: 100%;
 		height: 100%;

@@ -1,3 +1,5 @@
+@use "_variables" as v;
+
 body {
 	&:has(.hasWindowDisplay) {
 		overflow: hidden;
@@ -7,4 +9,13 @@ body {
 .app {
 	height: 100vh;
 	position: relative;
+}
+
+.appContent {
+	margin-top: var(--headerHeight);
+	position: relative;
+
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+		margin-top: 0;
+	}
 }

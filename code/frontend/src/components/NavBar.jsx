@@ -1,14 +1,16 @@
 import AccountButton from "@components/AccountButton";
+import CartButton from "@components/CartButton";
+import ChatButton from "@components/ChatButton";
 import SearchBar from "@components/SearchBar";
 import TradeCenterButton from "@components/TradeCenterButton";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
-import navBarStyles from "@styles/NavBar.module.scss";
+import styles from "@styles/NavBar.module.scss";
+import cns from "@utils/classNames";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaShoppingBasket } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
-import { TiShoppingCart } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navBarVariants = {
@@ -17,8 +19,11 @@ const navBarVariants = {
 };
 
 const NavBar = (props) => {
-	const [userAvatar, setUserAvatar] = useState("");
+	const componentRef = useRef();
+
 	const [browsing, setBrowsing] = useState(true);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	const [userAvatar, setUserAvatar] = useState("");
 
 	const navigate = useNavigate();
 
@@ -43,7 +48,8 @@ const NavBar = (props) => {
 		});
 	};
 
-	const handleBrowse = async () => {
+	const handleBrowse = (e) => {
+		e.stopPropagation();
 		navigate("/browse");
 
 		dispatch({
@@ -69,6 +75,16 @@ const NavBar = (props) => {
 		});
 	};
 
+	const handleResize = () => {
+		if (!componentRef.current) return;
+
+		const componentElem = componentRef.current;
+		const componentElemDimension = componentElem.getBoundingClientRect();
+
+		const { width: componentElemWidth } = componentElemDimension;
+		setIsSmallScreen(componentElemWidth <= 670);
+	};
+
 	useEffect(() => {
 		setBrowsing(!(pathname === "/"));
 	}, [pathname]);
@@ -79,60 +95,69 @@ const NavBar = (props) => {
 		}
 	}, [currentUser]);
 
+	useEffect(() => {
+		handleResize();
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, [window]);
+
 	const renderNavLeft = () => {
 		return (
-			<div className={navBarStyles["logo"]} onClick={handleHome}>
-				<div className={navBarStyles["icon"]}>
-					<PiStudentBold style={{ fill: "#fff" }} />
+			<div
+				className={cns(styles["logo"], {
+					[styles["atStore"]]: browsing,
+				})}
+				onClick={handleHome}
+			>
+				<div className={styles["logoInner"]}>
+					<div className={styles["icon"]}>
+						<PiStudentBold style={{ fill: "#fff" }} />
+					</div>
+					<h3>
+						<span>Student</span>
+						<span>Marketplace</span>
+					</h3>
 				</div>
-				<h3>
-					<span>Student</span>
-					<span>Marketplace</span>
-				</h3>
-			</div>
-		);
-	};
-
-	const renderNavCenter = () => {
-		return (
-			<div className={navBarStyles["path"]}>
-				{browsing && currentUser && <SearchBar />}
 				{!browsing && currentUser && (
-					<div className={navBarStyles["component"]} id="browseStore">
-						<div className={navBarStyles["icon"]}>
+					<motion.div
+						key={"browseComponent"}
+						animate={"visible"}
+						initial={"visible"}
+						variants={navBarVariants}
+						transition={{ y: { type: "spring" }, duration: 0.01 }}
+						className={styles["component"]}
+						id="browseStore"
+						onClick={handleBrowse}
+					>
+						<div className={styles["icon"]}>
 							<FaShoppingBasket style={{ fill: "#fff" }} />
 						</div>
-						<h3 onClick={handleBrowse}>
+						<h3>
 							<span>Browse</span>
 							<span>Store</span>
 						</h3>
-					</div>
+					</motion.div>
 				)}
 			</div>
 		);
 	};
 
+	const renderNavCenter = () => {
+		return <div className={styles["middle"]}>{browsing && currentUser && <SearchBar />}</div>;
+	};
+
 	const renderNavRight = () => {
 		return (
-			<div className={navBarStyles["component"]}>
-				{currentUser && (
+			<div className={styles["component"]}>
+				{browsing && currentUser && (
 					<>
+						<ChatButton />
 						<TradeCenterButton />
-						<div className={navBarStyles["cartComponent"]} onClick={handleOpenCart}>
-							<div className={navBarStyles["icon"]}>
-								<TiShoppingCart
-									onClick={handleOpenCart}
-									style={{
-										fill: cartAmount ? "#90ee90" : "#fff",
-									}}
-								/>
-							</div>
-							{cartAmount > 0 && (
-								<div className={navBarStyles["badge"]} onClick={handleOpenCart}>
-									{cartAmount}
-								</div>
-							)}
-						</div>
+						<CartButton cartAmount={cartAmount} handleOpenCart={handleOpenCart} />
 					</>
 				)}
 				<AccountButton userAvatar={userAvatar} />
@@ -144,16 +169,31 @@ const NavBar = (props) => {
 		<>
 			<motion.div
 				key="navBar-component"
-				className={navBarStyles["navbar"]}
+				ref={componentRef}
+				className={cns(styles["navbar"], {
+					[styles["navBarNarrow"]]: isSmallScreen,
+				})}
 				id={props.component}
 				animate={"visible"}
 				initial={"visible"}
 				variants={navBarVariants}
 				transition={{ y: { type: "spring" }, duration: 0.01 }}
 			>
-				{renderNavLeft()}
-				{renderNavCenter()}
-				{renderNavRight()}
+				{!isSmallScreen ? (
+					<>
+						{renderNavLeft()}
+						{renderNavCenter()}
+						{renderNavRight()}
+					</>
+				) : (
+					<>
+						<div className={styles["navBarNarrowTop"]}>
+							{renderNavLeft()}
+							{renderNavRight()}
+						</div>
+						{renderNavCenter()}
+					</>
+				)}
 			</motion.div>
 		</>
 	);

@@ -40,6 +40,7 @@ const Grid = (props) => {
 				items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
 			}
 		} else {
+			// this is for when a user is searching with a query
 			const foundItems = allItems?.filter((item, i) => {
 				// safe checking for items without names
 				// this should only happen in development and not during production

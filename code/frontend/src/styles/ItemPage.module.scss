@@ -1,3 +1,5 @@
+@use "_variables" as v;
+
 @keyframes opening {
 	0% {
 		height: 59px;
@@ -26,29 +28,13 @@
 }
 
 .itemPage {
-	margin-top: var(--headerHeight);
 	background-color: var(--bgColor);
 
 	&.notFound {
 		position: relative;
 	}
 
-	::-webkit-scrollbar {
-		width: 7px;
-	}
-
-	::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background: #888;
-		border-radius: var(--borderRadius);
-
-		&:hover {
-			background: #555;
-		}
-	}
+	@include v.scrollbar(var(--popOutBgColorAlt1), #555, 20px);
 }
 
 .itemPageContent {
