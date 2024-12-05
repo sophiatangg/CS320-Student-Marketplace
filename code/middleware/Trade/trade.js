@@ -37,7 +37,7 @@ export const updateExpiration = async (tradeID, time) => {
 	}
 };
 
-export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
+export const updateOffer = async (tradeId, ItemsinTrade, item) => {
 	try {
 		const { data, error } = await supabase.from("Trade").update({ items_in_trade: newItemsinTrade }).eq("id", tradeId);
 
@@ -54,3 +54,60 @@ export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
 		alert("An unexpected error occurred. Please try again later.");
 	}
 };
+export const acceptOffer = async (tradeId) => {
+	try {
+		// updating the trade to completed in trade table 
+		const { data:tradeData, error:tradeError } = await supabase.from("Trade").update({ completed: true }).eq("id", tradeId);
+		if (tradeError) {
+            console.error("Error completing the trade:", tradeError);
+            alert(`Error completing the trade: ${tradeError.message}`);
+            return;
+        }
+
+		// accessing the item id of the wanted item in the trade
+		const { data: itemWantedData, error: itemWantedError } = await supabase.from("Trade").select("target_item_id").eq("id", tradeId).single();
+		if (itemWantedError) {
+            console.error("Error selecting item wanted data:", itemWantedError);
+            alert(`Error completing the trade: ${itemWantedError.message}`);
+            return;
+        }
+		
+		const itemWantedID = itemWantedData.target_item_id;
+
+
+		// accessing the item id of the offered items in the trade
+		const { data: offeredItemData, error: offeredItemError } = await supabase.from("Trade").select("offer_items_ids").eq("id", tradeId).single();
+		if (offeredItemError) {
+            console.error("Error selecting offered items data:", offeredItemError);
+            alert(`Error completing the trade: ${offeredItemError.message}`);
+            return;
+        }
+		
+
+		const offeredItemIDs = offeredItemData.offer_items_ids;
+
+		// updating the wanted item to unavailable in the items table
+		const {error: wantedItemUpdateError} = await supabase.from("Item").update({ available: false }).eq("id", itemWantedID);
+
+		if (wantedItemUpdateError) {
+            console.error("Error update availability of wanted item:", wantedItemUpdateError);
+            alert(`Error completing the trade: ${wantedItemUpdateError.message}`);
+            return;
+        }
+		// updating the offered items to unavailable in the items table
+		const {error: offeredItemsUpdateError } = await supabase.from("Item").update({ available: false }).in("id", offeredItemIDs);
+		if (offeredItemsUpdateError) {
+            console.error("Error update availability of offered items:", offeredItemsUpdateError);
+            alert(`Error completing the trade: ${offeredItemsUpdateError.message}`);
+            return;
+        }
+		
+
+		console.log("trade successfully accepted:", tradeData);
+		alert("trade successfully accepted");
+	} catch (err) {
+		console.error("Unexpected error:", err);
+		alert("An unexpected error occurred. Please try again later.");
+	}
+};
+
