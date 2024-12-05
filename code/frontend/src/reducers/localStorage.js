@@ -3,6 +3,11 @@ const initial = {
 	generalSortView: JSON.parse(localStorage.getItem("generalSortView")) ?? true,
 	gridView: JSON.parse(localStorage.getItem("gridView")) ?? true,
 	loading: false,
+	pagination: JSON.parse(localStorage.getItem("pagination")) || {
+		currentPage: 1,
+		itemsPerPage: 20,
+		totalItems: 0,
+	},
 	selectedUserId: null,
 	sidebarViews: JSON.parse(localStorage.getItem("sidebarViews")) || {
 		general: false,
@@ -52,6 +57,19 @@ export const localStorageReducer = (state = initial, action) => {
 			return {
 				...state,
 				gridView: action.payload,
+			};
+
+		case "SET_PAGINATION":
+			const updatedPagination = {
+				...state.pagination,
+				...action.payload,
+			};
+
+			localStorage.setItem("pagination", JSON.stringify(updatedPagination));
+
+			return {
+				...state,
+				pagination: updatedPagination,
 			};
 
 		case "SET_SIDEBAR_VIEW":

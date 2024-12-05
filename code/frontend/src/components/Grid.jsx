@@ -5,7 +5,7 @@ import { useContextDispatch, useContextSelector } from "@providers/StoreProvider
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
 import { sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const Grid = (props) => {
@@ -16,18 +16,18 @@ const Grid = (props) => {
 	const categoryName = params.get("cat") || "";
 	const othersUserId = params.get("id") || "";
 
-	const { allItems, shownItems } = useContextSelector("itemsStore");
+	const { allItems } = useContextSelector("itemsStore");
 	const { gridView, sortProps } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
 	const dispatch = useContextDispatch();
 
+	const [baseShownItems, setBaseShownItems] = useState([]); // Stores items based on category or search
+	const [sortedShownItems, setSortedShownItems] = useState([]); // Stores items after sorting
+
 	useEffect(() => {
-		const updateItems = async () => {
-			dispatch({
-				type: "SET_LOADING",
-				payload: true,
-			});
+		const updateBaseItems = async () => {
+			dispatch({ type: "SET_LOADING", payload: true });
 
 			try {
 				let items;
@@ -35,50 +35,20 @@ const Grid = (props) => {
 					if (!categoryName || categoryName === "all") {
 						items = allItems;
 					} else if (categoryName === "my-items") {
-						items = allItems?.filter((item) => {
-							return item.seller_id === currentUser.id;
-						});
+						items = allItems.filter((item) => item.seller_id === currentUser.id);
 					} else if (categoryName === "wishlist") {
-						if (othersUserId) {
-							const res = await selectAllWishlistItemsByUser({ userId: othersUserId });
-							if (!res.data) {
-								console.error(`Error fetching wishlist items!`, res.error);
-
-								items = [];
-								return;
-							}
-
-							const userWishlistItems = allItems.filter((item) =>
-								res.data.some((wishlistItem) => {
-									return wishlistItem.item_id === item.id;
-								}),
-							);
-
-							items = userWishlistItems;
-						} else {
-							const res = await selectAllWishlistItemsByUser({ userId: null });
-							if (!res.data) {
-								console.error(`Error fetching wishlist items!`, res.error);
-
-								items = [];
-								return;
-							}
-
-							const personalWishlistItems = allItems.filter((item) =>
-								res.data.some((wishlistItem) => {
-									return wishlistItem.item_id === item.id;
-								}),
-							);
-
-							items = personalWishlistItems;
+						const res = await selectAllWishlistItemsByUser({ userId: othersUserId || null });
+						if (!res.data) {
+							console.error("Error fetching wishlist items:", res.error);
+							items = [];
+							return;
 						}
+						items = allItems.filter((item) => res.data.some((wishlistItem) => wishlistItem.item_id === item.id));
 					} else {
-						items = allItems?.filter((item) => {
-							return item.category.toLowerCase() === categoryName.toLowerCase();
-						});
+						items = allItems.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
 					}
 				} else {
-					items = allItems?.filter((item) => {
+					items = allItems.filter((item) => {
 						if (!item?.name) return false;
 						const name = item.name.toLowerCase().replace(/\s+/g, "");
 						const query = searchQuery.toLowerCase().replace(/\s+/g, "");
@@ -86,48 +56,42 @@ const Grid = (props) => {
 					});
 				}
 
-				dispatch({
-					type: "SET_SHOWN_ITEMS",
-					payload: items,
-				});
+				setBaseShownItems(items); // Update the filtered items
 			} catch (error) {
 				console.error("Error processing items in Grid:", error);
 			} finally {
-				dispatch({
-					type: "SET_LOADING",
-					payload: false,
-				});
+				dispatch({ type: "SET_LOADING", payload: false });
 			}
 		};
 
-		updateItems();
+		updateBaseItems();
 	}, [allItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
 
 	useEffect(() => {
-		if (!shownItems) return;
-
+		if (!baseShownItems) return;
 		let sortedItems;
 
 		switch (sortProps.selectedSortProp) {
 			case "name":
-				sortedItems = sortItemsByName(shownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByName(baseShownItems, sortProps.selectedSortOrder === "asc");
 				break;
 			case "date":
-				sortedItems = sortItemsByDate(shownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, sortProps.selectedSortOrder === "asc");
 				break;
 			case "price":
-				sortedItems = sortItemsByPrice(shownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByPrice(baseShownItems, sortProps.selectedSortOrder === "asc");
 				break;
 			default:
-				sortedItems = sortItemsByDate(shownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, sortProps.selectedSortOrder === "asc");
 				break;
 		}
 
+		setSortedShownItems(sortedItems);
 		dispatch({
 			type: "SET_SHOWN_ITEMS",
 			payload: sortedItems,
 		});
-	}, [sortProps.selectedSortProp, sortProps.selectedSortOrder, shownItems, dispatch]);
+	}, [baseShownItems, sortProps.selectedSortProp, sortProps.selectedSortOrder, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
@@ -157,14 +121,14 @@ const Grid = (props) => {
 		<>
 			<div
 				className={cns(styles["gridContainer"], {
-					[styles["withGrid"]]: gridView && shownItems?.length,
-					[styles["noGrid"]]: !gridView && shownItems?.length,
-					[styles["emptyGrid"]]: !shownItems?.length,
+					[styles["withGrid"]]: gridView && sortedShownItems?.length,
+					[styles["noGrid"]]: !gridView && sortedShownItems?.length,
+					[styles["emptyGrid"]]: !sortedShownItems?.length,
 				})}
 				id="gridContainer"
 			>
-				{shownItems.length === 0 && renderPlaceHolder()}
-				{shownItems?.map((item, i) => {
+				{sortedShownItems.length === 0 && renderPlaceHolder()}
+				{sortedShownItems?.map((item, i) => {
 					return <CardFull key={i} item={item} isFullWidth={gridView} />;
 				})}
 			</div>

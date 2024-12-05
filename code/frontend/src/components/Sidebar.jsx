@@ -42,7 +42,7 @@ const Sidebar = (props) => {
 	const navigate = useNavigate();
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
-	const categoryName = params.get("cat") || "";
+	const categoryName = params.get("cat") || "all";
 
 	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))];
 	const sortedUniqueCategories = uniqueCategoriesFromList
