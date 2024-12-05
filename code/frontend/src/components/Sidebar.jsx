@@ -35,7 +35,7 @@ const Sidebar = (props) => {
 
 	const componentRef = useRef(null);
 
-	const { sidebarViews } = useContextSelector("globalStore");
+	const { sidebarViews, sortProps } = useContextSelector("globalStore");
 	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
@@ -59,6 +59,14 @@ const Sidebar = (props) => {
 			icon: FaCalendarDays,
 			onClick: () => {
 				dispatch({
+					type: "SET_SORT_PROPS",
+					payload: {
+						key: "selectedSortProp",
+						value: "date",
+					},
+				});
+
+				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByDate(allItems, isAscending),
 				});
@@ -69,6 +77,14 @@ const Sidebar = (props) => {
 			icon: FaBarsStaggered,
 			onClick: () => {
 				dispatch({
+					type: "SET_SORT_PROPS",
+					payload: {
+						key: "selectedSortProp",
+						value: "name",
+					},
+				});
+
+				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByName(allItems, isAscending),
 				});
@@ -78,6 +94,14 @@ const Sidebar = (props) => {
 			name: "Price",
 			icon: IoIosPricetags,
 			onClick: () => {
+				dispatch({
+					type: "SET_SORT_PROPS",
+					payload: {
+						key: "selectedSortProp",
+						value: "price",
+					},
+				});
+
 				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByPrice(allItems, isAscending),
@@ -90,10 +114,32 @@ const Sidebar = (props) => {
 		{
 			name: "Ascending",
 			icon: TbSortAscending2,
+			onClick: () => {
+				setIsAscending(true);
+
+				dispatch({
+					type: "SET_SORT_PROPS",
+					payload: {
+						key: "selectedSortOrder",
+						value: "asc",
+					},
+				});
+			},
 		},
 		{
 			name: "Descending",
 			icon: TbSortDescending2,
+			onClick: () => {
+				setIsAscending(false);
+
+				dispatch({
+					type: "SET_SORT_PROPS",
+					payload: {
+						key: "selectedSortOrder",
+						value: "desc",
+					},
+				});
+			},
 		},
 	];
 
@@ -180,12 +226,17 @@ const Sidebar = (props) => {
 	const renderSorterList = (listName, arr) => {
 		return arr.map((item, itemIdx) => {
 			const isHovered = hoverStates[listName][itemIdx];
+			const isSelected =
+				(listName === "sortSelection" && sortProps.selectedSortProp === item.name.toLowerCase()) ||
+				(listName === "sortType" &&
+					sortProps.selectedSortOrder === (item.name === "Ascending" ? "asc" : item.name === "Descending" ? "desc" : ""));
 
 			return (
 				<div
 					key={itemIdx}
 					id={itemIdx + 1}
 					className={cns(styles["filterDiv"], {
+						[styles["selected"]]: isSelected,
 						[styles["filterListDisabled"]]: shownItems.length === 0,
 					})}
 					onClick={(e) => {
@@ -213,7 +264,7 @@ const Sidebar = (props) => {
 					<button
 						className={styles["filterBtn"]}
 						style={{
-							backgroundColor: hoverStates[listName][itemIdx] ? defaultSelectedBGColor : defaultBGColor,
+							backgroundColor: isHovered || isSelected ? defaultSelectedBGColor : defaultBGColor,
 						}}
 					>
 						<item.icon
@@ -221,8 +272,8 @@ const Sidebar = (props) => {
 							style={{
 								width: 30,
 								height: 30,
-								color: hoverStates[listName][itemIdx] ? defaultHoverIconColor : defaultSelectedBGColor,
-								fill: hoverStates[listName][itemIdx] ? defaultHoverIconColor : defaultSelectedBGColor,
+								color: isHovered || isSelected ? defaultHoverIconColor : defaultSelectedBGColor,
+								fill: isHovered || isSelected ? defaultHoverIconColor : defaultSelectedBGColor,
 							}}
 						/>
 					</button>

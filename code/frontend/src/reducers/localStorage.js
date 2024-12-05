@@ -2,13 +2,17 @@ const initial = {
 	items: JSON.parse(localStorage.getItem("items")) || [],
 	generalSortView: JSON.parse(localStorage.getItem("generalSortView")) ?? true,
 	gridView: JSON.parse(localStorage.getItem("gridView")) ?? true,
+	loading: false,
+	selectedUserId: null,
 	sidebarViews: JSON.parse(localStorage.getItem("sidebarViews")) || {
 		general: false,
 		category: true,
 	},
+	sortProps: JSON.parse(localStorage.getItem("sortProps")) || {
+		selectedSortProp: "date",
+		selectedSortOrder: "asc",
+	},
 	theme: JSON.parse(localStorage.getItem("theme")) ?? "dark",
-	loading: false,
-	selectedUserId: null,
 };
 
 export const localStorageReducer = (state = initial, action) => {
@@ -61,6 +65,19 @@ export const localStorageReducer = (state = initial, action) => {
 			return {
 				...state,
 				sidebarViews: updatedSidebarViews,
+			};
+
+		case "SET_SORT_PROPS":
+			const updatedSortProps = {
+				...state.sortProps,
+				[action.payload.key]: action.payload.value,
+			};
+
+			localStorage.setItem("sortProps", JSON.stringify(updatedSortProps));
+
+			return {
+				...state,
+				sortProps: updatedSortProps,
 			};
 
 		case "SET_THEME":

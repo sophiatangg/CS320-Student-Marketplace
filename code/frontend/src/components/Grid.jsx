@@ -4,6 +4,7 @@ import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
+import { sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -16,7 +17,7 @@ const Grid = (props) => {
 	const othersUserId = params.get("id") || "";
 
 	const { allItems, shownItems } = useContextSelector("itemsStore");
-	const { gridView } = useContextSelector("globalStore");
+	const { gridView, sortProps } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 
 	const dispatch = useContextDispatch();
@@ -100,7 +101,33 @@ const Grid = (props) => {
 		};
 
 		updateItems();
-	}, [allItems, shownItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
+	}, [allItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
+
+	useEffect(() => {
+		if (!shownItems) return;
+
+		let sortedItems;
+
+		switch (sortProps.selectedSortProp) {
+			case "name":
+				sortedItems = sortItemsByName(shownItems, sortProps.selectedSortOrder === "asc");
+				break;
+			case "date":
+				sortedItems = sortItemsByDate(shownItems, sortProps.selectedSortOrder === "asc");
+				break;
+			case "price":
+				sortedItems = sortItemsByPrice(shownItems, sortProps.selectedSortOrder === "asc");
+				break;
+			default:
+				sortedItems = sortItemsByDate(shownItems, sortProps.selectedSortOrder === "asc");
+				break;
+		}
+
+		dispatch({
+			type: "SET_SHOWN_ITEMS",
+			payload: sortedItems,
+		});
+	}, [sortProps.selectedSortProp, sortProps.selectedSortOrder, shownItems, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
