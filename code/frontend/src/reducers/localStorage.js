@@ -4,8 +4,7 @@ const initial = {
 	gridView: JSON.parse(localStorage.getItem("gridView")) ?? true,
 	loading: false,
 	pagination: JSON.parse(localStorage.getItem("pagination")) || {
-		currentPage: 1,
-		itemsPerPage: 20,
+		itemsPerPage: 12,
 		totalItems: 0,
 	},
 	selectedUserId: null,
@@ -62,7 +61,7 @@ export const localStorageReducer = (state = initial, action) => {
 		case "SET_PAGINATION":
 			const updatedPagination = {
 				...state.pagination,
-				...action.payload,
+				...action.payload, // Merge the payload into the existing pagination state
 			};
 
 			localStorage.setItem("pagination", JSON.stringify(updatedPagination));

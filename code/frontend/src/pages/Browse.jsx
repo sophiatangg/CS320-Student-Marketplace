@@ -1,12 +1,21 @@
 import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
+import Pagination from "@components/Pagination";
 import Sidebar from "@components/Sidebar";
+import {
+	countAllItems,
+	countAllItemsFromCategory,
+	countAllItemsFromUser,
+	countAllWishlistItemsByUser,
+	countSearchItemsFromQuery,
+} from "@database/items";
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Browse.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { MdOutlineTableRows } from "react-icons/md";
 import { TbLayoutGridFilled } from "react-icons/tb";
@@ -23,9 +32,13 @@ const Browse = (props) => {
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "";
 
+	const { currentUser } = useAuth();
 	const { gridView } = useContextSelector("globalStore");
-	const { shownItems } = useContextSelector("itemsStore");
+	const { allItems, shownItems } = useContextSelector("itemsStore");
+	const { searchQuery } = useContextSelector("searchStore");
 	const dispatch = useContextDispatch();
+
+	const [allItemsCounter, setAllItemsCounter] = useState(0);
 
 	const handleLayoutSwitch = (e, bool) => {
 		dispatch({
@@ -37,6 +50,68 @@ const Browse = (props) => {
 	useEffect(() => {
 		document.title = `${PROJECT_NAME} — Store`;
 	}, []);
+
+	useEffect(() => {
+		const fetchItemsCount = async () => {
+			let counter;
+			try {
+				if (searchQuery) {
+					const { count: searchCount, error: searchError } = await countSearchItemsFromQuery({
+						searchQuery: searchQuery,
+					});
+
+					if (searchError) {
+						console.error("Error calculating search result count:", searchError);
+					}
+
+					counter = searchCount;
+				} else {
+					// Count items based on category
+					switch (categoryName) {
+						case "all":
+							const { count: itemsCount } = await countAllItems();
+
+							counter = itemsCount;
+							break;
+						case "wishlist":
+							const { count: wishlistCount } = await countAllWishlistItemsByUser({
+								userId: null,
+							});
+
+							counter = wishlistCount;
+
+							break;
+						case "my-items":
+							const { count: ownItemsCount } = await countAllItemsFromUser({
+								userId: currentUser.id,
+							});
+
+							counter = ownItemsCount;
+
+							break;
+						default:
+							if (categoryName === "") {
+								counter = 0;
+								return;
+							}
+
+							const { count: categoryItemsCount } = await countAllItemsFromCategory({
+								category: categoryName,
+							});
+
+							counter = categoryItemsCount;
+							break;
+					}
+				}
+
+				setAllItemsCounter(counter);
+			} catch (error) {
+				console.error("Error fetching items count:", error);
+			}
+		};
+
+		fetchItemsCount();
+	}, [allItems, shownItems]);
 
 	const renderPlaceHolder = () => {
 		return (
@@ -53,10 +128,12 @@ const Browse = (props) => {
 
 	const renderCounter = () => {
 		return (
+			allItemsCounter > 0 &&
 			shownItems.length > 0 && (
 				<div className={styles["counterContainer"]}>
-					<span>{shownItems.length}</span>
-					<span>{shownItems.length > 1 ? "Items" : "Item"}</span>
+					<span>
+						{shownItems.length} out of {allItemsCounter} {allItemsCounter > 1 ? "Items" : "Item"}
+					</span>
 				</div>
 			)
 		);
@@ -118,6 +195,7 @@ const Browse = (props) => {
 								</div>
 							</div>
 							<Grid />
+							<Pagination />
 						</div>
 					</div>
 				</motion.div>

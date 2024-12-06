@@ -1,7 +1,7 @@
 import Footer from "@components/Footer";
 import LoadingBar from "@components/LoadingBar";
 import NavBar from "@components/NavBar";
-import { selectAllItemsWithImages, selectAllWishlistItemsByUser } from "@database/items";
+import { selectAllItemsWithImages, selectAllWishlistedItemsWithImagesFromUser } from "@database/items";
 import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
@@ -34,13 +34,17 @@ const App = () => {
 		tradeDisplayed,
 		tradeManageDisplay,
 	} = useContextSelector("displayStore");
-
+	const { loading, pagination, theme } = useContextSelector("globalStore");
+	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
-	const { loading, theme } = useContextSelector("globalStore");
-	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
-
 	const location = useLocation();
+	const { search } = useLocation();
+	const params = new URLSearchParams(search);
+	const currentPage = parseInt(params.get("page") || "1", 10);
+
+	const { itemsPerPage } = pagination;
+	const offset = (currentPage - 1) * itemsPerPage;
 
 	const prevPathname = usePrevious(location.pathname);
 
@@ -58,7 +62,11 @@ const App = () => {
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
-				const res = await selectAllItemsWithImages();
+				const res = await selectAllItemsWithImages({
+					limit: itemsPerPage,
+					offset: offset,
+				});
+
 				if (res.data) {
 					dispatch({
 						type: "SET_ALL_ITEMS",
@@ -73,25 +81,28 @@ const App = () => {
 		};
 
 		fetchItems();
-	}, [dispatch]);
+	}, [itemsPerPage, offset, dispatch]);
 
 	useEffect(() => {
 		const fetchWishlistItems = async () => {
 			try {
-				const res = await selectAllWishlistItemsByUser({ userId: null });
-				if (res.data) {
+				const { data } = await selectAllWishlistedItemsWithImagesFromUser({
+					userId: null,
+					limit: itemsPerPage,
+					offset: offset,
+				});
+
+				if (data) {
 					dispatch({
 						type: "SET_WISHLIST_ITEMS",
-						payload: res.data,
+						payload: data,
 					});
-				} else {
-					console.error("Failed to fetch wishlist items:", res.error);
 				}
 			} catch (error) {}
 		};
 
 		fetchWishlistItems();
-	}, [dispatch]);
+	}, [itemsPerPage, offset, dispatch]);
 
 	useEffect(() => {
 		const applyTheme = () => {

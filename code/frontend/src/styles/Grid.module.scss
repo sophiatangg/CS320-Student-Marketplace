@@ -3,6 +3,7 @@
 	margin-top: 25px;
 
 	&.withGrid {
+		min-height: 800px;
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		grid-template-rows: var(--gridDimension);

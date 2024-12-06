@@ -1,5 +1,10 @@
 import CardFull from "@components/CardFull";
-import { selectAllWishlistItemsByUser } from "@database/items";
+import {
+	searchItemsWithImagesFromQuery,
+	selectAllItemsWithImagesFromCategory,
+	selectAllItemsWithImagesFromUser,
+	selectAllWishlistedItemsWithImagesFromUser,
+} from "@database/items";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
@@ -11,14 +16,20 @@ import { useLocation } from "react-router-dom";
 const Grid = (props) => {
 	const { currentUser } = useAuth();
 
-	const { search } = useLocation();
-	const params = new URLSearchParams(search);
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
 	const categoryName = params.get("cat") || "";
 	const othersUserId = params.get("id") || "";
+	const currentPage = parseInt(params.get("page") || "1", 10);
 
 	const { allItems } = useContextSelector("itemsStore");
-	const { gridView, sortProps } = useContextSelector("globalStore");
+	const { gridView, pagination, sortProps } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
+
+	const { selectedSortProp, selectedSortOrder } = sortProps;
+
+	const { itemsPerPage } = pagination;
+	const offset = (currentPage - 1) * itemsPerPage;
 
 	const dispatch = useContextDispatch();
 
@@ -35,25 +46,34 @@ const Grid = (props) => {
 					if (!categoryName || categoryName === "all") {
 						items = allItems;
 					} else if (categoryName === "my-items") {
-						items = allItems.filter((item) => item.seller_id === currentUser.id);
+						const { data } = await selectAllItemsWithImagesFromUser({
+							userId: currentUser.id,
+							limit: itemsPerPage,
+							offset: offset,
+						});
+
+						items = data ?? [];
 					} else if (categoryName === "wishlist") {
-						const res = await selectAllWishlistItemsByUser({ userId: othersUserId || null });
-						if (!res.data) {
-							console.error("Error fetching wishlist items:", res.error);
-							items = [];
-							return;
-						}
-						items = allItems.filter((item) => res.data.some((wishlistItem) => wishlistItem.item_id === item.id));
+						const { data } = await selectAllWishlistedItemsWithImagesFromUser({
+							userId: othersUserId ?? currentUser.id,
+							limit: itemsPerPage,
+							offset: offset,
+						});
+
+						items = data ?? [];
 					} else {
-						items = allItems.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
+						const { data } = await selectAllItemsWithImagesFromCategory({
+							category: categoryName.toLowerCase(),
+						});
+
+						items = data ?? [];
 					}
 				} else {
-					items = allItems.filter((item) => {
-						if (!item?.name) return false;
-						const name = item.name.toLowerCase().replace(/\s+/g, "");
-						const query = searchQuery.toLowerCase().replace(/\s+/g, "");
-						return name.includes(query);
+					const { data } = await searchItemsWithImagesFromQuery({
+						searchQuery: searchQuery,
 					});
+
+					items = data ?? [];
 				}
 
 				setBaseShownItems(items); // Update the filtered items
@@ -65,46 +85,51 @@ const Grid = (props) => {
 		};
 
 		updateBaseItems();
-	}, [allItems, categoryName, searchQuery, currentUser, othersUserId, dispatch]);
+	}, [allItems, categoryName, currentUser, currentPage, itemsPerPage, offset, othersUserId, searchQuery, dispatch]);
 
 	useEffect(() => {
 		if (!baseShownItems) return;
 		let sortedItems;
 
-		switch (sortProps.selectedSortProp) {
+		switch (selectedSortProp) {
 			case "name":
-				sortedItems = sortItemsByName(baseShownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByName(baseShownItems, selectedSortOrder === "asc");
 				break;
 			case "date":
-				sortedItems = sortItemsByDate(baseShownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, selectedSortOrder === "asc");
 				break;
 			case "price":
-				sortedItems = sortItemsByPrice(baseShownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByPrice(baseShownItems, selectedSortOrder === "asc");
 				break;
 			default:
-				sortedItems = sortItemsByDate(baseShownItems, sortProps.selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, selectedSortOrder === "asc");
 				break;
 		}
 
 		setSortedShownItems(sortedItems);
+
 		dispatch({
 			type: "SET_SHOWN_ITEMS",
 			payload: sortedItems,
 		});
-	}, [baseShownItems, sortProps.selectedSortProp, sortProps.selectedSortOrder, dispatch]);
+	}, [baseShownItems, selectedSortProp, selectedSortOrder, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
 
-		if (categoryName === "all") {
-			message = "Empty Store";
-		} else if (categoryName === "my-items") {
-			message = "No Items";
-		} else if (categoryName === "wishlist") {
-			if (othersUserId && othersUserId !== currentUser.id) {
-				message = "This user has no items in their wishlist";
+		if (!searchQuery) {
+			if (categoryName === "all") {
+				message = "Empty Store";
+			} else if (categoryName === "my-items") {
+				message = "No Items";
+			} else if (categoryName === "wishlist") {
+				if (othersUserId && othersUserId !== currentUser.id) {
+					message = "This user has no items in their wishlist";
+				} else {
+					message = "Empty wishlist";
+				}
 			} else {
-				message = "Empty wishlist";
+				message = `No results for ${categoryName}`;
 			}
 		} else {
 			message = `No results for ${searchQuery}`;

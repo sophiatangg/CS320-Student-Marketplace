@@ -33,8 +33,11 @@ export const selectItemsFromUser = async () => {
 	}
 };
 
-export const selectAllItems = async () => {
-	const res = await supabase.from(itemTableName).select("*");
+export const selectAllItems = async ({ limit = 12, offset = 0 } = {}) => {
+	const res = await supabase
+		.from(itemTableName)
+		.select("*")
+		.range(offset, offset + limit - 1);
 
 	if (!res) {
 		console.error("Error fetching items from database");
@@ -52,16 +55,64 @@ export const selectAllItems = async () => {
 	}
 };
 
-export const selectAllItemsWithImages = async () => {
-	// Fetch all items
-	const { data: items, error: itemsError } = await supabase.from(itemTableName).select("*");
+export const searchItemsWithImagesFromQuery = async ({ searchQuery = "", limit = 12, offset = 0 }) => {
+	try {
+		let query = supabase.from(itemTableName).select("*");
+
+		// Add search filter
+		if (searchQuery) {
+			query = query.ilike("name", `%${searchQuery}%`); // Case-insensitive search
+		}
+
+		// Apply pagination
+		query = query.range(offset, offset + limit - 1);
+
+		const { data: items, error: itemsError } = await query;
+
+		if (itemsError) {
+			console.error("Error fetching items:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		// Fetch all images for the paginated items
+		const itemIds = items.map((item) => item.id);
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		// Combine items with their respective images
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages, // Attach images as an array
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (err) {
+		console.error("Unexpected error in searchItemsWithQuery:", err);
+		return { data: null, error: err };
+	}
+};
+
+export const selectAllItemsWithImages = async ({ limit = 12, offset = 0 } = {}) => {
+	// Fetch paginated items
+	const { data: items, error: itemsError } = await supabase
+		.from(itemTableName)
+		.select("*")
+		.range(offset, offset + limit - 1);
 
 	if (itemsError) {
 		console.error("Error fetching items:", itemsError);
 		return { data: null, error: itemsError };
 	}
 
-	// Fetch all images and group by itemid
+	// Fetch all images (can be optimized further if images are also paginated)
 	const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("*");
 
 	if (imagesError) {
@@ -71,24 +122,102 @@ export const selectAllItemsWithImages = async () => {
 
 	// Combine items with their respective images
 	const itemsWithImages = items.map((item) => {
-		const itemImages = images
-			.filter((image) => {
-				return image.itemid === item.id;
-			})
-			.map((image) => {
-				return image.image_url;
-			});
+		const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
 
 		return {
 			...item,
-			images: itemImages, // Attach images as an array
+			images: itemImages,
 		};
 	});
 
 	return { data: itemsWithImages, error: null };
 };
 
-export const selectAllWishlistItemsByUser = async ({ userId }) => {
+export const selectAllItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0 }) => {
+	if (!userId) {
+		console.error("User ID is required for fetching user items.");
+		return { data: null, error: "User ID is missing." };
+	}
+
+	try {
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.eq("seller_id", userId)
+			.range(offset, offset + limit - 1);
+
+		if (itemsError) {
+			console.error("Error fetching items:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		const itemIds = items.map((item) => item.id);
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages,
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (error) {
+		console.error("Unexpected error in selectAllItemsWithImagesFromUser:", error);
+		return { data: null, error };
+	}
+};
+
+export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 12, offset = 0 }) => {
+	if (!category) {
+		console.error("Category is required for fetching items.");
+		return { data: null, error: "Category is missing." };
+	}
+
+	try {
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.ilike("category", category)
+			.range(offset, offset + limit - 1);
+
+		if (itemsError) {
+			console.error("Error fetching items:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		const itemIds = items.map((item) => item.id);
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages,
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (error) {
+		console.error("Unexpected error in selectAllItemsWithImagesFromCategory:", error);
+		return { data: null, error };
+	}
+};
+
+export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0 }) => {
 	let _userId;
 	if (!userId) {
 		const {
@@ -103,7 +232,11 @@ export const selectAllWishlistItemsByUser = async ({ userId }) => {
 		_userId = userId;
 	}
 
-	const res = await supabase.from(wishlistTableName).select("*").eq("user_id", _userId);
+	const res = await supabase
+		.from(wishlistTableName)
+		.select("*")
+		.eq("user_id", _userId)
+		.range(offset, offset + limit - 1);
 
 	if (!res) {
 		console.error("Error fetching wishlist items from database:", res.error);
@@ -114,6 +247,168 @@ export const selectAllWishlistItemsByUser = async ({ userId }) => {
 		error: res.error,
 		status: res.status,
 	};
+};
+
+export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0 }) => {
+	let _userId;
+	if (!userId) {
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user.hasOwnProperty("id")) {
+			throw Error("Error fetching wishlisted items from user.");
+		}
+		_userId = user.id;
+	} else {
+		_userId = userId;
+	}
+
+	try {
+		const { data: wishlist, error: wishlistError } = await supabase
+			.from(wishlistTableName)
+			.select("item_id")
+			.eq("user_id", _userId)
+			.range(offset, offset + limit - 1);
+
+		if (wishlistError) {
+			console.error("Error fetching wishlist items:", wishlistError);
+			return { data: null, error: wishlistError };
+		}
+
+		const itemIds = wishlist.map((wish) => wish.item_id);
+		const { data: items, error: itemsError } = await supabase.from(itemTableName).select("*").in("id", itemIds);
+
+		if (itemsError) {
+			console.error("Error fetching items for wishlist:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages,
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (error) {
+		console.error("Unexpected error in selectAllWishlistedItemsWithImagesFromUser:", error);
+		return { data: null, error };
+	}
+};
+
+export const countAllItems = async () => {
+	try {
+		const { count, error } = await supabase.from(itemTableName).select("*", { count: "exact", head: true });
+
+		if (error) {
+			console.error("Error counting all items:", error);
+			return { count: 0, error };
+		}
+
+		return { count, error: null };
+	} catch (err) {
+		console.error("Unexpected error in countAllItems:", err);
+		return { count: 0, error: err };
+	}
+};
+
+export const countAllItemsFromUser = async ({ userId }) => {
+	try {
+		let _userId;
+		if (!userId) {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user?.id) {
+				throw new Error("Error fetching user session for item count.");
+			}
+			_userId = user.id;
+		} else {
+			_userId = userId;
+		}
+
+		const { count, error } = await supabase.from(itemTableName).select("*", { count: "exact", head: true }).eq("seller_id", _userId);
+
+		if (error) {
+			console.error("Error counting items from user:", error);
+			return { count: 0, error };
+		}
+
+		return { count, error: null };
+	} catch (err) {
+		console.error("Unexpected error in countAllItemsFromUser:", err);
+		return { count: 0, error: err };
+	}
+};
+
+export const countAllItemsFromCategory = async ({ category }) => {
+	if (!category) {
+		throw new Error("Category is required to count items.");
+	}
+
+	const { count, error } = await supabase.from(itemTableName).select("*", { count: "exact" }).ilike("category", category.toLowerCase());
+
+	if (error) {
+		console.error("Error fetching item count by category:", error);
+		return { count: 0, error };
+	}
+
+	return { count, error: null };
+};
+
+export const countAllWishlistItemsByUser = async ({ userId }) => {
+	try {
+		let _userId;
+		if (!userId) {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user?.id) {
+				throw new Error("Error fetching user session for wishlist count.");
+			}
+			_userId = user.id;
+		} else {
+			_userId = userId;
+		}
+
+		const { count, error } = await supabase.from(wishlistTableName).select("*", { count: "exact", head: true }).eq("user_id", _userId);
+
+		if (error) {
+			console.error("Error counting wishlist items:", error);
+			return { count: 0, error };
+		}
+
+		return { count, error: null };
+	} catch (err) {
+		console.error("Unexpected error in countWishlistItemsByUser:", err);
+		return { count: 0, error: err };
+	}
+};
+
+export const countSearchItemsFromQuery = async ({ searchQuery }) => {
+	if (!searchQuery || typeof searchQuery !== "string") {
+		return { count: 0, error: "Invalid search query." };
+	}
+
+	const { count, error } = await supabase
+		.from(itemTableName)
+		.select("*", { count: "exact", head: true }) // Use "exact" count with no data fetched
+		.ilike("name", `%${searchQuery}%`);
+
+	return { count, error };
 };
 
 export const getItemByItemId = async (itemId) => {

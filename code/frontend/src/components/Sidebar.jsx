@@ -40,8 +40,8 @@ const Sidebar = (props) => {
 	const dispatch = useContextDispatch();
 
 	const navigate = useNavigate();
-	const { search } = useLocation();
-	const params = new URLSearchParams(search);
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
 	const categoryName = params.get("cat") || "all";
 
 	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))];
@@ -179,7 +179,7 @@ const Sidebar = (props) => {
 	};
 
 	const handleCategorySelect = ({ name }) => {
-		navigate(`/browse?cat=${name.toLowerCase().replace(" ", "-")}`);
+		navigate(`/browse?cat=${name.toLowerCase().replace(" ", "-")}&page=1`);
 	};
 
 	const handleToggleSorterList = (e) => {
@@ -223,6 +223,16 @@ const Sidebar = (props) => {
 		setCollapsedButtonShown(!collapsedButtonShown);
 	};
 
+	const handleResetPage = () => {
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth",
+		});
+
+		params.set("page", 1);
+		navigate(`${location.pathname}?${params.toString()}`);
+	};
+
 	const renderSorterList = (listName, arr) => {
 		return arr.map((item, itemIdx) => {
 			const isHovered = hoverStates[listName][itemIdx];
@@ -245,6 +255,8 @@ const Sidebar = (props) => {
 						if (item.onClick) {
 							item.onClick();
 						}
+
+						handleResetPage();
 					}}
 					onMouseEnter={() => {
 						handleItemHover({
