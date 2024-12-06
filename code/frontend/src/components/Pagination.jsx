@@ -27,6 +27,7 @@ const Pagination = () => {
 	const params = new URLSearchParams(location.search);
 	const categoryName = params.get("cat") || "all";
 	const currentPage = parseInt(params.get("page") || "1", 10);
+	const othersUserId = params.get("id") || "";
 
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -55,7 +56,7 @@ const Pagination = () => {
 
 						case "wishlist":
 							const { count: wishlistCount } = await countAllWishlistItemsByUser({
-								userId: null,
+								userId: othersUserId ?? null,
 							});
 
 							counter = wishlistCount;

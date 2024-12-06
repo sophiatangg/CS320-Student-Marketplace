@@ -31,6 +31,7 @@ const Browse = (props) => {
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
 	const categoryName = params.get("cat") || "all";
+	const othersUserId = params.get("id") || "";
 
 	const { currentUser } = useAuth();
 	const { gridView } = useContextSelector("globalStore");
@@ -75,7 +76,7 @@ const Browse = (props) => {
 							break;
 						case "wishlist":
 							const { count: wishlistCount } = await countAllWishlistItemsByUser({
-								userId: null,
+								userId: othersUserId ?? null,
 							});
 
 							counter = wishlistCount;
