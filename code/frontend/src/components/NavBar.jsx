@@ -50,7 +50,7 @@ const NavBar = (props) => {
 
 	const handleBrowse = (e) => {
 		e.stopPropagation();
-		navigate("/browse?cat=all");
+		navigate("/browse");
 
 		dispatch({
 			type: "SET_CART_DISPLAYED",

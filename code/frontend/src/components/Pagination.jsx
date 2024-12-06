@@ -25,7 +25,7 @@ const Pagination = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const params = new URLSearchParams(location.search);
-	const categoryName = params.get("cat") || "";
+	const categoryName = params.get("cat") || "all";
 	const currentPage = parseInt(params.get("page") || "1", 10);
 
 	const totalPages = Math.ceil(totalItems / itemsPerPage);

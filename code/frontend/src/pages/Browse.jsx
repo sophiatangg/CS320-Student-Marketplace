@@ -30,7 +30,7 @@ const animations = {
 const Browse = (props) => {
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
-	const categoryName = params.get("cat") || "";
+	const categoryName = params.get("cat") || "all";
 
 	const { currentUser } = useAuth();
 	const { gridView } = useContextSelector("globalStore");

@@ -18,7 +18,7 @@ const Grid = (props) => {
 
 	const location = useLocation();
 	const params = new URLSearchParams(location.search);
-	const categoryName = params.get("cat") || "";
+	const categoryName = params.get("cat") || "all";
 	const othersUserId = params.get("id") || "";
 	const currentPage = parseInt(params.get("page") || "1", 10);
 	const sortPropName = params.get("spn") || "date";

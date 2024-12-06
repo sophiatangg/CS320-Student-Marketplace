@@ -65,7 +65,7 @@ const ItemPage = (props) => {
 	const dispatch = useContextDispatch();
 
 	const handleBrowse = async () => {
-		navigate("/browse?cat=all");
+		navigate("/browse");
 
 		dispatch({
 			type: "SET_CART_DISPLAYED",
