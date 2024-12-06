@@ -1,16 +1,24 @@
 .paginationContainer {
 	width: 100%;
-	height: 50px;
+	height: 90px;
 	position: relative;
 	display: flex;
-	flex-flow: row;
+	flex-flow: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-between;
+}
+
+.counterContainer {
+	position: relative;
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
 }
 
 .paginationInner {
 	width: 100%;
-	height: 100%;
+	height: 50px;
 	background-color: var(--cardFullBackground);
 	border-radius: var(--borderRadius);
 	display: inline-flex;
@@ -52,8 +60,9 @@
 			margin-right: 5px;
 		}
 
-		&:not(.disabled) {
-			background-color: var(--cardFullHoverBackground);
+		&:hover,
+		&.disabled {
+			background-color: var(--umassColor);
 		}
 	}
 
@@ -61,16 +70,22 @@
 		padding: 0 15px;
 	}
 
-	&.active {
+	&:hover {
 		background-color: var(--cardFullHoverBackground);
+	}
+
+	&.active {
+		background-color: var(--umassColor);
 		pointer-events: none !important;
 	}
 
 	&.disabled {
+		opacity: 0.5;
 		pointer-events: none;
 	}
 
 	span {
 		color: var(--colorPrimaryForeground);
+		cursor: pointer;
 	}
 }

@@ -111,6 +111,25 @@ const Pagination = () => {
 		navigate(`${location.pathname}?${params.toString()}`);
 	};
 
+	const renderCounter = () => {
+		if (totalItems === 0 || shownItems.length === 0) return null;
+
+		const startItem = (currentPage - 1) * itemsPerPage + 1;
+		const endItem = Math.min(startItem + shownItems.length - 1, totalItems);
+
+		return (
+			<div className={styles["counterContainer"]}>
+				<span>
+					Showing{" "}
+					<b>
+						{startItem} - {endItem}
+					</b>{" "}
+					of <b>{totalItems}</b> {totalItems > 1 ? "Items" : "Item"}
+				</span>
+			</div>
+		);
+	};
+
 	const renderPageNumbers = () => {
 		const pages = [];
 		const maxVisiblePages = 5;
@@ -130,10 +149,12 @@ const Pagination = () => {
 							className={cns(styles["navButton"], styles["secondary"], {
 								[styles["active"]]: page === currentPage,
 							})}
-							onClick={() => {
+							onClick={(e) => {
+								e.preventDefault();
+
 								handlePageChange(page);
 							}}
-							tabIndex={0}
+							tabIndex={1}
 						>
 							<span>{page}</span>
 						</div>
@@ -147,6 +168,7 @@ const Pagination = () => {
 
 	return (
 		<div className={styles["paginationContainer"]}>
+			{renderCounter()}
 			<div className={styles["paginationInner"]}>
 				<div
 					className={cns(styles["navButton"], styles["primary"], {
