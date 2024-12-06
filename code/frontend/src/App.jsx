@@ -1,7 +1,7 @@
 import Footer from "@components/Footer";
 import LoadingBar from "@components/LoadingBar";
 import NavBar from "@components/NavBar";
-import { selectAllItemsWithImages, selectAllWishlistedItemsWithImagesFromUser } from "@database/items";
+import { selectAllItemsWithImages, selectAllWishlistedItemsFromUser } from "@database/items";
 import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
@@ -86,7 +86,7 @@ const App = () => {
 	useEffect(() => {
 		const fetchWishlistItems = async () => {
 			try {
-				const { data } = await selectAllWishlistedItemsWithImagesFromUser({
+				const { data } = await selectAllWishlistedItemsFromUser({
 					userId: null,
 					limit: itemsPerPage,
 					offset: offset,
@@ -102,7 +102,7 @@ const App = () => {
 		};
 
 		fetchWishlistItems();
-	}, [itemsPerPage, offset, dispatch]);
+	}, [currentPage, itemsPerPage, offset, dispatch]);
 
 	useEffect(() => {
 		const applyTheme = () => {

@@ -1,15 +1,14 @@
 .gridContainer {
 	max-width: var(--contentMaxWidth);
-	margin-top: 25px;
+	min-height: 800px;
+	margin: 25px auto 50px auto;
 
 	&.withGrid {
-		min-height: 800px;
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		grid-template-rows: var(--gridDimension);
 		grid-auto-rows: var(--gridDimension);
 		grid-gap: 20px;
-		padding-bottom: 50px;
 		--gridDimension: 390px;
 
 		@media screen and (max-width: 1700px) {
@@ -94,9 +93,6 @@
 
 	&.noGrid {
 		width: 100%;
-		padding-top: 35px;
-		padding-bottom: 50px;
-		margin: 0 auto;
 		display: flex;
 		flex-flow: column;
 		align-items: flex-start;

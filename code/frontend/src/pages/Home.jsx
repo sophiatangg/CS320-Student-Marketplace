@@ -33,7 +33,7 @@ const Home = (props) => {
 		setOverlap(true);
 		setTimeout(() => {
 			setBrowsing(true);
-			navigate("/browse");
+			navigate("/browse?cat=all");
 		}, 1500);
 	};
 

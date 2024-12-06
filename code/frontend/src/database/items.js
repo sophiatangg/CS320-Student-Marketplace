@@ -217,6 +217,9 @@ export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 1
 	}
 };
 
+/**
+ * Fetch all data from wishlist table.
+ */
 export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0 }) => {
 	let _userId;
 	if (!userId) {
@@ -249,6 +252,9 @@ export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, off
 	};
 };
 
+/**
+ * Fetches all the data from Items table, which includes data from ItemImages table.
+ */
 export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0 }) => {
 	let _userId;
 	if (!userId) {

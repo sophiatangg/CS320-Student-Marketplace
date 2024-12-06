@@ -26,7 +26,7 @@ const NotFound = (props) => {
 	const dispatch = useContextDispatch();
 
 	const handleBrowse = async () => {
-		navigate("/browse");
+		navigate("/browse?cat=all");
 
 		dispatch({
 			type: "SET_CART_DISPLAYED",

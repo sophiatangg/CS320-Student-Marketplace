@@ -142,6 +142,8 @@ const Pagination = () => {
 		);
 	};
 
+	if (shownItems.length <= 0) return null;
+
 	return (
 		<div className={styles["paginationContainer"]}>
 			<div className={styles["paginationInner"]}>
