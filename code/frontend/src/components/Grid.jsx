@@ -21,12 +21,12 @@ const Grid = (props) => {
 	const categoryName = params.get("cat") || "";
 	const othersUserId = params.get("id") || "";
 	const currentPage = parseInt(params.get("page") || "1", 10);
+	const sortPropName = params.get("spn") || "date";
+	const sortPropType = params.get("spt") || "asc";
 
 	const { allItems } = useContextSelector("itemsStore");
-	const { gridView, pagination, sortProps } = useContextSelector("globalStore");
+	const { gridView, pagination } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
-
-	const { selectedSortProp, selectedSortOrder } = sortProps;
 
 	const { itemsPerPage } = pagination;
 	const offset = (currentPage - 1) * itemsPerPage;
@@ -91,18 +91,18 @@ const Grid = (props) => {
 		if (!baseShownItems) return;
 		let sortedItems;
 
-		switch (selectedSortProp) {
+		switch (sortPropName) {
 			case "name":
-				sortedItems = sortItemsByName(baseShownItems, selectedSortOrder === "asc");
+				sortedItems = sortItemsByName(baseShownItems, sortPropType === "asc");
 				break;
 			case "date":
-				sortedItems = sortItemsByDate(baseShownItems, selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, sortPropType === "asc");
 				break;
 			case "price":
-				sortedItems = sortItemsByPrice(baseShownItems, selectedSortOrder === "asc");
+				sortedItems = sortItemsByPrice(baseShownItems, sortPropType === "asc");
 				break;
 			default:
-				sortedItems = sortItemsByDate(baseShownItems, selectedSortOrder === "asc");
+				sortedItems = sortItemsByDate(baseShownItems, sortPropType === "asc");
 				break;
 		}
 
@@ -112,7 +112,7 @@ const Grid = (props) => {
 			type: "SET_SHOWN_ITEMS",
 			payload: sortedItems,
 		});
-	}, [baseShownItems, selectedSortProp, selectedSortOrder, dispatch]);
+	}, [baseShownItems, sortPropName, sortPropType, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";

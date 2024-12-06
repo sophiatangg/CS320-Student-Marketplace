@@ -35,7 +35,7 @@ const Sidebar = (props) => {
 
 	const componentRef = useRef(null);
 
-	const { sidebarViews, sortProps } = useContextSelector("globalStore");
+	const { sidebarViews } = useContextSelector("globalStore");
 	const { allItems, shownItems } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
@@ -43,6 +43,8 @@ const Sidebar = (props) => {
 	const location = useLocation();
 	const params = new URLSearchParams(location.search);
 	const categoryName = params.get("cat") || "all";
+	const sortPropName = params.get("spn") || "date";
+	const sortPropType = params.get("spt") || "asc";
 
 	const uniqueCategoriesFromList = [...new Set(allItems.map((item) => item.category))];
 	const sortedUniqueCategories = uniqueCategoriesFromList
@@ -59,17 +61,12 @@ const Sidebar = (props) => {
 			icon: FaCalendarDays,
 			onClick: () => {
 				dispatch({
-					type: "SET_SORT_PROPS",
-					payload: {
-						key: "selectedSortProp",
-						value: "date",
-					},
-				});
-
-				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByDate(allItems, isAscending),
 				});
+
+				params.set("spn", "date");
+				navigate(`${location.pathname}?${params.toString()}`);
 			},
 		},
 		{
@@ -77,17 +74,12 @@ const Sidebar = (props) => {
 			icon: FaBarsStaggered,
 			onClick: () => {
 				dispatch({
-					type: "SET_SORT_PROPS",
-					payload: {
-						key: "selectedSortProp",
-						value: "name",
-					},
-				});
-
-				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByName(allItems, isAscending),
 				});
+
+				params.set("spn", "name");
+				navigate(`${location.pathname}?${params.toString()}`);
 			},
 		},
 		{
@@ -95,17 +87,12 @@ const Sidebar = (props) => {
 			icon: IoIosPricetags,
 			onClick: () => {
 				dispatch({
-					type: "SET_SORT_PROPS",
-					payload: {
-						key: "selectedSortProp",
-						value: "price",
-					},
-				});
-
-				dispatch({
 					type: "SET_ALL_ITEMS",
 					payload: sortItemsByPrice(allItems, isAscending),
 				});
+
+				params.set("spn", "price");
+				navigate(`${location.pathname}?${params.toString()}`);
 			},
 		},
 	];
@@ -117,13 +104,8 @@ const Sidebar = (props) => {
 			onClick: () => {
 				setIsAscending(true);
 
-				dispatch({
-					type: "SET_SORT_PROPS",
-					payload: {
-						key: "selectedSortOrder",
-						value: "asc",
-					},
-				});
+				params.set("spt", "asc");
+				navigate(`${location.pathname}?${params.toString()}`);
 			},
 		},
 		{
@@ -132,13 +114,8 @@ const Sidebar = (props) => {
 			onClick: () => {
 				setIsAscending(false);
 
-				dispatch({
-					type: "SET_SORT_PROPS",
-					payload: {
-						key: "selectedSortOrder",
-						value: "desc",
-					},
-				});
+				params.set("spt", "desc");
+				navigate(`${location.pathname}?${params.toString()}`);
 			},
 		},
 	];
@@ -237,9 +214,8 @@ const Sidebar = (props) => {
 		return arr.map((item, itemIdx) => {
 			const isHovered = hoverStates[listName][itemIdx];
 			const isSelected =
-				(listName === "sortSelection" && sortProps.selectedSortProp === item.name.toLowerCase()) ||
-				(listName === "sortType" &&
-					sortProps.selectedSortOrder === (item.name === "Ascending" ? "asc" : item.name === "Descending" ? "desc" : ""));
+				(listName === "sortSelection" && sortPropName === item.name.toLowerCase()) ||
+				(listName === "sortType" && sortPropType === (item.name === "Ascending" ? "asc" : item.name === "Descending" ? "desc" : ""));
 
 			return (
 				<div
