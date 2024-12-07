@@ -1,6 +1,11 @@
 import CardMini from "@components/CardMini";
 import Pagination from "@components/Pagination";
-import { countAllItemsFromUser, selectAllItemsWithImagesFromUser } from "@database/items";
+import {
+	countAllTradeableItemsFromUser,
+	selectAllItemsWithImages,
+	selectAllTradeableItemsWithImagesFromUser,
+	updateItemByColumn,
+} from "@database/items";
 import { storeTradeInDatabase } from "@database/trade";
 import { getUser } from "@database/users";
 import Window from "@popups/Window";
@@ -17,6 +22,7 @@ import { toast } from "react-toastify";
 const TradeWindow = (props) => {
 	const { currentUser } = useAuth();
 
+	const { pagination: globalPagination } = useContextSelector("globalStore");
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
@@ -101,20 +107,42 @@ const TradeWindow = (props) => {
 			throw Error(message + " Check code!");
 		}
 
-		// Update the allItems global state to mark the item as traded.
-		// Otherwise, users would have to refresh the page to have show the updates
-		dispatch({
-			type: "SET_ALL_ITEMS",
-			payload: allItems.map((item) => {
-				const newItem = { ...item, isTraded: true };
+		try {
+			// Use Promise.all to ensure all updates are processed
+			await Promise.all(
+				selectedOfferItemIds.map(async (itemId) => {
+					const flaggedItemAsTraded = await updateItemByColumn({
+						id: itemId,
+						column: "in_trade",
+						value: true,
+					});
 
-				return item.id === selectedItem.id ? newItem : item;
-			}),
-		});
+					if (!flaggedItemAsTraded) {
+						throw new Error(`Error updating trade status for item ${itemId}`);
+					}
+				}),
+			);
 
-		toast.success(`Trade offer sent to ${sellerData.name}!`, toastProps);
+			const { data, error } = await selectAllItemsWithImages({
+				limit: globalPagination.itemsPerPage,
+				offset: offset,
+			});
 
-		handleRemoveWindow(e);
+			if (data) {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: data,
+				});
+			} else {
+				console.error("Failed to fetch new items:", error);
+			}
+
+			toast.success(`Trade offer sent to ${sellerData.name}!`, toastProps);
+			handleRemoveWindow(e);
+		} catch (error) {
+			console.error("Error updating trade status for items:", error);
+			toast.error("An error occurred while updating item trade statuses.", toastProps);
+		}
 	};
 
 	const handlePageChange = (newPage) => {
@@ -132,13 +160,13 @@ const TradeWindow = (props) => {
 
 	useEffect(() => {
 		const fetchInventoryData = async () => {
-			const { data: itemsData, error: itemsError } = await selectAllItemsWithImagesFromUser({
+			const { data: itemsData, error: itemsError } = await selectAllTradeableItemsWithImagesFromUser({
 				userId: currentUser.id,
 				limit: pagination.itemsPerPage,
 				offset: offset,
 			});
 
-			const { count: itemsCounterNum, error: itemsCounterError } = await countAllItemsFromUser({
+			const { count: itemsCounterNum, error: itemsCounterError } = await countAllTradeableItemsFromUser({
 				userId: currentUser.id,
 			});
 

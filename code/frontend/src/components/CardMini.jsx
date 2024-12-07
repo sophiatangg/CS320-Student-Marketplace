@@ -12,11 +12,6 @@ const CardMini = (props) => {
 
 	const [itemOwner, setItemOwner] = useState("");
 	const [itemCreateDate, setItemCreatedDate] = useState("");
-	const [cardStateHover, setCardStateHover] = useState(false);
-
-	const handleCardHover = (e) => {
-		setCardStateHover(!cardStateHover);
-	};
 
 	const handleCardClick = (e) => {
 		if (!handleItemOfferSelected || !item) return;
@@ -69,16 +64,9 @@ const CardMini = (props) => {
 		<>
 			<div
 				className={cns(styles["cardMini"], {
-					[styles["cardSelected"]]: isDefaultSelected,
-					[styles["cardHovered"]]: cardStateHover,
+					[styles["cardSelected"]]: isDefaultSelected || selectedOfferedItems?.some((itemElem) => itemElem.id === item.id),
 					[styles["cardNotSelectable"]]: source && source === "tradeWindow",
 				})}
-				onMouseEnter={(e) => {
-					handleCardHover(e);
-				}}
-				onMouseLeave={(e) => {
-					handleCardHover(e);
-				}}
 				onClick={(e) => {
 					handleCardClick(e);
 				}}

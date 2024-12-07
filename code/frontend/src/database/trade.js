@@ -93,6 +93,7 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 				};
 
 				return {
+					id: trade.id, // Inject the trade's ID
 					trade_offers: tradeOffers,
 					trade_goal: tradeGoal,
 					trader: trader,
@@ -188,5 +189,93 @@ export const findItemDataFromTrade = async ({ itemId, userId, sellerId }) => {
 	} catch (error) {
 		console.error("Error in findItemDataFromTrade:", error);
 		throw error;
+	}
+};
+
+export const findTradeIdByOffersAndTarget = async ({ offer_ids, targetId, userId, type }) => {
+	if (!offer_ids || offer_ids.length === 0 || !targetId || !userId || !type) {
+		console.error("offer_ids, targetId, userId, and type are required.");
+		return { tradeId: -1, error: "Missing input parameters." };
+	}
+
+	if (type !== "SENT" && type !== "RECEIVED") {
+		console.error("Invalid type. Must be 'SENT' or 'RECEIVED'.");
+		return { tradeId: -1, error: "Invalid type parameter." };
+	}
+
+	// Determine the user column to filter by based on the type
+	const userColumn = type === "SENT" ? "buyer_id" : "seller_id";
+
+	try {
+		// Fetch trades matching the user, targetId, and offer_ids
+		const { data, error } = await supabase
+			.from(tradeTableName)
+			.select("id, offer_items_ids")
+			.eq(userColumn, userId)
+			.eq("target_item_id", targetId);
+
+		if (error) {
+			console.error("Error fetching trade:", error.message);
+			return { tradeId: -1, error: error.message };
+		}
+
+		if (!data || data.length === 0) {
+			return { tradeId: -1, error: null }; // No matching trade found
+		}
+
+		// Find the trade where the offer_ids match exactly
+		const matchingTrade = data.find((trade) => {
+			const tradeOfferIds = trade.offer_items_ids;
+			if (!tradeOfferIds || !Array.isArray(tradeOfferIds)) return false;
+
+			// Check if tradeOfferIds contains exactly the same IDs as offer_ids
+			const isMatch = tradeOfferIds.length === offer_ids.length && offer_ids.every((offerId) => tradeOfferIds.includes(offerId));
+
+			return isMatch;
+		});
+
+		return matchingTrade ? { tradeId: matchingTrade.id, error: null } : { tradeId: -1, error: null };
+	} catch (err) {
+		console.error("Unexpected error fetching trade:", err);
+		return { tradeId: -1, error: err.message };
+	}
+};
+
+export const removeTradeById = async ({ id }) => {
+	if (!id) {
+		console.error("Trade ID is required for deletion.");
+		return {
+			deletedRow: null,
+			error: "Trade ID is missing.",
+		};
+	}
+
+	try {
+		// Delete the row with the given ID from the Trade table
+		const { data: deletedRow, error } = await supabase
+			.from(tradeTableName)
+			.delete()
+			.eq("id", id)
+			.select("*") // Fetch the deleted row
+			.single();
+
+		if (error) {
+			console.error("Error deleting trade:", error.message);
+			return {
+				deletedRow: null,
+				error,
+			};
+		}
+
+		return {
+			deletedRow,
+			error: null,
+		};
+	} catch (err) {
+		console.error("Unexpected error deleting trade:", err);
+		return {
+			deletedRow: null,
+			error: err,
+		};
 	}
 };

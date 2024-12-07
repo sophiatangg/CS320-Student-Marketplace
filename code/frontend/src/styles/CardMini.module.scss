@@ -18,11 +18,11 @@
 	--thumbnailWidth: 120px;
 	--fontWeight: 600;
 
-	&:not(.cardSelected, .cardHovered) {
+	&:not(.cardSelected, :hover) {
 		--colorChange: #{rgba(#fff, 0.1)};
 	}
 
-	&.cardHovered {
+	&:hover {
 		--colorChange: #{rgba(#fff, 0.2)};
 	}
 

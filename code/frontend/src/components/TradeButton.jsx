@@ -39,7 +39,7 @@ const TradeButton = (props) => {
 		const checkTrade = async () => {
 			try {
 				// If the item is already marked as traded, no need to fetch from the database
-				if (item.isTraded) {
+				if (item.in_trade) {
 					setHasAlreadySentTrade(true);
 					return;
 				}

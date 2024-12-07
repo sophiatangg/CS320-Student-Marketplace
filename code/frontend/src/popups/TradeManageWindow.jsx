@@ -1,14 +1,17 @@
 import CardMini from "@components/CardMini";
-import { fetchTradeRequestCounts, fetchTradeRequests } from "@database/trade"; // Assuming fetchTradeRequests is here
+import { updateItemByColumn } from "@database/items";
+import { fetchTradeRequestCounts, fetchTradeRequests, removeTradeById } from "@database/trade"; // Assuming fetchTradeRequests is here
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider"; // Assuming you have an auth provider
 import { useContextDispatch } from "@providers/StoreProvider";
 import styles from "@styles/TradeManageWindow.module.scss";
 import cns from "@utils/classNames";
+import { toastProps } from "@utils/toastProps";
 import { useEffect, useRef, useState } from "react";
 import { BsChatQuoteFill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { LuCheck } from "react-icons/lu";
+import { toast } from "react-toastify";
 
 const TradeManageWindow = () => {
 	const { currentUser } = useAuth();
@@ -31,6 +34,25 @@ const TradeManageWindow = () => {
 
 	const isTradeRequestsEmpty = tradeRequests.length === 0;
 
+	const loadTradeRequests = async () => {
+		if (!currentUser || !currentUser.id) return;
+
+		setIsLoading(true);
+
+		try {
+			const requests = await fetchTradeRequests({
+				userId: currentUser.id,
+				type: activeTab,
+			});
+
+			setTradeRequests(requests);
+		} catch (error) {
+			console.error(`Error loading ${activeTab.toLowerCase()} trade requests:`, error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	const handleOpenTradeManageWindow = (bool) => {
 		dispatch({
 			type: "SET_TRADE_MANAGE_DISPLAYED",
@@ -38,7 +60,7 @@ const TradeManageWindow = () => {
 		});
 	};
 
-	const handleChat = (e) => {
+	const handleChat = (e, request) => {
 		e.preventDefault();
 
 		dispatch({
@@ -54,26 +76,75 @@ const TradeManageWindow = () => {
 		}, 10);
 	};
 
-	useEffect(() => {
-		const loadTradeRequests = async () => {
-			if (!currentUser || !currentUser.id) return;
+	const handleAcceptOffer = (e, request) => {
+		console.log(e);
 
-			setIsLoading(true);
+		switch (activeTab) {
+			case "RECEIVED":
+				break;
+			case "SENT":
+				break;
+			case "COMPLETED":
+				break;
+			default:
+				break;
+		}
+	};
 
-			try {
-				const requests = await fetchTradeRequests({
-					userId: currentUser.id,
-					type: activeTab,
+	const handleRejectOffer = async (e, request) => {
+		if (!request) return;
+		const { id: tradeId, trade_goal, trade_offers, trader } = request;
+
+		const offeredItemIds = trade_offers.map((item) => item.id);
+
+		// set "in_trade" to false to each OFFERED items when cancelling sent trade requests
+		// this also works when rejecting received trades
+		// FUTURE GOAL: send chat notification when rejecting offer!
+		await Promise.all(
+			offeredItemIds.map(async (itemId) => {
+				const flaggedItemAsTraded = await updateItemByColumn({
+					id: itemId,
+					column: "in_trade",
+					value: false,
 				});
 
-				setTradeRequests(requests);
-			} catch (error) {
-				console.error(`Error loading ${activeTab.toLowerCase()} trade requests:`, error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+				if (!flaggedItemAsTraded) {
+					throw new Error(`Error updating trade status for item ${itemId}`);
+				}
+			}),
+		);
 
+		const { error } = await removeTradeById({
+			id: tradeId,
+		});
+
+		if (error) {
+			throw new Error("Error removing trade from given id.", error);
+		}
+
+		switch (activeTab) {
+			case "RECEIVED":
+				// Straightforward: remove the row data from "Trade" table
+				// If successful, render a toast to notify successful removal of received trade
+				toast.success(`Successfully rejected trade offer from ${trader.name}!`, toastProps);
+
+				break;
+			case "SENT":
+				// This will be followed by removing the row data from "Trade" table
+				// If successful, render a toast to notify successful removal of sent trade
+				toast.success(`Success. Previously sent trade has been cancelled!`, toastProps);
+
+				break;
+			case "COMPLETED":
+				break;
+			default:
+				break;
+		}
+
+		await loadTradeRequests();
+	};
+
+	useEffect(() => {
 		loadTradeRequests();
 	}, [activeTab, currentUser]);
 
@@ -201,13 +272,13 @@ const TradeManageWindow = () => {
 		);
 	};
 
-	const renderButtons = () => {
+	const renderButtons = (request) => {
 		const buttonOpt = [
 			{
 				name: "chat",
 				className: "chatButton",
-				onClick: (e) => {
-					handleChat(e);
+				onClick: async (e) => {
+					handleChat(e, request);
 				},
 				icon: () => {
 					return <BsChatQuoteFill />;
@@ -216,7 +287,9 @@ const TradeManageWindow = () => {
 			{
 				name: "accept",
 				className: "acceptButton",
-				onClick: (e) => {},
+				onClick: async (e) => {
+					handleAcceptOffer(e, request);
+				},
 				icon: () => {
 					return <LuCheck />;
 				},
@@ -224,7 +297,9 @@ const TradeManageWindow = () => {
 			{
 				name: "reject",
 				className: "rejectButton",
-				onClick: (e) => {},
+				onClick: async (e) => {
+					await handleRejectOffer(e, request);
+				},
 				icon: () => {
 					return <IoClose />;
 				},
@@ -290,7 +365,7 @@ const TradeManageWindow = () => {
 								)}
 							</p>
 						</h2>
-						{renderButtons()}
+						{activeTab !== "COMPLETED" && renderButtons(request)}
 					</div>
 					<div className={styles["tradeRequestCardInner"]}>
 						<div className={styles["tradeItem"]}>

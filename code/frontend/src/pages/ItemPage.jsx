@@ -258,7 +258,7 @@ const ItemPage = (props) => {
 					{!isOwnItem && (
 						<div className={styles["cart-trade"]}>
 							<AddToCartButton item={selectedItem} isBig={true} />
-							<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} />
+							<TradeButton isBig={true} handleTradeOpen={handleTradeOpen} item={selectedItem} />
 						</div>
 					)}
 				</div>

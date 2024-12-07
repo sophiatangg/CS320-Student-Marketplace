@@ -191,6 +191,57 @@ export const selectAllItemsWithImagesFromUser = async ({ userId, limit = 12, off
 	}
 };
 
+export const selectAllTradeableItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
+	if (!userId) {
+		console.error("User ID is required for fetching user items.");
+		return { data: null, error: "User ID is missing." };
+	}
+
+	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.eq("seller_id", userId)
+			.eq("in_trade", false)
+			.order(column, { ascending: sortPropType === "asc" }) // Add sorting
+			.range(offset, offset + limit - 1);
+
+		if (itemsError) {
+			console.error("Error fetching items:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		const itemIds = items.map((item) => item.id);
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages,
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (error) {
+		console.error("Unexpected error in selectAllItemsWithImagesFromUser:", error);
+		return { data: null, error };
+	}
+};
+
 export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
 	if (!category) {
 		console.error("Category is required for fetching items.");
@@ -394,6 +445,40 @@ export const countAllItemsFromUser = async ({ userId }) => {
 	}
 };
 
+export const countAllTradeableItemsFromUser = async ({ userId }) => {
+	try {
+		let _userId;
+		if (!userId) {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user?.id) {
+				throw new Error("Error fetching user session for item count.");
+			}
+			_userId = user.id;
+		} else {
+			_userId = userId;
+		}
+
+		const { count, error } = await supabase
+			.from(itemTableName)
+			.select("*", { count: "exact", head: true })
+			.eq("seller_id", _userId)
+			.eq("in_trade", false);
+
+		if (error) {
+			console.error("Error counting items from user:", error);
+			return { count: 0, error };
+		}
+
+		return { count, error: null };
+	} catch (err) {
+		console.error("Unexpected error in countAllItemsFromUser:", err);
+		return { count: 0, error: err };
+	}
+};
+
 export const countAllItemsFromCategory = async ({ category }) => {
 	if (!category) {
 		throw new Error("Category is required to count items.");
@@ -542,6 +627,30 @@ export const generateUniqueSurname = async (itemName) => {
 	return {
 		name: uniqueSurname,
 	};
+};
+
+export const updateItemByColumn = async ({ id, column, value }) => {
+	if (!id || !column) {
+		console.error("ID and column name are required for updating an item.");
+		return false;
+	}
+
+	try {
+		const { error } = await supabase
+			.from(itemTableName)
+			.update({ [column]: value }) // Use dynamic key for the column
+			.eq("id", id);
+
+		if (error) {
+			console.error("Error updating column:", error.message);
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		console.error("Unexpected error updating column:", err);
+		return false;
+	}
 };
 
 export const uploadAndHostItemImage = async ({ file }) => {
@@ -702,6 +811,9 @@ export const addItemByUser = async ({ itemData }) => {
 	}
 };
 
+/**
+ * Best use for adding/editing items
+ */
 export const editItemByUser = async ({ itemData, itemId }) => {
 	if (!itemData) return null;
 
