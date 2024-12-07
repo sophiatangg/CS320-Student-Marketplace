@@ -1,7 +1,6 @@
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Sidebar.module.scss";
 import cns from "@utils/classNames";
-import { sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidFridge, BiSolidShoppingBags } from "react-icons/bi";
@@ -60,11 +59,6 @@ const Sidebar = (props) => {
 			name: "Date",
 			icon: FaCalendarDays,
 			onClick: () => {
-				dispatch({
-					type: "SET_ALL_ITEMS",
-					payload: sortItemsByDate(allItems, isAscending),
-				});
-
 				params.set("spn", "date");
 				navigate(`${location.pathname}?${params.toString()}`);
 			},
@@ -73,11 +67,6 @@ const Sidebar = (props) => {
 			name: "Name",
 			icon: FaBarsStaggered,
 			onClick: () => {
-				dispatch({
-					type: "SET_ALL_ITEMS",
-					payload: sortItemsByName(allItems, isAscending),
-				});
-
 				params.set("spn", "name");
 				navigate(`${location.pathname}?${params.toString()}`);
 			},
@@ -86,11 +75,6 @@ const Sidebar = (props) => {
 			name: "Price",
 			icon: IoIosPricetags,
 			onClick: () => {
-				dispatch({
-					type: "SET_ALL_ITEMS",
-					payload: sortItemsByPrice(allItems, isAscending),
-				});
-
 				params.set("spn", "price");
 				navigate(`${location.pathname}?${params.toString()}`);
 			},
@@ -225,10 +209,28 @@ const Sidebar = (props) => {
 						[styles["selected"]]: isSelected,
 						[styles["filterListDisabled"]]: shownItems.length === 0,
 					})}
-					onClick={(e) => {
+					onClick={async (e) => {
 						e.preventDefault();
 
 						if (item.onClick) {
+							try {
+								const { data, error } = await selectAllItemsWithImages({
+									limit: itemsPerPage,
+									offset: offset,
+									sortPropName: sortPropName,
+									sortPropType: sortPropType,
+								});
+
+								if (error) {
+									throw new Error("Error fetching data.");
+								}
+
+								dispatch({
+									type: "SET_SHOWN_ITEMS",
+									payload: data,
+								});
+							} catch (error) {}
+
 							item.onClick();
 						}
 

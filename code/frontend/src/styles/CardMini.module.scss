@@ -1,3 +1,5 @@
+@use "_variables" as v;
+
 .cardMini {
 	width: 330px;
 	height: 160px;
@@ -63,6 +65,19 @@
 			width: 100%;
 		}
 	}
+}
+
+.cardNotSelectable {
+	position: relative;
+}
+
+.cardUnknown {
+	color: var(--colorPrimaryForeground);
+	text-align: center;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .itemName {

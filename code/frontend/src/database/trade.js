@@ -9,11 +9,23 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 		throw new Error("User ID is required.");
 	}
 
-	const queryColumn = type === "RECEIVED" ? "seller_id" : "buyer_id";
+	let queryColumn = null;
+	if (type === "RECEIVED") queryColumn = "seller_id";
+	if (type === "SENT") queryColumn = "buyer_id";
 
 	try {
-		// Query the Trade table based on the type
-		const { data: tradeData, error: tradeError } = await supabase.from(tradeTableName).select("*").eq(queryColumn, userId);
+		let tradeQuery;
+
+		// Handle query based on type
+		if (type === "COMPLETED") {
+			tradeQuery = supabase.from(tradeTableName).select("*").eq("completed", true);
+		} else if (queryColumn) {
+			tradeQuery = supabase.from(tradeTableName).select("*").eq(queryColumn, userId);
+		} else {
+			throw new Error("Invalid trade request type.");
+		}
+
+		const { data: tradeData, error: tradeError } = await tradeQuery;
 
 		if (tradeError) {
 			throw new Error(`Error fetching ${type.toLowerCase()} trade requests.`);
@@ -24,28 +36,62 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 		}
 
 		const fetchData = async (itemId) => {
-			const [itemDetails, itemImages] = await Promise.all([getItemByItemId(itemId), getItemImagesByItemId(itemId)]);
+			try {
+				const itemDetails = await getItemByItemId(itemId);
+				const itemImages = await getItemImagesByItemId(itemId);
 
-			return {
-				...itemDetails,
-				images: itemImages.map((item) => item.image_url),
-			};
+				if (!itemDetails || itemDetails.hasOwnProperty("code")) {
+					return {
+						id: itemId,
+						name: "Unavailable Item",
+						images: [],
+						isDataUnavailable: true,
+					};
+				}
+
+				return {
+					...itemDetails,
+					images: itemImages?.map((img) => img.image_url) || [],
+					isDataUnavailable: false,
+				};
+			} catch (error) {
+				return {
+					id: itemId,
+					name: "Unavailable Item",
+					images: [],
+					isDataUnavailable: true,
+				};
+			}
 		};
 
 		// Process each trade to fetch items and user info
-		const tradeRequests = await Promise.all(
+		const resData = await Promise.all(
 			tradeData.map(async (trade) => {
-				// Fetch all items offered in the trade
-				const tradeOffers = await Promise.all(trade.offer_items_ids.map(async (itemId) => fetchData(itemId)));
+				const tradeOffers = await Promise.all(
+					trade.offer_items_ids.map(async (itemId) => {
+						try {
+							return await fetchData(itemId);
+						} catch (error) {}
+					}),
+				);
 
-				// Fetch the trader's user info
 				const traderId = type === "RECEIVED" ? trade.buyer_id : trade.seller_id;
 				const trader = await getUser(traderId);
 
-				// Fetch the target item
 				const tradeGoal = await fetchData(trade.target_item_id);
 
-				// Return the formatted trade request object
+				tradeOffers.forEach((trade) => {
+					trade["types"] = {
+						kind: "offer",
+						result: type,
+					};
+				});
+
+				tradeGoal["types"] = {
+					kind: "goal",
+					result: type,
+				};
+
 				return {
 					trade_offers: tradeOffers,
 					trade_goal: tradeGoal,
@@ -54,7 +100,7 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 			}),
 		);
 
-		return tradeRequests;
+		return resData;
 	} catch (error) {
 		console.error(`Error in fetchTradeRequests (${type}):`, error);
 		throw error;
@@ -66,14 +112,23 @@ export const fetchTradeRequestCounts = async ({ userId, type = "RECEIVED" }) => 
 		throw new Error("User ID is required.");
 	}
 
-	const queryColumn = type === "RECEIVED" ? "seller_id" : "buyer_id";
+	let queryColumn = null;
+	if (type === "RECEIVED") queryColumn = "seller_id";
+	if (type === "SENT") queryColumn = "buyer_id";
 
 	try {
-		// Query the Trade table for the count of rows
-		const { count, error } = await supabase
-			.from(tradeTableName)
-			.select("*", { count: "exact", head: true }) // Fetch only the count
-			.eq(queryColumn, userId);
+		let countQuery;
+
+		// Handle count query based on type
+		if (type === "COMPLETED") {
+			countQuery = supabase.from(tradeTableName).select("*", { count: "exact", head: true }).eq("completed", true);
+		} else if (queryColumn) {
+			countQuery = supabase.from(tradeTableName).select("*", { count: "exact", head: true }).eq(queryColumn, userId);
+		} else {
+			throw new Error("Invalid trade request type.");
+		}
+
+		const { count, error } = await countQuery;
 
 		if (error) {
 			throw new Error(`Error fetching ${type.toLowerCase()} trade request count.`);

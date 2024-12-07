@@ -77,8 +77,24 @@ const TradeManageWindow = () => {
 		loadTradeRequests();
 	}, [activeTab, currentUser]);
 
+	// tabs
 	useEffect(() => {
-		const loadTradeRequests = async () => {
+		if (!sliderRef.current) return;
+		if (!tradeWindowRef.current) return;
+
+		// Update slider position and width whenever the active tab changes
+		const activeTab = tradeWindowRef.current.querySelector(`.${styles.activeTab}`);
+		if (activeTab && sliderRef.current) {
+			const { offsetLeft, offsetWidth } = activeTab;
+
+			sliderRef.current.style.transform = `translateX(${offsetLeft}px) translateY(-50%)`; // Only include -50% for Y
+			sliderRef.current.style.width = `${offsetWidth}px`;
+		}
+	}, [activeTab]);
+
+	// badge counter
+	useEffect(() => {
+		const loadTradeRequestsCount = async () => {
 			if (!currentUser || !currentUser.id) return;
 
 			try {
@@ -98,25 +114,12 @@ const TradeManageWindow = () => {
 			}
 		};
 
-		loadTradeRequests();
+		loadTradeRequestsCount();
 	}, [activeTab, currentUser]);
 
+	// badge counter initial
 	useEffect(() => {
-		if (!sliderRef.current) return;
-		if (!tradeWindowRef.current) return;
-
-		// Update slider position and width whenever the active tab changes
-		const activeTab = tradeWindowRef.current.querySelector(`.${styles.activeTab}`);
-		if (activeTab && sliderRef.current) {
-			const { offsetLeft, offsetWidth } = activeTab;
-
-			sliderRef.current.style.transform = `translateX(${offsetLeft}px) translateY(-50%)`; // Only include -50% for Y
-			sliderRef.current.style.width = `${offsetWidth}px`;
-		}
-	}, [activeTab]);
-
-	useEffect(() => {
-		const loadTradeBadges = async () => {
+		const loadTradeRequestsCountInitial = async () => {
 			if (!currentUser || !currentUser.id) return;
 
 			try {
@@ -139,7 +142,7 @@ const TradeManageWindow = () => {
 			}
 		};
 
-		loadTradeBadges();
+		loadTradeRequestsCountInitial();
 	}, []);
 
 	const renderHeader = () => {
@@ -175,26 +178,24 @@ const TradeManageWindow = () => {
 	};
 
 	const renderTabs = () => {
+		const tabsList = ["Received", "Sent", "Completed"];
+
 		return (
 			<div className={styles["tabContainer"]}>
-				<div
-					className={cns(styles["tabItem"], {
-						[styles["activeTab"]]: activeTab === "RECEIVED",
-					})}
-					onClick={() => setActiveTab("RECEIVED")}
-				>
-					<span>Received</span>
-					{showBadges && renderBadgeCounter("received")}
-				</div>
-				<div
-					className={cns(styles["tabItem"], {
-						[styles["activeTab"]]: activeTab === "SENT",
-					})}
-					onClick={() => setActiveTab("SENT")}
-				>
-					<span>Sent</span>
-					{showBadges && renderBadgeCounter("sent")}
-				</div>
+				{tabsList.map((tab, tabIndex) => {
+					return (
+						<div
+							key={tabIndex}
+							className={cns(styles["tabItem"], {
+								[styles["activeTab"]]: activeTab === tab.toUpperCase(),
+							})}
+							onClick={() => setActiveTab(tab.toUpperCase())}
+						>
+							<span>{tab}</span>
+							{showBadges && renderBadgeCounter(tab.toLowerCase())}
+						</div>
+					);
+				})}
 				<div ref={sliderRef} className={styles["tabSlider"]} />
 			</div>
 		);
@@ -254,7 +255,11 @@ const TradeManageWindow = () => {
 	const renderTradeRequestsEmpty = () => {
 		return (
 			<div className={styles["tradeRequestEmpty"]}>
-				<p>No trade requests found</p>
+				<p>
+					{activeTab === "RECEIVED" && <span>No trade requests found</span>}
+					{activeTab === "SENT" && <span>No sent trade requests found</span>}
+					{activeTab === "COMPLETED" && <span>You have not completed any trade offers</span>}
+				</p>
 			</div>
 		);
 	};

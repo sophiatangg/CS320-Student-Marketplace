@@ -12,7 +12,10 @@ import cns from "@utils/classNames";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const Pagination = () => {
+const Pagination = (props) => {
+	const { predefined, className } = props;
+
+	// Use global data if predefined is not provided
 	const { pagination } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
 	const { allItems, shownItems } = useContextSelector("itemsStore");
@@ -20,18 +23,23 @@ const Pagination = () => {
 
 	const dispatch = useContextDispatch();
 
-	const { itemsPerPage, totalItems } = pagination;
+	// Fallback to global data if predefined does not exist
+	const itemsPerPage = predefined?.currentItemsPerPage || pagination.itemsPerPage;
+	const totalItems = predefined?.currentTotalItems || pagination.totalItems;
+	const currentPage = predefined?.currentCurrentPage || parseInt(new URLSearchParams(useLocation().search).get("page") || "1", 10);
 
 	const navigate = useNavigate();
 	const location = useLocation();
 	const params = new URLSearchParams(location.search);
 	const categoryName = params.get("cat") || "all";
-	const currentPage = parseInt(params.get("page") || "1", 10);
 	const othersUserId = params.get("id") || "";
 
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
 
 	useEffect(() => {
+		// Only fetch items count if predefined is not provided
+		if (predefined) return;
+
 		const fetchItemsCount = async () => {
 			try {
 				let counter = 0;
@@ -50,7 +58,6 @@ const Pagination = () => {
 					switch (categoryName) {
 						case "all":
 							const { count: itemsCount } = await countAllItems();
-
 							counter = itemsCount;
 							break;
 
@@ -58,7 +65,6 @@ const Pagination = () => {
 							const { count: wishlistCount } = await countAllWishlistItemsByUser({
 								userId: othersUserId ?? null,
 							});
-
 							counter = wishlistCount;
 							break;
 
@@ -66,9 +72,9 @@ const Pagination = () => {
 							const { count: ownItemsCount } = await countAllItemsFromUser({
 								userId: currentUser.id,
 							});
-
 							counter = ownItemsCount;
 							break;
+
 						default:
 							if (categoryName === "") {
 								counter = 0;
@@ -78,7 +84,6 @@ const Pagination = () => {
 							const { count: categoryItemsCount } = await countAllItemsFromCategory({
 								category: categoryName,
 							});
-
 							counter = categoryItemsCount;
 							break;
 					}
@@ -97,7 +102,7 @@ const Pagination = () => {
 		};
 
 		fetchItemsCount();
-	}, [allItems, categoryName, currentUser, dispatch, searchQuery, shownItems]);
+	}, [predefined, allItems, categoryName, currentUser, dispatch, searchQuery, shownItems]);
 
 	const handlePageChange = (newPage) => {
 		if (newPage < 1 || newPage > totalPages) return;
@@ -107,15 +112,21 @@ const Pagination = () => {
 			behavior: "smooth",
 		});
 
-		params.set("page", newPage);
-		navigate(`${location.pathname}?${params.toString()}`);
+		if (!predefined) {
+			// Update URL and navigate when not using predefined data
+			params.set("page", newPage);
+			navigate(`${location.pathname}?${params.toString()}`);
+		} else {
+			// Call a custom handler if provided in predefined props
+			predefined?.onPageChange?.(newPage);
+		}
 	};
 
 	const renderCounter = () => {
-		if (totalItems === 0 || shownItems.length === 0) return null;
+		if (totalItems === 0 || (!predefined && shownItems.length === 0)) return null;
 
 		const startItem = (currentPage - 1) * itemsPerPage + 1;
-		const endItem = Math.min(startItem + shownItems.length - 1, totalItems);
+		const endItem = Math.min(startItem + (predefined?.currentItemsPerPage || shownItems.length) - 1, totalItems);
 
 		return (
 			<div className={styles["counterContainer"]}>
@@ -151,7 +162,6 @@ const Pagination = () => {
 							})}
 							onClick={(e) => {
 								e.preventDefault();
-
 								handlePageChange(page);
 							}}
 							tabIndex={1}
@@ -164,10 +174,10 @@ const Pagination = () => {
 		);
 	};
 
-	if (shownItems.length <= 0) return null;
+	if (predefined?.currentTotalItems === 0 || (!predefined && shownItems.length <= 0)) return null;
 
 	return (
-		<div className={styles["paginationContainer"]}>
+		<div className={cns(styles["paginationContainer"], className)}>
 			{renderCounter()}
 			<div className={styles["paginationInner"]}>
 				<div

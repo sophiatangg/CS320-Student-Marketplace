@@ -8,35 +8,19 @@ const wishlistTableName = "Wishlist";
 
 const itemImagesStorageName = "item-images";
 
-export const selectItemsFromUser = async () => {
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+export const selectAllItems = async ({ limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" } = {}) => {
+	const columnMap = {
+		date: "date_added",
+		name: "name",
+		price: "price",
+	};
 
-	const userId = user.id;
+	const column = columnMap[sortPropName] || "date_added";
 
-	const res = await supabase.from(itemTableName).select("id").or(`id.eq.${userId}`);
-
-	if (!res) {
-		console.error("Error fetching items from database");
-		return {
-			data: null,
-			error: res.error,
-			status: res.status,
-		};
-	} else {
-		return {
-			data: res.data,
-			error: res.error,
-			status: res.status,
-		};
-	}
-};
-
-export const selectAllItems = async ({ limit = 12, offset = 0 } = {}) => {
 	const res = await supabase
 		.from(itemTableName)
 		.select("*")
+		.order(column, { ascending: sortPropType === "asc" }) // Add sorting
 		.range(offset, offset + limit - 1);
 
 	if (!res) {
@@ -55,8 +39,21 @@ export const selectAllItems = async ({ limit = 12, offset = 0 } = {}) => {
 	}
 };
 
-export const searchItemsWithImagesFromQuery = async ({ searchQuery = "", limit = 12, offset = 0 }) => {
+export const searchItemsWithImagesFromQuery = async ({
+	searchQuery = "",
+	limit = 12,
+	offset = 0,
+	sortPropName = "date",
+	sortPropType = "asc",
+} = {}) => {
 	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
 		let query = supabase.from(itemTableName).select("*");
 
 		// Add search filter
@@ -64,8 +61,8 @@ export const searchItemsWithImagesFromQuery = async ({ searchQuery = "", limit =
 			query = query.ilike("name", `%${searchQuery}%`); // Case-insensitive search
 		}
 
-		// Apply pagination
-		query = query.range(offset, offset + limit - 1);
+		// Apply sorting and pagination
+		query = query.order(column, { ascending: sortPropType === "asc" }).range(offset, offset + limit - 1);
 
 		const { data: items, error: itemsError } = await query;
 
@@ -89,7 +86,7 @@ export const searchItemsWithImagesFromQuery = async ({ searchQuery = "", limit =
 
 			return {
 				...item,
-				images: itemImages, // Attach images as an array
+				images: itemImages,
 			};
 		});
 
@@ -100,50 +97,69 @@ export const searchItemsWithImagesFromQuery = async ({ searchQuery = "", limit =
 	}
 };
 
-export const selectAllItemsWithImages = async ({ limit = 12, offset = 0 } = {}) => {
-	// Fetch paginated items
-	const { data: items, error: itemsError } = await supabase
-		.from(itemTableName)
-		.select("*")
-		.range(offset, offset + limit - 1);
+export const selectAllItemsWithImages = async ({ limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" } = {}) => {
+	const columnMap = {
+		date: "date_added",
+		name: "name", // Normalize `name` for case-insensitive sorting
+		price: "price",
+	};
+	const column = columnMap[sortPropName] || "date_added";
 
-	if (itemsError) {
-		console.error("Error fetching items:", itemsError);
-		return { data: null, error: itemsError };
+	try {
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.order(column, { ascending: sortPropType === "asc" })
+			.range(offset, offset + limit - 1);
+
+		if (itemsError) {
+			console.error("Error fetching items:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		const itemIds = items.map((item) => item.id);
+		const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("itemid, image_url").in("itemid", itemIds);
+
+		if (imagesError) {
+			console.error("Error fetching images:", imagesError);
+			return { data: null, error: imagesError };
+		}
+
+		const itemsWithImages = items.map((item) => {
+			const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
+
+			return {
+				...item,
+				images: itemImages,
+			};
+		});
+
+		return { data: itemsWithImages, error: null };
+	} catch (err) {
+		console.error("Unexpected error in selectAllItemsWithImages:", err);
+		return { data: null, error: err };
 	}
-
-	// Fetch all images (can be optimized further if images are also paginated)
-	const { data: images, error: imagesError } = await supabase.from(itemImagesTableName).select("*");
-
-	if (imagesError) {
-		console.error("Error fetching images:", imagesError);
-		return { data: null, error: imagesError };
-	}
-
-	// Combine items with their respective images
-	const itemsWithImages = items.map((item) => {
-		const itemImages = images.filter((image) => image.itemid === item.id).map((image) => image.image_url);
-
-		return {
-			...item,
-			images: itemImages,
-		};
-	});
-
-	return { data: itemsWithImages, error: null };
 };
 
-export const selectAllItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0 }) => {
+export const selectAllItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
 	if (!userId) {
 		console.error("User ID is required for fetching user items.");
 		return { data: null, error: "User ID is missing." };
 	}
 
 	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
 		const { data: items, error: itemsError } = await supabase
 			.from(itemTableName)
 			.select("*")
 			.eq("seller_id", userId)
+			.order(column, { ascending: sortPropType === "asc" }) // Add sorting
 			.range(offset, offset + limit - 1);
 
 		if (itemsError) {
@@ -175,17 +191,25 @@ export const selectAllItemsWithImagesFromUser = async ({ userId, limit = 12, off
 	}
 };
 
-export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 12, offset = 0 }) => {
+export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
 	if (!category) {
 		console.error("Category is required for fetching items.");
 		return { data: null, error: "Category is missing." };
 	}
 
 	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
 		const { data: items, error: itemsError } = await supabase
 			.from(itemTableName)
 			.select("*")
-			.ilike("category", category)
+			.ilike("category", category.toLowerCase())
+			.order(column, { ascending: sortPropType === "asc" }) // Add sorting
 			.range(offset, offset + limit - 1);
 
 		if (itemsError) {
@@ -220,7 +244,7 @@ export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 1
 /**
  * Fetch all data from wishlist table.
  */
-export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0 }) => {
+export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
 	let _userId;
 	if (!userId) {
 		const {
@@ -228,42 +252,7 @@ export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, off
 		} = await supabase.auth.getUser();
 
 		if (!user.hasOwnProperty("id")) {
-			throw Error("Error fetching wishlisted items from user.");
-		}
-		_userId = user.id;
-	} else {
-		_userId = userId;
-	}
-
-	const res = await supabase
-		.from(wishlistTableName)
-		.select("*")
-		.eq("user_id", _userId)
-		.range(offset, offset + limit - 1);
-
-	if (!res) {
-		console.error("Error fetching wishlist items from database:", res.error);
-	}
-
-	return {
-		data: res.hasOwnProperty("data") ? res.data : null,
-		error: res.error,
-		status: res.status,
-	};
-};
-
-/**
- * Fetches all the data from Items table, which includes data from ItemImages table.
- */
-export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0 }) => {
-	let _userId;
-	if (!userId) {
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-
-		if (!user.hasOwnProperty("id")) {
-			throw Error("Error fetching wishlisted items from user.");
+			throw new Error("Error fetching wishlisted items from user.");
 		}
 		_userId = user.id;
 	} else {
@@ -271,6 +260,13 @@ export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit
 	}
 
 	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
 		const { data: wishlist, error: wishlistError } = await supabase
 			.from(wishlistTableName)
 			.select("item_id")
@@ -283,7 +279,67 @@ export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit
 		}
 
 		const itemIds = wishlist.map((wish) => wish.item_id);
-		const { data: items, error: itemsError } = await supabase.from(itemTableName).select("*").in("id", itemIds);
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.in("id", itemIds)
+			.order(column, { ascending: sortPropType === "asc" }); // Add sorting
+
+		if (itemsError) {
+			console.error("Error fetching items for wishlist:", itemsError);
+			return { data: null, error: itemsError };
+		}
+
+		return { data: items, error: null };
+	} catch (error) {
+		console.error("Unexpected error in selectAllWishlistedItemsFromUser:", error);
+		return { data: null, error };
+	}
+};
+
+/**
+ * Fetches all the data from Items table, which includes data from ItemImages table.
+ */
+export const selectAllWishlistedItemsWithImagesFromUser = async ({ userId, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
+	let _userId;
+	if (!userId) {
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user.hasOwnProperty("id")) {
+			throw new Error("Error fetching wishlisted items from user.");
+		}
+		_userId = user.id;
+	} else {
+		_userId = userId;
+	}
+
+	try {
+		const columnMap = {
+			date: "date_added",
+			name: "name",
+			price: "price",
+		};
+		const column = columnMap[sortPropName] || "date_added";
+
+		const { data: wishlist, error: wishlistError } = await supabase
+			.from(wishlistTableName)
+			.select("item_id")
+			.eq("user_id", _userId)
+			.range(offset, offset + limit - 1);
+
+		if (wishlistError) {
+			console.error("Error fetching wishlist items:", wishlistError);
+			return { data: null, error: wishlistError };
+		}
+
+		const itemIds = wishlist.map((wish) => wish.item_id);
+		const { data: items, error: itemsError } = await supabase
+			.from(itemTableName)
+			.select("*")
+			.in("id", itemIds)
+			.order(column, { ascending: sortPropType === "asc" }); // Add sorting
 
 		if (itemsError) {
 			console.error("Error fetching items for wishlist:", itemsError);
@@ -422,13 +478,11 @@ export const getItemByItemId = async (itemId) => {
 
 	const { data: itemData, error: itemError } = await supabase.from(itemTableName).select("*").eq("id", itemId).single();
 
-	if (itemError) {
-		throw Error(`Error fetching item by ${itemId}`);
-	}
-
 	if (itemData) {
 		return itemData;
 	}
+
+	return itemError;
 };
 
 export const getItemWithImagesBySurname = async (surname) => {

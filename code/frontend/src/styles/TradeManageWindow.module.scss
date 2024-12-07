@@ -24,7 +24,7 @@
 }
 
 .header {
-	--paddingBottom: 15px;
+	--paddingBottom: 25px;
 	padding: 0 30px var(--paddingBottom) 30px;
 	position: relative;
 	display: flex;
@@ -289,9 +289,12 @@
 
 .tradeRequestPlaceholder,
 .tradeRequestEmpty {
+	min-height: 400px;
 	margin: 20px 0;
 	position: relative;
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 
 	p {
 		color: var(--colorPrimaryForeground);

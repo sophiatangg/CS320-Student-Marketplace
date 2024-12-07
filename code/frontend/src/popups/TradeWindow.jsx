@@ -1,4 +1,6 @@
 import CardMini from "@components/CardMini";
+import Pagination from "@components/Pagination";
+import { countAllItemsFromUser, selectAllItemsWithImagesFromUser } from "@database/items";
 import { storeTradeInDatabase } from "@database/trade";
 import { getUser } from "@database/users";
 import Window from "@popups/Window";
@@ -6,7 +8,7 @@ import { useAuth } from "@providers/AuthProvider.jsx";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/TradeWindow.module.scss";
 import { toastProps } from "@utils/toastProps.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsChatQuoteFill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
@@ -16,11 +18,20 @@ const TradeWindow = (props) => {
 	const { currentUser } = useAuth();
 
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
-
 	const dispatch = useContextDispatch();
 
 	const [inventoryItems, setInventoryItems] = useState([]);
 	const [selectedOfferItems, setSelectedOfferItems] = useState([]);
+
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		itemsPerPage: 6,
+		totalInventory: 0,
+	});
+
+	const tradeWindowInnerRef = useRef(null);
+
+	const offset = (pagination.currentPage - 1) * pagination.itemsPerPage;
 
 	const handleTradeOpen = (bool) => {
 		dispatch({
@@ -106,13 +117,47 @@ const TradeWindow = (props) => {
 		handleRemoveWindow(e);
 	};
 
-	useEffect(() => {
-		const personalItems = allItems.filter((item) => {
-			return item.seller_id === currentUser.id;
-		});
+	const handlePageChange = (newPage) => {
+		// Update the pagination state
+		setPagination((prev) => ({
+			...prev,
+			currentPage: newPage,
+		}));
 
-		setInventoryItems(personalItems);
-	}, [allItems]);
+		// Scroll the `tradeWindowInner` element to the top
+		if (tradeWindowInnerRef.current) {
+			tradeWindowInnerRef.current.scrollTop = 0;
+		}
+	};
+
+	useEffect(() => {
+		const fetchInventoryData = async () => {
+			const { data: itemsData, error: itemsError } = await selectAllItemsWithImagesFromUser({
+				userId: currentUser.id,
+				limit: pagination.itemsPerPage,
+				offset: offset,
+			});
+
+			const { count: itemsCounterNum, error: itemsCounterError } = await countAllItemsFromUser({
+				userId: currentUser.id,
+			});
+
+			if (itemsError || itemsCounterError) {
+				throw new Error("Error fetching inventory data.");
+			}
+
+			setPagination((prev) => {
+				return {
+					...prev,
+					totalInventory: itemsCounterNum,
+				};
+			});
+
+			setInventoryItems(itemsData);
+		};
+
+		fetchInventoryData();
+	}, [allItems, currentUser, pagination.currentPage, pagination.itemsPerPage]);
 
 	return (
 		<Window dispatchType={"SET_TRADE_DISPLAYED"}>
@@ -130,7 +175,7 @@ const TradeWindow = (props) => {
 						/>
 					</div>
 				</div>
-				<div className={styles["tradeWindowInner"]}>
+				<div ref={tradeWindowInnerRef} className={styles["tradeWindowInner"]}>
 					<div className={styles["tradeWindowContent"]}>
 						<div className={styles["tradeListContainer"]} id="top">
 							<h4>What you want</h4>
@@ -146,6 +191,7 @@ const TradeWindow = (props) => {
 										<CardMini
 											key={itemIndex}
 											item={item}
+											source={"tradeWindow"}
 											isDefaultSelected={selectedOfferItems.includes(item)}
 											handleItemOfferSelected={handleItemOfferSelected}
 											selectedOfferedItems={selectedOfferItems}
@@ -153,6 +199,15 @@ const TradeWindow = (props) => {
 									);
 								})}
 							</div>
+							<Pagination
+								className={styles["inventoryPages"]}
+								predefined={{
+									currentCurrentPage: pagination.currentPage,
+									currentItemsPerPage: pagination.itemsPerPage,
+									currentTotalItems: pagination.totalInventory,
+									onPageChange: handlePageChange,
+								}}
+							/>
 						</div>
 					</div>
 				</div>

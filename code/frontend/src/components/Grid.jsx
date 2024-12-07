@@ -1,6 +1,7 @@
 import CardFull from "@components/CardFull";
 import {
 	searchItemsWithImagesFromQuery,
+	selectAllItemsWithImages,
 	selectAllItemsWithImagesFromCategory,
 	selectAllItemsWithImagesFromUser,
 	selectAllWishlistedItemsWithImagesFromUser,
@@ -9,7 +10,6 @@ import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
-import { sortItemsByDate, sortItemsByName, sortItemsByPrice } from "@utils/itemsData";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -88,31 +88,30 @@ const Grid = (props) => {
 	}, [allItems, categoryName, currentUser, currentPage, itemsPerPage, offset, othersUserId, searchQuery, dispatch]);
 
 	useEffect(() => {
-		if (!baseShownItems) return;
-		let sortedItems;
+		const fetchData = async () => {
+			if (!baseShownItems) return;
 
-		switch (sortPropName) {
-			case "name":
-				sortedItems = sortItemsByName(baseShownItems, sortPropType === "asc");
-				break;
-			case "date":
-				sortedItems = sortItemsByDate(baseShownItems, sortPropType === "asc");
-				break;
-			case "price":
-				sortedItems = sortItemsByPrice(baseShownItems, sortPropType === "asc");
-				break;
-			default:
-				sortedItems = sortItemsByDate(baseShownItems, sortPropType === "asc");
-				break;
-		}
+			const { data, error } = await selectAllItemsWithImages({
+				limit: itemsPerPage,
+				offset: offset,
+				sortPropName: sortPropName,
+				sortPropType: sortPropType,
+			});
 
-		setSortedShownItems(sortedItems);
+			if (error) {
+				throw new Error("Error fetching data.");
+			}
 
-		dispatch({
-			type: "SET_SHOWN_ITEMS",
-			payload: sortedItems,
-		});
-	}, [baseShownItems, sortPropName, sortPropType, dispatch]);
+			setSortedShownItems(data);
+
+			dispatch({
+				type: "SET_SHOWN_ITEMS",
+				payload: data,
+			});
+		};
+
+		fetchData();
+	}, [baseShownItems, itemsPerPage, offset, sortPropName, sortPropType, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
