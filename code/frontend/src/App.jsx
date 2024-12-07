@@ -59,6 +59,7 @@ const App = () => {
 		}
 	}, [location.pathname, prevPathname, dispatch]);
 
+	// all items
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
@@ -83,6 +84,7 @@ const App = () => {
 		fetchItems();
 	}, [itemsPerPage, offset, dispatch]);
 
+	// wishlist items
 	useEffect(() => {
 		const fetchWishlistItems = async () => {
 			try {

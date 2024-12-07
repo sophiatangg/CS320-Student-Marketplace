@@ -244,7 +244,7 @@ export const selectAllItemsWithImagesFromCategory = async ({ category, limit = 1
 /**
  * Fetch all data from wishlist table.
  */
-export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0, sortPropName = "date", sortPropType = "asc" }) => {
+export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, offset = 0 }) => {
 	let _userId;
 	if (!userId) {
 		const {
@@ -252,49 +252,28 @@ export const selectAllWishlistedItemsFromUser = async ({ userId, limit = 12, off
 		} = await supabase.auth.getUser();
 
 		if (!user.hasOwnProperty("id")) {
-			throw new Error("Error fetching wishlisted items from user.");
+			throw Error("Error fetching wishlisted items from user.");
 		}
 		_userId = user.id;
 	} else {
 		_userId = userId;
 	}
 
-	try {
-		const columnMap = {
-			date: "date_added",
-			name: "name",
-			price: "price",
-		};
-		const column = columnMap[sortPropName] || "date_added";
+	const res = await supabase
+		.from(wishlistTableName)
+		.select("*")
+		.eq("user_id", _userId)
+		.range(offset, offset + limit - 1);
 
-		const { data: wishlist, error: wishlistError } = await supabase
-			.from(wishlistTableName)
-			.select("item_id")
-			.eq("user_id", _userId)
-			.range(offset, offset + limit - 1);
-
-		if (wishlistError) {
-			console.error("Error fetching wishlist items:", wishlistError);
-			return { data: null, error: wishlistError };
-		}
-
-		const itemIds = wishlist.map((wish) => wish.item_id);
-		const { data: items, error: itemsError } = await supabase
-			.from(itemTableName)
-			.select("*")
-			.in("id", itemIds)
-			.order(column, { ascending: sortPropType === "asc" }); // Add sorting
-
-		if (itemsError) {
-			console.error("Error fetching items for wishlist:", itemsError);
-			return { data: null, error: itemsError };
-		}
-
-		return { data: items, error: null };
-	} catch (error) {
-		console.error("Unexpected error in selectAllWishlistedItemsFromUser:", error);
-		return { data: null, error };
+	if (!res) {
+		console.error("Error fetching wishlist items from database:", res.error);
 	}
+
+	return {
+		data: res.hasOwnProperty("data") ? res.data : null,
+		error: res.error,
+		status: res.status,
+	};
 };
 
 /**
