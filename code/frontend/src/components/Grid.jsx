@@ -44,12 +44,21 @@ const Grid = (props) => {
 				let items;
 				if (!searchQuery) {
 					if (!categoryName || categoryName === "all") {
-						items = allItems;
+						const { data } = await selectAllItemsWithImages({
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
+						});
+
+						items = data;
 					} else if (categoryName === "my-items") {
 						const { data } = await selectAllItemsWithImagesFromUser({
 							userId: currentUser.id,
 							limit: itemsPerPage,
 							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
 						});
 
 						items = data ?? [];
@@ -58,12 +67,18 @@ const Grid = (props) => {
 							userId: othersUserId ?? currentUser.id,
 							limit: itemsPerPage,
 							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
 						});
 
 						items = data ?? [];
 					} else {
 						const { data } = await selectAllItemsWithImagesFromCategory({
 							category: categoryName.toLowerCase(),
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
 						});
 
 						items = data ?? [];
@@ -85,33 +100,17 @@ const Grid = (props) => {
 		};
 
 		updateBaseItems();
-	}, [allItems, categoryName, currentUser, currentPage, itemsPerPage, offset, othersUserId, searchQuery, dispatch]);
+	}, [allItems, categoryName, currentUser, currentPage, itemsPerPage, offset, othersUserId, searchQuery, sortPropName, sortPropType, dispatch]);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			if (!baseShownItems) return;
+		if (!baseShownItems) return;
 
-			const { data, error } = await selectAllItemsWithImages({
-				limit: itemsPerPage,
-				offset: offset,
-				sortPropName: sortPropName,
-				sortPropType: sortPropType,
-			});
-
-			if (error) {
-				throw new Error("Error fetching data.");
-			}
-
-			setSortedShownItems(data);
-
-			dispatch({
-				type: "SET_SHOWN_ITEMS",
-				payload: data,
-			});
-		};
-
-		fetchData();
-	}, [baseShownItems, itemsPerPage, offset, sortPropName, sortPropType, dispatch]);
+		setSortedShownItems(baseShownItems);
+		dispatch({
+			type: "SET_SHOWN_ITEMS",
+			payload: baseShownItems,
+		});
+	}, [baseShownItems, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";

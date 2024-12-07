@@ -226,7 +226,7 @@ const Sidebar = (props) => {
 								}
 
 								dispatch({
-									type: "SET_SHOWN_ITEMS",
+									type: "SET_ALL_ITEMS",
 									payload: data,
 								});
 							} catch (error) {}
