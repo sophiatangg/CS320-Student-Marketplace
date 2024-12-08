@@ -21,33 +21,22 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 		let tradeQuery;
 
 		// Handle query based on type
-		if (type === "COMPLETED") {
-			// Fetch trade IDs with status "completed"
+		if (type === "COMPLETED" || type === "REJECTED") {
+			// Fetch trade IDs with matching status
+			const statusFilter = type === "COMPLETED" ? "completed" : "rejected";
 			const { data: statusData, error: statusError } = await supabase
 				.from(TRADE_STATUS_TABLE_NAME)
 				.select("trade_id")
-				.eq("status", "completed");
+				.eq("status", statusFilter);
 
 			if (statusError) {
-				throw new Error(`Error fetching completed trades: ${statusError.message}`);
+				throw new Error(`Error fetching ${type.toLowerCase()} trades: ${statusError.message}`);
 			}
 
 			tradeIds = statusData.map((status) => status.trade_id);
 
-			// Use these IDs to fetch trades
-			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").in("id", tradeIds);
-		} else if (type === "REJECTED") {
-			// Fetch trade IDs with status "rejected"
-			const { data: statusData, error: statusError } = await supabase.from(TRADE_STATUS_TABLE_NAME).select("trade_id").eq("status", "rejected");
-
-			if (statusError) {
-				throw new Error(`Error fetching rejected trades: ${statusError.message}`);
-			}
-
-			tradeIds = statusData.map((status) => status.trade_id);
-
-			// Use these IDs to fetch trades
-			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").in("id", tradeIds);
+			// Filter trades where the user is involved
+			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").in("id", tradeIds).or(`seller_id.eq.${userId},buyer_id.eq.${userId}`);
 		} else if (queryColumn) {
 			// Fetch received or sent trades
 			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").eq(queryColumn, userId);

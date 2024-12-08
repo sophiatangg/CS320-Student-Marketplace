@@ -76,6 +76,10 @@ const TradeManageWindow = () => {
 			const filteredRequests = requests.filter((request) => {
 				const statusObj = statuses.find((status) => status.trade_id === request.id);
 
+				if (request.tradee.id == currentUser.id || request.trader.id === currentUser.id) {
+					return true;
+				}
+
 				if (!statusObj) return false;
 
 				const { status } = statusObj;
