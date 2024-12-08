@@ -80,9 +80,9 @@ async function deleteExpiredTrades() {
   const now = new Date().toISOString(); 
   //first check it's been 48 hours and get all expired trade_ids from Trade_Status
   const { data, error } = await supabase
-    .from('Trade_Status')
-    .select('trade_id')
-    .match({ status: 'pending' }) // Only delete unaccepted trades
+    .from('trade')
+    .select('id')
+    .match({ completed: 'FALSE' }) // Only delete uncompleted trades
     .lt('expires_at', now);
 
   if (error) {
