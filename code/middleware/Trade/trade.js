@@ -37,12 +37,16 @@ export const storeTradeInDatabase = async (tradeEntry) => {
 	}
 };
 
-export const updateExpiration = async (tradeID, time) => {
+export const updateExpiration = async (tradeEntry) => {
 	try {
-		let initialTime = new Date(time);
+		let initialTime = new Date();
 		const newExpiration = new Date(initialTime);
 		newExpiration.setHours(newExpiration.getHours() + 72);
-		const { data, error } = await supabase.from("Trade").update({ expiration_date: newExpiration }).eq("id", tradeID);
+		const { data, error } = await supabase
+		.from("Trade")
+		.update({ expires_at: newExpiration })
+		.eq("id", tradeEntry.id);
+		
 		if (error) {
 			console.error("Error updating expiration time", error);
 			alert(`Error updating expiration time: ${error.message}`);
@@ -56,16 +60,19 @@ export const updateExpiration = async (tradeID, time) => {
 	}
 };
 
-export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
+export const updateOffer = async (tradeEntry) => {
 	try {
-		const { data, error } = await supabase.from("Trade").update({ items_in_trade: newItemsinTrade }).eq("id", tradeId);
+		const { data, error } = await supabase
+		.from("Trade")
+		.update({ offer_item_ids: tradeEntry.offer_item_ids })
+		.eq("id", tradeEntry.id);
 
 		if (error) {
 			console.error("Error updating trade items:", updateError);
 			alert(`Error updating trade items: ${updateError.message}`);
 			return;
 		}
-		await updateExpiration(tradeId, timestamp);
+		await updateExpiration(tradeEntry);
 		console.log("Counter offer updated successfully:", data);
 		alert("Counter offfer updated successfully!");
 	} catch (err) {
