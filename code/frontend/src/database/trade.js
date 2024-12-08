@@ -38,8 +38,17 @@ export const fetchTradeRequests = async ({ userId, type = "RECEIVED" }) => {
 			// Filter trades where the user is involved
 			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").in("id", tradeIds).or(`seller_id.eq.${userId},buyer_id.eq.${userId}`);
 		} else if (queryColumn) {
-			// Fetch received or sent trades
-			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").eq(queryColumn, userId);
+			// Fetch trade IDs with status "pending"
+			const { data: statusData, error: statusError } = await supabase.from(TRADE_STATUS_TABLE_NAME).select("trade_id").eq("status", "pending");
+
+			if (statusError) {
+				throw new Error(`Error fetching pending trades: ${statusError.message}`);
+			}
+
+			tradeIds = statusData.map((status) => status.trade_id);
+
+			// Fetch received or sent trades where the status is "pending"
+			tradeQuery = supabase.from(TRADE_TABLE_NAME).select("*").in("id", tradeIds).eq(queryColumn, userId);
 		} else {
 			throw new Error("Invalid trade request type.");
 		}
