@@ -32,6 +32,9 @@ export const storeTradeInDatabase = async (tradeEntry) => {
 		console.error("Unexpected error:", err);
 		alert("An unexpected error occurred. Please try again later.");
 	}
+	for (let i = 0; i < tradeEntry.offer_item_ids.length; i++) {
+		updateInTrade(tradeEntry.offer_item_ids[i]);
+	}
 };
 
 export const updateExpiration = async (tradeID, time) => {
