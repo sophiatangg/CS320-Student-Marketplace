@@ -78,7 +78,7 @@ const schedule = require('node-schedule');
 
 async function deleteExpiredTrades() {
   const now = new Date().toISOString(); 
-  //first check it's been 48 hours and get all expired trade_ids from Trade_Status
+  //first check it's been 48 hours and get all expired trade_ids from Trade
   const { data, error } = await supabase
     .from('trade')
     .select('id')
@@ -117,7 +117,7 @@ async function deleteExpiredTrades() {
   const { data: deletedTrade_Status, error: deletedTrade_StatusError } = await supabase
     .from('Trade_Status')
     .delete()
-    .in('id', expiredTradeIds); 
+    .in('trade_id', expiredTradeIds); 
 
   if (deletedTrade_StatusError) {
 	console.error('Error deleting expired trades:', deletedTrade_StatusError);
