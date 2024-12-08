@@ -66,10 +66,61 @@ export const updateOffer = async (tradeId, newItemsinTrade, timestamp) => {
 			return;
 		}
 		await updateExpiration(tradeId, timestamp);
-		console.log("Counter offfer updated successfully:", data);
+		console.log("Counter offer updated successfully:", data);
 		alert("Counter offfer updated successfully!");
 	} catch (err) {
 		console.error("Unexpected error:", err);
 		alert("An unexpected error occurred. Please try again later.");
 	}
 };
+
+const schedule = require('node-schedule');
+
+async function deleteExpiredTrades() {
+  const now = new Date().toISOString(); 
+  //first check it's been 48 hours and get all expired trade_ids from Trade_Status
+  const { data, error } = await supabase
+    .from('Trade_Status')
+    .select('trade_id')
+    .match({ status: 'pending' }) // Only delete unaccepted trades
+    .lt('expires_at', now);
+
+  if (error) {
+    console.error('Error getting expired trades:', error);
+  } 
+
+  if (data.length === 0) {
+    console.log('No expired trades found.');
+    return;
+  }
+  
+  const expiredTradeIds = data.map((trade) => trade.id);
+  console.log('Expired trade IDs:', expiredTradeIds);
+
+  //delete trades from Trade table
+  const { data: deletedTrades, error: deleteError } = await supabase
+    .from('trade')
+    .delete()
+    .in('id', expiredTradeIds); // Delete trades by their IDs
+
+  if (deleteError) {
+    console.error('Error deleting expired trades:', deleteError);
+  } else {
+    console.log('Expired trades deleted:', deletedTrades);
+  }
+
+  //delete trades from Trade_Status table
+  const { data: deletedTrade_Status, error: deletedTrade_StatusError } = await supabase
+    .from('Trade_Status')
+    .delete()
+    .in('id', expiredTradeIds); 
+
+  if (deletedTrade_StatusError) {
+	console.error('Error deleting expired trades:', deletedTrade_StatusError);
+  } else {
+	console.log('Expired trades deleted:', deletedTrade_Status);
+  }
+}
+
+// Schedule the task to run every hour
+schedule.scheduleJob('0 * * * *', deleteExpiredTrades);
