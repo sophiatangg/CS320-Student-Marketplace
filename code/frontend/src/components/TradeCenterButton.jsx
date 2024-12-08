@@ -1,6 +1,6 @@
 import { fetchTradeRequestCounts } from "@database/trade";
 import { useAuth } from "@providers/AuthProvider";
-import { useContextDispatch } from "@providers/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/TradeCenterButton.module.scss";
 import { useEffect, useState } from "react";
 import { PiSwapBold } from "react-icons/pi";
@@ -8,6 +8,8 @@ import { PiSwapBold } from "react-icons/pi";
 const TradeCenterButton = () => {
 	const { currentUser } = useAuth();
 	const [tradeRequestsCount, setTradeRequestsCount] = useState(0);
+
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 
 	const dispatch = useContextDispatch();
 
@@ -45,7 +47,7 @@ const TradeCenterButton = () => {
 		};
 
 		loadTradeRequests();
-	}, [currentUser]);
+	}, [allItems, currentUser, shownItems]);
 
 	return (
 		<div

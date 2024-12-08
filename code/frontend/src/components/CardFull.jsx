@@ -177,18 +177,26 @@ const CardFull = (props) => {
 					</div>
 				</div>
 				<div className={styles["buttons"]}>
-					<div className={styles["price-cart-trade"]}>
-						<span className={styles["price"]}>${item?.price}</span>
-						{!isOwnItem && (
-							<div className={styles["cart-trade"]}>
-								<AddToCartButton item={item} isBig={false} />
-								<TradeButton handleTradeOpen={handleTradeOpen} item={item} />
-							</div>
-						)}
-					</div>
-					{!isOwnItem && (
+					{!item?.available ? (
+						<div className={styles["tradeComplete"]}>
+							<span>Successful Trade!</span>
+						</div>
+					) : (
 						<>
-							<WishlistButton item={item} />
+							<div className={styles["price-cart-trade"]}>
+								<span className={styles["price"]}>${item?.price}</span>
+								{!isOwnItem && (
+									<div className={styles["cart-trade"]}>
+										<AddToCartButton item={item} isBig={false} />
+										<TradeButton handleTradeOpen={handleTradeOpen} item={item} />
+									</div>
+								)}
+							</div>
+							{!isOwnItem && (
+								<>
+									<WishlistButton item={item} />
+								</>
+							)}
 						</>
 					)}
 				</div>

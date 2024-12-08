@@ -6,7 +6,7 @@ import {
 	selectAllTradeableItemsWithImagesFromUser,
 	updateItemByColumn,
 } from "@database/items";
-import { storeTradeInDatabase } from "@database/trade";
+import { initializeTradeStatus, storeTradeInDatabase } from "@database/trade";
 import { getUser } from "@database/users";
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider.jsx";
@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { BsChatQuoteFill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const TradeWindow = (props) => {
@@ -25,6 +26,13 @@ const TradeWindow = (props) => {
 	const { pagination: globalPagination } = useContextSelector("globalStore");
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
+
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
+	const categoryName = params.get("cat") || "all";
+	const currentPage = parseInt(params.get("page") || "1", 10);
+	const sortPropName = params.get("spn") || "date";
+	const sortPropType = params.get("spt") || "asc";
 
 	const [inventoryItems, setInventoryItems] = useState([]);
 	const [selectedOfferItems, setSelectedOfferItems] = useState([]);
@@ -104,7 +112,17 @@ const TradeWindow = (props) => {
 		if (!tradeRes) {
 			const message = `Error initiating trade to ${sellerData.name}.`;
 			toast.error(message, toastProps);
-			throw Error(message + " Check code!");
+			throw new Error(message + " Check code!");
+		}
+
+		const { data: tradeStatusData, error: tradeStatusError } = await initializeTradeStatus({
+			tradeId: tradeRes[0].id,
+		});
+
+		if (tradeStatusError) {
+			const message = `Something unexpectedly went wrong. Check trade status ${tradeStatusData.id}.`;
+			console.error(message);
+			throw new Error(message + " Check code!");
 		}
 
 		try {
@@ -126,6 +144,8 @@ const TradeWindow = (props) => {
 			const { data, error } = await selectAllItemsWithImages({
 				limit: globalPagination.itemsPerPage,
 				offset: offset,
+				sortPropName: sortPropName,
+				sortPropType: sortPropType,
 			});
 
 			if (data) {

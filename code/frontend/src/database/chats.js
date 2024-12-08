@@ -1,7 +1,7 @@
 import { supabase } from "@database/supabaseClient";
 
-const chatTableName = "Chat";
-const chatMessagesTableName = "ChatMessages";
+const CHAT_TABLE_NAME = "Chat";
+const CHAT_MESSAGES_TABLE_NAME = "ChatMessages";
 
 export const countChatsByUserId = async (userId) => {
 	if (!userId) return 0;
@@ -9,7 +9,7 @@ export const countChatsByUserId = async (userId) => {
 	try {
 		// Fetch chats where the user is either the initiator or the receiver
 		const { count, error } = await supabase
-			.from(chatTableName)
+			.from(CHAT_TABLE_NAME)
 			.select("*", { count: "exact", head: true })
 			.or(`initiator_id.eq.${userId},receiver_id.eq.${userId}`);
 
@@ -30,7 +30,7 @@ export const fetchChatsByUserId = async (userId) => {
 	if (!userId) return [];
 
 	// Fetch chats where the user is either the initiator or the receiver
-	const { data: chats, error } = await supabase.from(chatTableName).select("*").or(`initiator_id.eq.${userId},receiver_id.eq.${userId}`);
+	const { data: chats, error } = await supabase.from(CHAT_TABLE_NAME).select("*").or(`initiator_id.eq.${userId},receiver_id.eq.${userId}`);
 
 	if (error) {
 		console.error("Error fetching chats:", error);
@@ -53,7 +53,7 @@ export const fetchMessagesById = async (chatId) => {
 	if (!chatId) return null;
 
 	const { data: fetchedMessages, error } = await supabase
-		.from(chatMessagesTableName)
+		.from(CHAT_MESSAGES_TABLE_NAME)
 		.select("*")
 		.eq("chat_id", chatId)
 		.order("created_at", { ascending: true });
@@ -72,7 +72,7 @@ export const subscribeToMessages = (chatId, callback) => {
 	}
 
 	const subscription = supabase
-		.from(`${chatMessagesTableName}:chat_id=eq.${chatId}`)
+		.from(`${CHAT_MESSAGES_TABLE_NAME}:chat_id=eq.${chatId}`)
 		.on("INSERT", (payload) => {
 			if (callback) callback(payload.new);
 		})
@@ -93,7 +93,7 @@ export const sendMessage = async ({ chatId, senderId, message }) => {
 	if (!message || !message === "") return null;
 
 	const { data, error } = await supabase
-		.from(chatMessagesTableName)
+		.from(CHAT_MESSAGES_TABLE_NAME)
 		.insert({
 			chat_id: chatId,
 			sender_id: senderId,

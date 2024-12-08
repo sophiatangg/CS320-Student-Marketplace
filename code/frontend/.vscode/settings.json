@@ -28,5 +28,5 @@
 	"javascript.updateImportsOnFileMove.enabled": "always",
 	"liveSassCompile.settings.watchOnLaunch": false,
 	"prettier.resolveGlobalModules": false,
-	"cSpell.words": ["umass", "Wishlisted"]
+	"cSpell.words": ["tradee", "umass", "Wishlisted"]
 }
