@@ -1,32 +1,70 @@
-import { fetchMessagesById, sendMessage, subscribeToMessages, unsubscribeFromMessages } from "@database/chats";
+import { fetchMessagesById, sendMessage, subscribeToMessages, unsubscribeFromMessages, updateChat } from "@database/chats";
+import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import styles from "@styles/ChatMessage.module.scss";
 import cns from "@utils/classNames";
 import { useEffect, useState } from "react";
 
 const ChatMessage = (props) => {
-	const { activeUser, setActiveUser } = props;
+	const { activeChat } = props;
 
+	const [currentChatWith, setCurrentChatWith] = useState(null);
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
 
 	const { currentUser } = useAuth();
 
 	useEffect(() => {
-		if (!activeUser || !activeUser.id) return;
+		if (!activeChat || !activeChat.id) return;
 
 		let messageSubscription;
-
 		const initializeChat = async () => {
 			try {
 				// Fetch existing messages
-				const fetchedMessages = await fetchMessagesById(activeUser.id);
+				const fetchedMessages = await fetchMessagesById({ chatId: activeChat.id });
 
-				setMessages(fetchedMessages ?? []);
+				if (!fetchedMessages) {
+					setMessages([]);
+					console.error("Error fetching messages");
+					return;
+				}
+
+				const currentChatter = await getUser(currentUser.id === activeChat.initiator_id ? activeChat.receiver_id : activeChat.initiator_id);
+				if (!currentChatter) {
+					setCurrentChatWith(null);
+					throw new Error("Error fetching chat receiver");
+				}
+
+				setCurrentChatWith(currentChatter);
+
+				// Map messages and fetch user data for each sender
+				const formattedMessages = await Promise.all(
+					fetchedMessages.map(async (msg) => {
+						const user = await getUser(msg.sender_id); // Fetch user data
+						return {
+							id: msg.id,
+							user: user || { id: msg.sender_id, name: "Unknown" }, // Fallback for unknown users
+							message: msg.message,
+							timeSent: msg.created_at,
+							isRead: msg.is_read,
+						};
+					}),
+				);
+
+				setMessages(formattedMessages);
 
 				// Subscribe to new messages
-				messageSubscription = subscribeToMessages(activeUser.id, (newMessage) => {
-					setMessages((prevMessages) => [...prevMessages, newMessage]);
+				messageSubscription = subscribeToMessages(activeChat.id, async (newMessage) => {
+					const user = await getUser(newMessage.sender_id); // Fetch user data for the new message
+					const formattedNewMessage = {
+						id: newMessage.id,
+						user: user || { id: newMessage.sender_id, name: "Unknown" },
+						message: newMessage.message,
+						timeSent: newMessage.created_at,
+						isRead: newMessage.is_read,
+					};
+
+					setMessages((prevMessages) => [...prevMessages, formattedNewMessage]);
 				});
 			} catch (error) {
 				console.error("Error initializing chat:", error);
@@ -38,7 +76,7 @@ const ChatMessage = (props) => {
 		return () => {
 			unsubscribeFromMessages(messageSubscription);
 		};
-	}, [activeUser]);
+	}, [activeChat, currentUser]);
 
 	const handleSendMessage = async (e) => {
 		if (e.shiftKey && e.code === "Enter") return; // Prevent sending on Shift + Enter
@@ -48,13 +86,16 @@ const ChatMessage = (props) => {
 		try {
 			// Insert the message into the database
 			const newMessageData = await sendMessage({
-				chatId: activeUser.id,
+				chatId: activeChat.id,
 				senderId: currentUser.id,
 				message: newMessage.trim(),
 			});
 
 			// Update the chat's last message
-			await updateChat(activeUser.id, newMessage.trim());
+			await updateChat({
+				chatId: activeChat.id,
+				message: newMessage.trim(),
+			});
 
 			// Update local state
 			setMessages((prevMessages) => {
@@ -76,17 +117,60 @@ const ChatMessage = (props) => {
 	};
 
 	const renderMessages = () => {
-		return messages.map((msg, index) => (
-			<div key={index} className={styles["messageItem"]}>
-				<div className={styles["messageHeader"]}>
-					<strong>{msg.sender}</strong>
-					<span className={styles["timestamp"]}>{msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+		// Group consecutive messages by the same user
+		const groupedMessages = messages.reduce((acc, msg, index) => {
+			if (index === 0 || msg.user.id !== messages[index - 1].user.id) {
+				// Start a new group if it's the first message or the sender changes
+				acc.push([msg]);
+			} else {
+				// Add to the existing group
+				acc[acc.length - 1].push(msg);
+			}
+			return acc;
+		}, []);
+
+		// Render the grouped messages
+		return groupedMessages.map((group, groupIndex) => {
+			const isCurrentUser = group[0].user.id === currentUser.id;
+			const date = new Date(group[0].timeSent);
+
+			return (
+				<div
+					key={groupIndex}
+					id={groupIndex}
+					className={cns(styles["messageGroup"], {
+						[styles["messageGroupSelf"]]: isCurrentUser,
+						[styles["messageGroupOther"]]: !isCurrentUser,
+					})}
+				>
+					<div className={styles["messageHeader"]}>
+						<strong>{group[0].user.name}</strong>
+						<span className={styles["timestamp"]}>{date.toLocaleDateString([], { month: "short", day: "numeric" })}</span>
+					</div>
+					<div className={styles["messageContents"]}>
+						{group.map((msg, msgIndex) => {
+							// Determine the appropriate class
+							const isOnlyMessage = group.length === 1;
+							const isFirstMessage = msgIndex === 0 && group.length > 1;
+							const isLastMessage = msgIndex === group.length - 1 && group.length > 1;
+
+							return (
+								<div
+									key={msgIndex}
+									className={cns(styles["messageContent"], {
+										[styles["messageContentSingle"]]: isOnlyMessage,
+										[styles["messageContentFirst"]]: isFirstMessage,
+										[styles["messageContentLast"]]: isLastMessage,
+									})}
+								>
+									<span>{msg.message}</span>
+								</div>
+							);
+						})}
+					</div>
 				</div>
-				<div className={styles["messageContent"]}>
-					<span>{msg.content}</span>
-				</div>
-			</div>
-		));
+			);
+		});
 	};
 
 	const renderInputArea = () => {
@@ -96,7 +180,7 @@ const ChatMessage = (props) => {
 			e.target.style.height = `${e.target.scrollHeight}px`;
 		};
 
-		const firstName = String(activeUser.name).split(" ")[0];
+		const firstName = String(currentChatWith?.name || "Unknown").split(" ")[0];
 
 		return (
 			<div className={styles["chatMessageInputArea"]}>
