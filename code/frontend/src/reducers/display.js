@@ -25,6 +25,7 @@ export const displayReducer = (state = initial, action) => {
 				...state,
 				addEditNewItemDisplayed: action.payload,
 			};
+
 		case "SET_CHAT_DISPLAYED":
 			return {
 				...state,

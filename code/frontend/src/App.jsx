@@ -1,6 +1,7 @@
 import Footer from "@components/Footer";
+import LoadingBar from "@components/LoadingBar";
 import NavBar from "@components/NavBar";
-import { selectAllItemsWithImages, selectAllWishlistItemsByUser } from "@database/items";
+import { selectAllItemsWithImages, selectAllWishlistedItemsFromUser } from "@database/items";
 import Browse from "@pages/Browse";
 import Home from "@pages/Home";
 import ItemPage from "@pages/ItemPage";
@@ -17,6 +18,7 @@ import TradeWindow from "@popups/TradeWindow";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import appStyles from "@styles/App.module.scss";
 import cns from "@utils/classNames";
+import { usePrevious } from "@utils/usePrevious";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
@@ -32,17 +34,40 @@ const App = () => {
 		tradeDisplayed,
 		tradeManageDisplay,
 	} = useContextSelector("displayStore");
-
+	const { loading, pagination, theme } = useContextSelector("globalStore");
+	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
 	const dispatch = useContextDispatch();
 
-	const { theme } = useContextSelector("globalStore");
-	const { selectedItemIdToEdit } = useContextSelector("itemsStore");
-	const { pathname } = useLocation();
+	const location = useLocation();
+	const { search } = useLocation();
+	const params = new URLSearchParams(search);
+	const currentPage = parseInt(params.get("page") || "1", 10);
 
+	const { itemsPerPage } = pagination;
+	const offset = (currentPage - 1) * itemsPerPage;
+
+	const prevPathname = usePrevious(location.pathname);
+
+	useEffect(() => {
+		const hasPathChanged = prevPathname !== location.pathname;
+
+		if (hasPathChanged) {
+			dispatch({
+				type: "SET_LOADING",
+				payload: false,
+			});
+		}
+	}, [location.pathname, prevPathname, dispatch]);
+
+	// all items
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
-				const res = await selectAllItemsWithImages();
+				const res = await selectAllItemsWithImages({
+					limit: itemsPerPage,
+					offset: offset,
+				});
+
 				if (res.data) {
 					dispatch({
 						type: "SET_ALL_ITEMS",
@@ -57,25 +82,29 @@ const App = () => {
 		};
 
 		fetchItems();
-	}, [dispatch]);
+	}, [itemsPerPage, offset, dispatch]);
 
+	// wishlist items
 	useEffect(() => {
 		const fetchWishlistItems = async () => {
 			try {
-				const res = await selectAllWishlistItemsByUser();
-				if (res.data) {
+				const { data } = await selectAllWishlistedItemsFromUser({
+					userId: null,
+					limit: itemsPerPage,
+					offset: offset,
+				});
+
+				if (data) {
 					dispatch({
 						type: "SET_WISHLIST_ITEMS",
-						payload: res.data,
+						payload: data,
 					});
-				} else {
-					console.error("Failed to fetch wishlist items:", res.error);
 				}
 			} catch (error) {}
 		};
 
 		fetchWishlistItems();
-	}, [dispatch]);
+	}, [currentPage, itemsPerPage, offset, dispatch]);
 
 	useEffect(() => {
 		const applyTheme = () => {
@@ -100,7 +129,7 @@ const App = () => {
 	}, [theme]);
 
 	const animationKey = () => {
-		const key = pathname.split("/").filter(Boolean).join("-");
+		const key = location.pathname.split("/").filter(Boolean).join("-");
 		return key || "home";
 	};
 
@@ -108,6 +137,7 @@ const App = () => {
 
 	return (
 		<>
+			{loading && <LoadingBar />}
 			<div
 				className={cns(appStyles["app"], {
 					[appStyles["hasWindowDisplay"]]:
@@ -115,29 +145,31 @@ const App = () => {
 				})}
 			>
 				<NavBar />
-				<AnimatePresence exitBeforeEnter>
-					<Routes key={animationKey()} location={location}>
-						<Route path="/" element={<Home />} />
-						<Route path="/login/" element={<Login />} />
-						<Route
-							path="/browse/*"
-							element={
-								<ProtectedRoute>
-									<Browse />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path="/store/:itemId"
-							element={
-								<ProtectedRoute>
-									<ItemPage />
-								</ProtectedRoute>
-							}
-						/>
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</AnimatePresence>
+				<div className={appStyles["appContent"]}>
+					<AnimatePresence exitBeforeEnter>
+						<Routes key={animationKey()} location={location}>
+							<Route path="/" element={<Home />} />
+							<Route path="/login/" element={<Login />} />
+							<Route
+								path="/browse/*"
+								element={
+									<ProtectedRoute>
+										<Browse />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/store/:surname"
+								element={
+									<ProtectedRoute>
+										<ItemPage />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</AnimatePresence>
+				</div>
 				{accountInfoDisplayed && <AccountOptionsWindow />}
 				{accountProfileDisplayed && <AccountProfileWindow />}
 				{isAddItemWindowOpen && <AddEditNewItemWindow />}

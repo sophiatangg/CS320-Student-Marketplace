@@ -1,3 +1,4 @@
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountButton.module.scss";
 import cns from "@utils/classNames";
@@ -6,6 +7,8 @@ import { PiUserCircleFill } from "react-icons/pi";
 
 const AccountButton = (props) => {
 	const { userAvatar } = props;
+
+	const { currentUser } = useAuth();
 
 	const [isClicked, setIsClicked] = useState(false);
 
@@ -36,6 +39,7 @@ const AccountButton = (props) => {
 			<div
 				className={cns(styles["icon"], {
 					[styles["userSignedIn"]]: userAvatar !== "",
+					[styles["iconBig"]]: !currentUser,
 				})}
 			>
 				{userAvatar === "" ? (
@@ -54,6 +58,11 @@ const AccountButton = (props) => {
 					/>
 				)}
 			</div>
+			{currentUser && (
+				<div className={styles["title"]}>
+					<span>You</span>
+				</div>
+			)}
 		</div>
 	);
 };

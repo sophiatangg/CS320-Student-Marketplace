@@ -1,26 +1,51 @@
 import CardMini from "@components/CardMini";
-import { storeTradeInDatabase } from "@database/trade";
+import Pagination from "@components/Pagination";
+import {
+	countAllTradeableItemsFromUser,
+	selectAllItemsWithImages,
+	selectAllTradeableItemsWithImagesFromUser,
+	updateItemByColumn,
+} from "@database/items";
+import { initializeTradeStatus, storeTradeInDatabase } from "@database/trade";
 import { getUser } from "@database/users";
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider.jsx";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider.jsx";
 import styles from "@styles/TradeWindow.module.scss";
 import { toastProps } from "@utils/toastProps.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsChatQuoteFill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { PiSwapBold } from "react-icons/pi";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const TradeWindow = (props) => {
 	const { currentUser } = useAuth();
 
+	const { pagination: globalPagination } = useContextSelector("globalStore");
 	const { allItems, selectedItem } = useContextSelector("itemsStore");
-
 	const dispatch = useContextDispatch();
+
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
+	const categoryName = params.get("cat") || "all";
+	const currentPage = parseInt(params.get("page") || "1", 10);
+	const sortPropName = params.get("spn") || "date";
+	const sortPropType = params.get("spt") || "asc";
 
 	const [inventoryItems, setInventoryItems] = useState([]);
 	const [selectedOfferItems, setSelectedOfferItems] = useState([]);
+
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		itemsPerPage: 6,
+		totalInventory: 0,
+	});
+
+	const tradeWindowInnerRef = useRef(null);
+
+	const offset = (pagination.currentPage - 1) * pagination.itemsPerPage;
 
 	const handleTradeOpen = (bool) => {
 		dispatch({
@@ -70,49 +95,117 @@ const TradeWindow = (props) => {
 			return item.id;
 		});
 
-		const sellerData = await getUser(selectedItem.seller_id);
+		const sellerData = await getUser(selectedItem?.seller_id);
 		if (!sellerData || !sellerData.name) {
 			toast.error(`Error fetching trade info.`);
 			throw Error("Error while fetching trade info. Check code");
 		}
 
 		const tradeData = {
-			buyer_id: currentUser.id,
-			seller_id: selectedItem.seller_id,
+			buyer_id: currentUser?.id,
+			seller_id: selectedItem?.seller_id,
 			offer_items_ids: selectedOfferItemIds,
-			target_item_id: selectedItem.id,
+			target_item_id: selectedItem?.id,
 		};
 
 		const tradeRes = await storeTradeInDatabase({ data: tradeData });
 		if (!tradeRes) {
 			const message = `Error initiating trade to ${sellerData.name}.`;
 			toast.error(message, toastProps);
-			throw Error(message + " Check code!");
+			throw new Error(message + " Check code!");
 		}
 
-		// Update the allItems global state to mark the item as traded.
-		// Otherwise, users would have to refresh the page to have show the updates
-		dispatch({
-			type: "SET_ALL_ITEMS",
-			payload: allItems.map((item) => {
-				const newItem = { ...item, isTraded: true };
-
-				return item.id === selectedItem.id ? newItem : item;
-			}),
+		const { data: tradeStatusData, error: tradeStatusError } = await initializeTradeStatus({
+			tradeId: tradeRes[0].id,
 		});
 
-		toast.success(`Trade offer sent to ${sellerData.name}!`, toastProps);
+		if (tradeStatusError) {
+			const message = `Something unexpectedly went wrong. Check trade status ${tradeStatusData.id}.`;
+			console.error(message);
+			throw new Error(message + " Check code!");
+		}
 
-		handleRemoveWindow(e);
+		try {
+			// Use Promise.all to ensure all updates are processed
+			await Promise.all(
+				selectedOfferItemIds.map(async (itemId) => {
+					const flaggedItemAsTraded = await updateItemByColumn({
+						id: itemId,
+						column: "in_trade",
+						value: true,
+					});
+
+					if (!flaggedItemAsTraded) {
+						throw new Error(`Error updating trade status for item ${itemId}`);
+					}
+				}),
+			);
+
+			const { data, error } = await selectAllItemsWithImages({
+				limit: globalPagination.itemsPerPage,
+				offset: offset,
+				sortPropName: sortPropName,
+				sortPropType: sortPropType,
+			});
+
+			if (data) {
+				dispatch({
+					type: "SET_ALL_ITEMS",
+					payload: data,
+				});
+			} else {
+				console.error("Failed to fetch new items:", error);
+			}
+
+			toast.success(`Trade offer sent to ${sellerData.name}!`, toastProps);
+			handleRemoveWindow(e);
+		} catch (error) {
+			console.error("Error updating trade status for items:", error);
+			toast.error("An error occurred while updating item trade statuses.", toastProps);
+		}
+	};
+
+	const handlePageChange = (newPage) => {
+		// Update the pagination state
+		setPagination((prev) => ({
+			...prev,
+			currentPage: newPage,
+		}));
+
+		// Scroll the `tradeWindowInner` element to the top
+		if (tradeWindowInnerRef.current) {
+			tradeWindowInnerRef.current.scrollTop = 0;
+		}
 	};
 
 	useEffect(() => {
-		const personalItems = allItems.filter((item) => {
-			return item.seller_id === currentUser.id;
-		});
+		const fetchInventoryData = async () => {
+			const { data: itemsData, error: itemsError } = await selectAllTradeableItemsWithImagesFromUser({
+				userId: currentUser.id,
+				limit: pagination.itemsPerPage,
+				offset: offset,
+			});
 
-		setInventoryItems(personalItems);
-	}, [allItems]);
+			const { count: itemsCounterNum, error: itemsCounterError } = await countAllTradeableItemsFromUser({
+				userId: currentUser.id,
+			});
+
+			if (itemsError || itemsCounterError) {
+				throw new Error("Error fetching inventory data.");
+			}
+
+			setPagination((prev) => {
+				return {
+					...prev,
+					totalInventory: itemsCounterNum,
+				};
+			});
+
+			setInventoryItems(itemsData);
+		};
+
+		fetchInventoryData();
+	}, [allItems, currentUser, pagination.currentPage, pagination.itemsPerPage]);
 
 	return (
 		<Window dispatchType={"SET_TRADE_DISPLAYED"}>
@@ -130,7 +223,7 @@ const TradeWindow = (props) => {
 						/>
 					</div>
 				</div>
-				<div className={styles["tradeWindowInner"]}>
+				<div ref={tradeWindowInnerRef} className={styles["tradeWindowInner"]}>
 					<div className={styles["tradeWindowContent"]}>
 						<div className={styles["tradeListContainer"]} id="top">
 							<h4>What you want</h4>
@@ -146,6 +239,7 @@ const TradeWindow = (props) => {
 										<CardMini
 											key={itemIndex}
 											item={item}
+											source={"tradeWindow"}
 											isDefaultSelected={selectedOfferItems.includes(item)}
 											handleItemOfferSelected={handleItemOfferSelected}
 											selectedOfferedItems={selectedOfferItems}
@@ -153,6 +247,15 @@ const TradeWindow = (props) => {
 									);
 								})}
 							</div>
+							<Pagination
+								className={styles["inventoryPages"]}
+								predefined={{
+									currentCurrentPage: pagination.currentPage,
+									currentItemsPerPage: pagination.itemsPerPage,
+									currentTotalItems: pagination.totalInventory,
+									onPageChange: handlePageChange,
+								}}
+							/>
 						</div>
 					</div>
 				</div>

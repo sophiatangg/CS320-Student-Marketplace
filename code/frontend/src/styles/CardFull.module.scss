@@ -16,28 +16,22 @@
 	}
 
 	&.cardFullOwnItem {
-		background-color: var(--cardOwnFullBackground);
+		position: relative;
 
-		&:hover {
-			background-color: var(--cardOwnFullHoverBackground);
-		}
+		// background-color: var(--cardOwnFullBackground);
+
+		// &:hover {
+		// 	background-color: var(--cardOwnFullHoverBackground);
+		// }
 	}
 
 	&.cardFullWidth {
-		width: 80%;
+		width: 100%;
 		min-height: 150px;
 		max-height: 400px;
 		display: flex;
 		flex-flow: row;
 		--contentHeight: 100%;
-
-		@media screen and (min-width: 600px) {
-			width: 100%;
-		}
-
-		@media screen and (max-width: 600px) {
-			width: 100%;
-		}
 
 		.thumbnail {
 			max-width: 320px;
@@ -132,6 +126,12 @@
 
 	.price div {
 		color: var(--colorGrayTertiary);
+	}
+}
+
+.cardFetchingInfo {
+	> div {
+		position: relative;
 	}
 }
 
@@ -248,4 +248,18 @@
 	flex-flow: row wrap;
 	gap: 10px;
 	align-items: center;
+}
+
+.tradeComplete {
+	width: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	span {
+		color: var(--colorPrimaryForeground);
+		text-align: center;
+		font-weight: 600;
+	}
 }

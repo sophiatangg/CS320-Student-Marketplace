@@ -85,6 +85,8 @@
 	}
 
 	.avatarInner {
+		width: 100%;
+		height: 100%;
 		border-radius: var(--borderRadius);
 		overflow: hidden;
 
@@ -131,7 +133,6 @@
 	width: calc(100% - (var(--innerSpaceOffset) * 2));
 	height: calc(100% - var(--headerHeight) - var(--headerInnerOffsetY) - (var(--innerSpaceOffset) * 2));
 	margin: calc(var(--headerInnerOffsetY) + 25px) var(--innerSpaceOffset) var(--innerSpaceOffset) var(--innerSpaceOffset);
-	flex: 1;
 	position: relative;
 }
 
@@ -180,5 +181,49 @@
 		span {
 			flex: 1;
 		}
+	}
+}
+
+.miscButtons {
+	width: 100%;
+	height: 50px;
+	margin: 20px 0 0 0;
+	position: absolute;
+	inset: auto auto 0 0;
+	display: flex;
+
+	&:has(> div:only-child) {
+		flex-flow: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&:has(> div:not(:only-child)) {
+		flex-flow: row;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+.buttonLink {
+	color: var(--colorPrimaryForeground);
+	font-family: "GT Bold";
+	text-align: center;
+	background-color: var(--popOutBgColorAlt1);
+	border-radius: var(--borderRadius);
+	padding: 10px 40px;
+	position: relative;
+	user-select: none;
+	cursor: pointer;
+	transition:
+		background-color 100ms linear,
+		transform 100ms linear;
+
+	&:active {
+		transform: scale(var(--scaleDownFactor));
+	}
+
+	&:hover {
+		background-color: var(--umassColor);
 	}
 }

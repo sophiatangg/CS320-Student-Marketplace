@@ -1,6 +1,6 @@
-import { fetchTradeRequests } from "@database/trade";
+import { fetchTradeRequestCounts } from "@database/trade";
 import { useAuth } from "@providers/AuthProvider";
-import { useContextDispatch } from "@providers/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/TradeCenterButton.module.scss";
 import { useEffect, useState } from "react";
 import { PiSwapBold } from "react-icons/pi";
@@ -8,6 +8,8 @@ import { PiSwapBold } from "react-icons/pi";
 const TradeCenterButton = () => {
 	const { currentUser } = useAuth();
 	const [tradeRequestsCount, setTradeRequestsCount] = useState(0);
+
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 
 	const dispatch = useContextDispatch();
 
@@ -23,20 +25,29 @@ const TradeCenterButton = () => {
 			if (!currentUser || !currentUser.id) return;
 
 			try {
-				const tradeRequests = await fetchTradeRequests({ userId: currentUser.id });
+				// Fetch RECEIVED trade requests
+				const receivedRequests = await fetchTradeRequestCounts({
+					userId: currentUser.id,
+					type: "RECEIVED",
+				});
 
-				if (tradeRequests && tradeRequests.length > 0) {
-					setTradeRequestsCount(tradeRequests.length); // Update the badge count
-				} else {
-					setTradeRequestsCount(0); // No trade offers
-				}
+				// Fetch SENT trade requests
+				const sentRequests = await fetchTradeRequestCounts({
+					userId: currentUser.id,
+					type: "SENT",
+				});
+
+				const receivedRequestsCount = receivedRequests || 0;
+				const sentRequestsCount = sentRequests || 0;
+
+				setTradeRequestsCount(receivedRequestsCount + sentRequestsCount);
 			} catch (error) {
 				console.error("Error loading trade requests:", error);
 			}
 		};
 
 		loadTradeRequests();
-	}, [currentUser]);
+	}, [allItems, currentUser, shownItems]);
 
 	return (
 		<div
@@ -45,11 +56,14 @@ const TradeCenterButton = () => {
 				handleOpenTradeManageWindow(true);
 			}}
 		>
-			{tradeRequestsCount > 0 && (
-				<div className={styles["badge"]}>{tradeRequestsCount}</div> // Badge to show the count
-			)}
-			<div className={styles["icon"]}>
-				<PiSwapBold style={{ color: "#fff" }} />
+			<div className={styles["iconContainer"]}>
+				{tradeRequestsCount > 0 && <div className={styles["badge"]}>{tradeRequestsCount}</div>}
+				<div className={styles["icon"]}>
+					<PiSwapBold style={{ color: "#fff" }} />
+				</div>
+			</div>
+			<div className={styles["title"]}>
+				<span>Trade</span>
 			</div>
 		</div>
 	);

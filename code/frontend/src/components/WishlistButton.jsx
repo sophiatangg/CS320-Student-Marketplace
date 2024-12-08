@@ -78,19 +78,21 @@ const WishlistButton = (props) => {
 		if (!Array.isArray(ownWishlistItems)) return;
 
 		const hasFoundWishlistedItem = ownWishlistItems.some((wishlistItem) => {
-			return wishlistItem.item_id === item.id && wishlistItem.user_id == currentUser.id;
+			return wishlistItem.item_id === item?.id && wishlistItem.user_id == currentUser.id;
 		});
 
 		setIsItemWishlisted(hasFoundWishlistedItem);
 	}, [currentUser, ownWishlistItems]);
 
+	if (!item) return null;
+
 	return (
-		<div className={styles["like-container"]} id={item.id}>
+		<div className={styles["like-container"]} id={item?.id}>
 			<button
 				className={cns(styles["like"], {
 					[styles["red"]]: isItemWishlisted,
 				})}
-				id={item.id}
+				id={item?.id}
 				aria-label="Like"
 				onClick={(e) => {
 					e.preventDefault();

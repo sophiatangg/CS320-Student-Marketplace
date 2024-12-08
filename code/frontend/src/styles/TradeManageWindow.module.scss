@@ -24,7 +24,7 @@
 }
 
 .header {
-	--paddingBottom: 15px;
+	--paddingBottom: 25px;
 	padding: 0 30px var(--paddingBottom) 30px;
 	position: relative;
 	display: flex;
@@ -196,8 +196,7 @@
 		border-radius: calc(var(--borderRadius) - 5px);
 	}
 
-	.acceptButton,
-	.rejectButton {
+	.tradeInfoButton {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -213,21 +212,34 @@
 		&:active {
 			transform: scale(var(--scaleDownFactor));
 		}
-	}
 
-	.acceptButton {
-		background-color: var(--buttonNormal);
+		&[id="chat"] {
+			background-color: var(--buttonBlue);
 
-		&:hover {
-			background-color: var(--buttonNormalHover);
+			svg {
+				width: 60%;
+				height: 60%;
+			}
+
+			&:hover {
+				background-color: var(--buttonBlueHover);
+			}
 		}
-	}
 
-	.rejectButton {
-		background-color: var(--buttonDanger);
+		&[id="accept"] {
+			background-color: var(--buttonNormal);
 
-		&:hover {
-			background-color: var(--buttonDangerHover);
+			&:hover {
+				background-color: var(--buttonNormalHover);
+			}
+		}
+
+		&[id="reject"] {
+			background-color: var(--buttonDanger);
+
+			&:hover {
+				background-color: var(--buttonDangerHover);
+			}
 		}
 	}
 
@@ -256,6 +268,19 @@
 	gap: 50px;
 }
 
+.tradeRequestCardFooter {
+	width: 100%;
+	padding: 10px 0;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
 .tradeItem {
 	display: flex;
 	flex-flow: column;
@@ -277,9 +302,12 @@
 
 .tradeRequestPlaceholder,
 .tradeRequestEmpty {
+	min-height: 400px;
 	margin: 20px 0;
 	position: relative;
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 
 	p {
 		color: var(--colorPrimaryForeground);

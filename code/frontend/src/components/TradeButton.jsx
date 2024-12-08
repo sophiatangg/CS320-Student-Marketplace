@@ -1,5 +1,6 @@
-import { findItemDataFromTrade } from "@database/trade";
+import { findPendingItemDataFromTrade } from "@database/trade";
 import { useAuth } from "@providers/AuthProvider";
+import { useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/TradeButton.module.scss";
 import cns from "@utils/classNames";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ const TradeButton = (props) => {
 	const [hasAlreadySentTrade, setHasAlreadySentTrade] = useState(false);
 
 	const { currentUser } = useAuth();
+	const { allItems, shownItems } = useContextSelector("itemsStore");
 
 	const handleComponentHover = (e) => {
 		setHovered(!isHovered);
@@ -38,17 +40,13 @@ const TradeButton = (props) => {
 
 		const checkTrade = async () => {
 			try {
-				// If the item is already marked as traded, no need to fetch from the database
-				if (item.isTraded) {
-					setHasAlreadySentTrade(true);
-					return;
-				}
-
-				const itemData = await findItemDataFromTrade({
+				const itemData = await findPendingItemDataFromTrade({
 					itemId: item.id,
 					userId: currentUser.id,
 					sellerId: item.seller_id,
 				});
+
+				if (!itemData) return;
 
 				// Set to true if trade exists, otherwise false
 				setHasAlreadySentTrade(!!itemData);
@@ -59,7 +57,7 @@ const TradeButton = (props) => {
 		};
 
 		checkTrade();
-	}, [currentUser, item]);
+	}, [allItems, currentUser, item, shownItems]);
 
 	const renderIcon = () => {
 		return (

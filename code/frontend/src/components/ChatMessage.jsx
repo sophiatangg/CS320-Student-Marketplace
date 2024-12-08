@@ -1,6 +1,8 @@
+import { fetchMessagesById, sendMessage, subscribeToMessages, unsubscribeFromMessages } from "@database/chats";
+import { useAuth } from "@providers/AuthProvider";
 import styles from "@styles/ChatMessage.module.scss";
 import cns from "@utils/classNames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ChatMessage = (props) => {
 	const { activeUser, setActiveUser } = props;
@@ -8,17 +10,61 @@ const ChatMessage = (props) => {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
 
-	const removeMessageWindow = () => {
-		setActiveUser(null);
-	};
+	const { currentUser } = useAuth();
 
-	const handleSendMessage = (e) => {
+	useEffect(() => {
+		if (!activeUser || !activeUser.id) return;
+
+		let messageSubscription;
+
+		const initializeChat = async () => {
+			try {
+				// Fetch existing messages
+				const fetchedMessages = await fetchMessagesById(activeUser.id);
+
+				setMessages(fetchedMessages ?? []);
+
+				// Subscribe to new messages
+				messageSubscription = subscribeToMessages(activeUser.id, (newMessage) => {
+					setMessages((prevMessages) => [...prevMessages, newMessage]);
+				});
+			} catch (error) {
+				console.error("Error initializing chat:", error);
+			}
+		};
+
+		initializeChat();
+
+		return () => {
+			unsubscribeFromMessages(messageSubscription);
+		};
+	}, [activeUser]);
+
+	const handleSendMessage = async (e) => {
 		if (e.shiftKey && e.code === "Enter") return; // Prevent sending on Shift + Enter
 		if (e.code !== "Enter") return; // Allow only Enter key to send
 		if (!newMessage.trim()) return; // Prevent sending empty messages
 
-		setMessages((prevMessages) => [...prevMessages, { sender: "Me", content: newMessage, timestamp: new Date() }]);
-		setNewMessage("");
+		try {
+			// Insert the message into the database
+			const newMessageData = await sendMessage({
+				chatId: activeUser.id,
+				senderId: currentUser.id,
+				message: newMessage.trim(),
+			});
+
+			// Update the chat's last message
+			await updateChat(activeUser.id, newMessage.trim());
+
+			// Update local state
+			setMessages((prevMessages) => {
+				return [...prevMessages, newMessageData];
+			});
+
+			setNewMessage("");
+		} catch (error) {
+			console.error("Error sending message:", error);
+		}
 	};
 
 	const renderContent = () => {

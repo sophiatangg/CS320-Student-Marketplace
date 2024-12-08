@@ -1,6 +1,7 @@
 import { supabase } from "@database/supabaseClient";
 
-const tableName = "User";
+const USER_TABLE_NAME = "User";
+const AUTH_TABLE_NAME = "auth.users";
 
 const signInWithGoogle = async () => {
 	const { data, error } = await supabase.auth.signInWithOAuth({
@@ -37,7 +38,7 @@ const setUser = (setter) => {
 const getUser = async (userId) => {
 	if (!userId) return;
 
-	const { data: userData, error: userError } = await supabase.from(tableName).select("*").eq("id", userId).single();
+	const { data: userData, error: userError } = await supabase.from(USER_TABLE_NAME).select("*").eq("id", userId).single();
 
 	if (userError) {
 		throw Error("Error fetching user by userId.");
@@ -46,6 +47,17 @@ const getUser = async (userId) => {
 	if (userData) {
 		return userData;
 	}
+};
+
+const getAuthUser = async (userId) => {
+	const { data, error } = await supabase.from(AUTH_TABLE_NAME).select("*").eq("id", userId).single();
+
+	if (error) {
+		console.error("Error fetching user:", error);
+		return null;
+	}
+
+	return data;
 };
 
 const insertUserData = async () => {
@@ -67,7 +79,7 @@ const insertUserData = async () => {
 
 	// Check if a user with the same id or email already exists
 	const { data: existingUser, error: fetchError } = await supabase
-		.from(tableName)
+		.from(USER_TABLE_NAME)
 		.select("id", "email")
 		.or(`id.eq.${id},email.eq.${email}`)
 		.maybeSingle();
@@ -86,7 +98,7 @@ const insertUserData = async () => {
 		// Here, we are checking if the user is logged in and if their data is already existed in our "User" table.
 		// Otherwise, we are inserting the following row to the "User" table:
 
-		const { error: insertError } = await supabase.from(tableName).insert({
+		const { error: insertError } = await supabase.from(USER_TABLE_NAME).insert({
 			id,
 			email,
 			name: full_name,
@@ -114,4 +126,4 @@ const signOut = async (e) => {
 	return data;
 };
 
-export { getUser, insertUserData, setUser, signInWithGoogle, signOut };
+export { getAuthUser, getUser, insertUserData, setUser, signInWithGoogle, signOut };
