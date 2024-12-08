@@ -1,7 +1,7 @@
 import ChatMessage from "@components/ChatMessage";
-import { fetchChatsByUserId } from "@database/chats";
+import { fetchChatsByUserId, initiateChatSession } from "@database/chats";
 import { useAuth } from "@providers/AuthProvider";
-import { useContextDispatch } from "@providers/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/ChatListWindow.module.scss";
 import cns from "@utils/classNames";
 import { AnimatePresence, motion } from "framer-motion";
@@ -34,23 +34,59 @@ const ChatListWindow = (props) => {
 	const chatListContentRef = useRef(null);
 
 	const [chatList, setChatList] = useState([]);
-	const [activeChat, setActiveChat] = useState(null);
 	const [isExiting, setIsExiting] = useState(false);
 	const [hoveredItemId, setHoveredItemId] = useState(null);
+	const [currentUserWith, setCurrentUserWith] = useState(null);
 
 	const { currentUser } = useAuth();
+
+	const { activeChat } = useContextSelector("displayStore");
 	const dispatch = useContextDispatch();
 
 	const handleExiting = () => {
 		setIsExiting(!isExiting);
 	};
 
-	const handleAddActiveChat = (chat) => {
-		setActiveChat(chat);
+	const handleAddActiveChat = async (chat) => {
+		try {
+			if (!chat) return;
+
+			// If `chat` is null, attempt to find the existing chat or create one
+			const initiatorId = currentUser.id;
+			const receiverId = chat.user.id; // Replace this with a valid receiver ID logic
+
+			if (!receiverId) {
+				console.error("Receiver ID is not available to initiate a chat.");
+				return;
+			}
+
+			const newChat = await initiateChatSession({
+				initiatorId,
+				receiverId,
+			});
+
+			if (newChat) {
+				setCurrentUserWith(chat.user);
+
+				dispatch({
+					type: "SET_ACTIVE_CHAT",
+					payload: newChat,
+				});
+			} else {
+				throw new Error("Unable to initialize chat session.");
+			}
+		} catch (error) {
+			console.error("Error adding active chat:", error);
+		}
 	};
 
 	const handleRemoveActiveChat = () => {
-		setActiveChat(null);
+		setCurrentUserWith(null);
+
+		dispatch({
+			type: "SET_ACTIVE_CHAT",
+			payload: null,
+		});
 	};
 
 	useEffect(() => {
@@ -67,7 +103,7 @@ const ChatListWindow = (props) => {
 	const isChatListEmpty = chatList.length === 0;
 
 	const renderHeader = () => {
-		const headerTitle = activeChat ? activeChat.name : "Chat Messages";
+		const headerTitle = currentUserWith ? currentUserWith.name : "Chat Messages";
 
 		return (
 			<div
@@ -85,7 +121,9 @@ const ChatListWindow = (props) => {
 								}}
 							/>
 						</div>
-						<div className={styles["headerUserAvatar"]}>{activeChat.avatar_url && <img src={activeChat.avatar_url} />}</div>
+						<div className={styles["headerUserAvatar"]}>
+							{currentUserWith && currentUserWith?.avatar_url && <img src={currentUserWith?.avatar_url} />}
+						</div>
 					</>
 				)}
 				<span className={styles["title"]}>{headerTitle}</span>
@@ -106,7 +144,9 @@ const ChatListWindow = (props) => {
 				})}
 			>
 				{activeChat ? (
-					<ChatMessage activeUser={activeChat} setActiveUser={setActiveChat} />
+					<>
+						<ChatMessage activeChat={activeChat} />
+					</>
 				) : isChatListEmpty ? (
 					renderEmptyContainer()
 				) : (
@@ -135,43 +175,38 @@ const ChatListWindow = (props) => {
 					setHoveredItemId(null);
 				}}
 			>
-				{chatList.map((chat) => (
-					<div
-						key={chat.id}
-						className={styles["chatItem"]}
-						onMouseEnter={(e) => {
-							e.preventDefault();
-
-							setHoveredItemId(chat.id);
-						}}
-						onMouseLeave={(e) => {
-							e.preventDefault();
-
-							setHoveredItemId(chat.id);
-						}}
-					>
+				{chatList.map((chat) => {
+					return (
 						<div
-							className={styles["chatAvatarContainer"]}
-							onClick={(e) => {
-								handleAddActiveChat(chat);
+							key={chat.id}
+							className={styles["chatItem"]}
+							onClick={async (e) => {
+								await handleAddActiveChat(chat);
+							}}
+							onMouseEnter={async (e) => {
+								e.preventDefault();
+
+								setHoveredItemId(chat.id);
+							}}
+							onMouseLeave={(e) => {
+								e.preventDefault();
+
+								setHoveredItemId(chat.id);
 							}}
 						>
-							{chat.avatar && <img src={chat.avatar} className={styles["chatAvatar"]} />}
-						</div>
-						<div
-							className={styles["chatContent"]}
-							onClick={(e) => {
-								handleAddActiveChat(chat);
-							}}
-						>
-							<span className={styles["chatName"]}>{chat.name}</span>
-							<div className={styles["chatMessagePreview"]}>
-								<span>{chat.lastMessage}</span>
+							<div className={styles["chatAvatarContainer"]}>
+								{chat.user.avatar_url && <img src={chat.user.avatar_url} className={styles["chatAvatar"]} />}
 							</div>
+							<div className={styles["chatContent"]}>
+								<span className={styles["chatName"]}>{chat.user?.name}</span>
+								<div className={styles["chatMessagePreview"]}>
+									<span>{chat.user?.lastMessage}</span>
+								</div>
+							</div>
+							{/* {hoveredItemId === chat.id && renderButtons()} */}
 						</div>
-						{/* {hoveredItemId === chat.id && renderButtons()} */}
-					</div>
-				))}
+					);
+				})}
 			</div>
 		);
 	};

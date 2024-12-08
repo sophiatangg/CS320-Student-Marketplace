@@ -1,4 +1,5 @@
 import CardMini from "@components/CardMini";
+import { initiateChatSession } from "@database/chats";
 import { updateItemByColumn } from "@database/items";
 import { fetchTradeRequestCounts, fetchTradeRequests, fetchTradeStatus, updateTradeByColumn, updateTradeStatus } from "@database/trade"; // Assuming fetchTradeRequests is here
 import Window from "@popups/Window";
@@ -144,20 +145,50 @@ const TradeManageWindow = () => {
 		});
 	};
 
-	const handleChat = (e, request) => {
+	const handleChat = async (e, request) => {
 		e.preventDefault();
 
-		dispatch({
-			type: "SET_TRADE_MANAGE_DISPLAYED",
-			payload: false,
-		});
+		if (!request) {
+			console.error("Trade request is required to initiate chat.");
+			return;
+		}
 
-		setTimeout(() => {
-			dispatch({
-				type: "SET_CHAT_DISPLAYED",
-				payload: true,
+		const otherUserId = request.tradee.id === currentUser.id ? request.trader.id : request.tradee.id;
+		if (!otherUserId) {
+			console.error("Other user ID is missing.");
+			return;
+		}
+
+		try {
+			const chatSession = await initiateChatSession({
+				initiatorId: currentUser.id,
+				receiverId: otherUserId,
 			});
-		}, 10);
+
+			if (!chatSession) {
+				throw new Error("Failed to create or fetch chat session.");
+			}
+
+			dispatch({
+				type: "SET_TRADE_MANAGE_DISPLAYED",
+				payload: false,
+			});
+
+			setTimeout(() => {
+				dispatch({
+					type: "SET_ACTIVE_CHAT",
+					payload: chatSession,
+				});
+
+				dispatch({
+					type: "SET_CHAT_DISPLAYED",
+					payload: true,
+				});
+			}, 10);
+		} catch (error) {
+			console.error("Error initiating chat:", error);
+			toast.error("Failed to start chat session.", toastProps);
+		}
 	};
 
 	const handleAcceptOffer = async (e, request) => {
@@ -392,7 +423,7 @@ const TradeManageWindow = () => {
 				name: "chat",
 				className: "chatButton",
 				onClick: async (e) => {
-					handleChat(e, request);
+					await handleChat(e, request);
 				},
 				icon: () => {
 					return <BsChatQuoteFill />;
@@ -503,27 +534,51 @@ const TradeManageWindow = () => {
 			let footerMessage;
 			let subTitleLeft;
 			let subTitleRight;
+
+			let fromToLabel;
+			let fromToName;
+
 			switch (selectedStatusFromRequest?.status) {
 				case "pending":
 					if (activeTab === "SENT") {
 						subTitleLeft = "What you want";
 						subTitleRight = "What you offer";
 						footerMessage = `Trade offer sent at`;
+
+						fromToLabel = `To `;
+						fromToName = request.tradee?.name || "Unknown Seller";
 					} else {
 						subTitleLeft = "What they want";
 						subTitleRight = "What they offer";
 						footerMessage = `Trade received at`;
+
+						fromToLabel = `From `;
+						fromToName = request.trader?.name || "Unknown Trader";
 					}
 					break;
 				case "rejected":
-					if (request.trader.id === currentUser.id) {
-						subTitleLeft = "What you want";
-						subTitleRight = "What you offer";
-						footerMessage = `Trade cancelled at`;
-					} else {
+					console.log(request);
+					if (request.tradee.id !== currentUser.id && request.trader.id === currentUser.id) {
 						subTitleLeft = "What they want";
 						subTitleRight = "What they offer";
 						footerMessage = `Trade rejected at`;
+
+						fromToLabel = "To ";
+						fromToName = request.tradee?.name || "Unknown Trader";
+					} else if (request.tradee.id === currentUser.id && request.trader.id === currentUser.id) {
+						subTitleLeft = "????";
+						subTitleRight = "????";
+						footerMessage = `????`;
+
+						fromToLabel = "Why are you sending to yourself?";
+						fromToName = request.trader?.name || "Unknown Seller";
+					} else if (request.trader.id === currentUser.id && request.tradee.id !== currentUser.id) {
+						subTitleLeft = "????";
+						subTitleRight = "????";
+						footerMessage = `????`;
+
+						fromToLabel = "Why are you sending to yourself?";
+						fromToName = request.trader?.name || "Unknown Seller";
 					}
 					break;
 				case "completed":
@@ -531,9 +586,15 @@ const TradeManageWindow = () => {
 					if (request.tradee.id !== currentUser.id) {
 						subTitleLeft = "What you want";
 						subTitleRight = "What you offer";
+
+						fromToLabel = "To ";
+						fromToName = request.tradee?.name || "Unknown Seller";
 					} else {
 						subTitleLeft = "What they want";
 						subTitleRight = "What they offer";
+
+						fromToLabel = "From";
+						fromToName = request.trader?.name || "Unknown Trader";
 					}
 					break;
 				default:
@@ -545,15 +606,7 @@ const TradeManageWindow = () => {
 					<div className={styles["tradeInfoFrom"]}>
 						<h2>
 							<p>
-								{activeTab === "RECEIVED" ? (
-									<>
-										From <span>{request.trader?.name || "Unknown Trader"}</span>
-									</>
-								) : (
-									<>
-										To <span>{request.tradee?.name || "Unknown Seller"}</span>
-									</>
-								)}
+								{fromToLabel} <span>{fromToName}</span>
 							</p>
 						</h2>
 						{renderButtons(request)}

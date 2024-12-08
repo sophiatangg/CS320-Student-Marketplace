@@ -1,3 +1,6 @@
+@use "_variables" as v;
+@use "sass:color";
+
 .chatMessage {
 	width: 100%;
 	flex: 1;
@@ -29,26 +32,150 @@
 	justify-content: flex-end;
 }
 
-.messageItem {
+.messageGroup {
 	width: 100%;
+	padding: 0 20px;
+	margin: 0 0 10px 0;
 	position: relative;
+	display: flex;
+	flex-flow: column;
+
+	&.messageGroupSelf {
+		align-items: flex-end;
+		justify-content: flex-end;
+	}
+
+	&.messageGroupOther {
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
 }
 
 .messageHeader {
 	color: var(--colorPrimaryForeground);
+	margin: 0 0 10px 0;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	gap: 10px;
+
+	strong {
+		@at-root .messageGroupSelf & {
+			order: 2;
+		}
+
+		@at-root .messageGroupOther & {
+			order: 1;
+		}
+	}
 }
 
 .timestamp {
 	color: var(--colorDarkForeground);
 	font-size: 12px;
+
+	@at-root .messageGroupSelf & {
+		order: 1;
+	}
+
+	@at-root .messageGroupOther & {
+		order: 2;
+	}
+}
+
+.messageContents {
+	width: 100%;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+
+	@at-root .messageGroupSelf & {
+		align-items: flex-end;
+		justify-content: flex-end;
+	}
+
+	@at-root .messageGroupOther & {
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
 }
 
 .messageContent {
-	width: 100%;
+	padding: 5px 18px;
+	margin: 0 0 5px 0;
+	border-radius: calc(var(--borderRadius) + 10px);
+	position: relative;
+	display: inline-flex;
+	flex-flow: column;
+
+	&.messageContentSingle {
+		position: relative;
+	}
+
+	&.messageContentFirst {
+		position: relative;
+	}
+
+	&:not(.messageContentLast, .messageContentSingle) {
+		&:before,
+		&::after {
+			display: none;
+		}
+	}
+
+	&.messageContentLast {
+		position: relative;
+	}
+
+	&:before,
+	&:after {
+		content: "";
+		height: 15px;
+		position: absolute;
+		bottom: 0;
+	}
+
+	@at-root .messageGroupSelf & {
+		color: var(--send-color);
+		background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
+		background-attachment: fixed;
+		align-self: flex-end;
+
+		&:before {
+			width: 20px;
+			background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
+			background-attachment: fixed;
+			border-bottom-left-radius: 16px 14px;
+			right: -8px;
+		}
+
+		&:after {
+			width: 26px;
+			right: -26px;
+			background-color: var(--popOutBgColor);
+			border-bottom-left-radius: 10px;
+		}
+	}
+
+	@at-root .messageGroupOther & {
+		background: var(--popOutBgColorAlt1);
+		color: black;
+		align-self: flex-start;
+
+		&:before {
+			width: 20px;
+			background-color: var(--popOutBgColorAlt1);
+			border-bottom-right-radius: 16px 14px;
+			left: -7px;
+		}
+
+		&:after {
+			width: 26px;
+			background-color: var(--popOutBgColor);
+			border-bottom-right-radius: 10px;
+			left: -26px;
+		}
+	}
 
 	span {
 		color: var(--colorPrimaryForeground);
