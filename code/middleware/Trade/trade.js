@@ -96,7 +96,8 @@ async function deleteExpiredTrades() {
   
   const expiredTradeIds = data.map((trade) => trade.id);
   console.log('Expired trade IDs:', expiredTradeIds);
-  if (expiredTradeIds.length < 0) {
+
+  if (expiredTradeIds.length <= 0) {
 	return;
   }
 
