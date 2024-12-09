@@ -16,6 +16,23 @@ export const formatDateAgo = ({ date }) => {
 
 	const twoDigitFormat = (num) => num.toString().padStart(2, "0");
 
+	// Ordinal suffix logic
+	const getOrdinalSuffix = (day) => {
+		if ([11, 12, 13].includes(day % 100)) {
+			return "th";
+		}
+		switch (day % 10) {
+			case 1:
+				return "st";
+			case 2:
+				return "nd";
+			case 3:
+				return "rd";
+			default:
+				return "th";
+		}
+	};
+
 	if (diffInHours < 24) {
 		const hours = twoDigitFormat(diffInHours);
 		const minutes = twoDigitFormat(diffInMinutes % 60);
@@ -28,8 +45,7 @@ export const formatDateAgo = ({ date }) => {
 		const month = givenDate.toLocaleString("default", { month: "long" });
 		const day = givenDate.getDate();
 		const year = givenDate.getFullYear();
-		const ordinals = ["st", "nd", "rd"][((day % 10) - 1) % 3] || "th";
-		return `${month} ${day}${ordinals}, ${year}`;
+		return `${month} ${day}${getOrdinalSuffix(day)}, ${year}`;
 	}
 };
 

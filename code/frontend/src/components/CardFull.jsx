@@ -19,6 +19,7 @@ const variants = {
 const CardFull = (props) => {
 	const { item, isFullWidth } = props;
 
+	const [isFetching, setIsFetching] = useState(true);
 	const [owner, setOwner] = useState("");
 
 	const { currentUser } = useAuth();
@@ -65,17 +66,40 @@ const CardFull = (props) => {
 		});
 	};
 
-	useEffect(() => {
-		if (!item || !item?.seller_id) return;
+	const handleOpenProfile = (e) => {
+		e.preventDefault();
 
+		if (!item.seller_id) return;
+
+		dispatch({
+			type: "SET_ACCOUNT_PROFILE_DISPLAYED",
+			payload: true,
+		});
+
+		dispatch({
+			type: "SET_SELECTED_USER_ID",
+			payload: item.seller_id,
+		});
+	};
+
+	useEffect(() => {
+		if (!item || !item?.seller_id) {
+			setIsFetching(false); // No fetching needed if no item or seller ID
+			return;
+		}
+
+		setIsFetching(true); // Start fetching
 		getUser(item?.seller_id)
 			.then((res) => {
 				setOwner(res.name);
 			})
 			.catch((error) => {
-				console.error("Error finding owner of the item?. Check the code!");
+				console.error("Error finding owner of the item. Check the code!", error);
+			})
+			.finally(() => {
+				setIsFetching(false); // Stop fetching once done (success or error)
 			});
-	}, [item, owner]);
+	}, [item]);
 
 	const renderItemName = ({ text, highlight }) => {
 		if (!text) return;
@@ -100,6 +124,7 @@ const CardFull = (props) => {
 			className={cns(styles["cardFull"], {
 				[styles["cardFullWidth"]]: !isFullWidth,
 				[styles["cardFullOwnItem"]]: isOwnItem,
+				[styles["cardFetchingInfo"]]: isFetching,
 			})}
 			onMouseEnter={(e) => {
 				handleCurrentHoveredItem({ id: item?.id });
@@ -144,7 +169,7 @@ const CardFull = (props) => {
 						{owner ? (
 							<>
 								<span>Posted by</span>
-								<span>{owner}</span>
+								{<span onClick={handleOpenProfile}>{item.seller_id === currentUser.id ? "You" : owner}</span>}
 							</>
 						) : (
 							<span>Fetching seller name...</span>
@@ -152,18 +177,26 @@ const CardFull = (props) => {
 					</div>
 				</div>
 				<div className={styles["buttons"]}>
-					<div className={styles["price-cart-trade"]}>
-						<span className={styles["price"]}>${item?.price}</span>
-						{!isOwnItem && (
-							<div className={styles["cart-trade"]}>
-								<AddToCartButton item={item} isBig={false} />
-								<TradeButton handleTradeOpen={handleTradeOpen} item={item} />
-							</div>
-						)}
-					</div>
-					{!isOwnItem && (
+					{!item?.available ? (
+						<div className={styles["tradeComplete"]}>
+							<span>Successful Trade!</span>
+						</div>
+					) : (
 						<>
-							<WishlistButton item={item} />
+							<div className={styles["price-cart-trade"]}>
+								<span className={styles["price"]}>${item?.price}</span>
+								{!isOwnItem && (
+									<div className={styles["cart-trade"]}>
+										<AddToCartButton item={item} isBig={false} />
+										<TradeButton handleTradeOpen={handleTradeOpen} item={item} />
+									</div>
+								)}
+							</div>
+							{!isOwnItem && (
+								<>
+									<WishlistButton item={item} />
+								</>
+							)}
 						</>
 					)}
 				</div>

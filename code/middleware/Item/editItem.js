@@ -5,13 +5,13 @@ export const editItemInDatabase = async (Item) => {
 		const { data, error } = await supabase.from("Item").update([Item]);
 		if (error) {
 			console.error("Error editing item:", error);
-			alert(`Error editing item: ${error.message}`);
+			//alert(`Error editing item: ${error.message}`);
 		} else {
 			console.log("Item edited successfully:", data);
-			alert("Item edited successfully!");
+			//alert("Item edited successfully!");
 		}
 	} catch (err) {
 		console.error("Unexpected error:", err);
-		alert("An unexpected error occurred. Please try again later.");
+		//alert("An unexpected error occurred. Please try again later.");
 	}
 };

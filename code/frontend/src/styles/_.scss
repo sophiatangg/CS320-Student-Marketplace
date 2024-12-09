@@ -31,6 +31,10 @@
 	--sidebarSpaceOffset: 50px;
 	--chatListHeight: 50px;
 
+	--filterListWidth: calc(var(--logoWidth) + 30px);
+	--contentMaxWidth: 1500px;
+	--browseContentGap: calc(var(--sidebarSpaceOffset) - 20px);
+
 	--borderRadius: 8px;
 
 	--purpleColor: #92f;

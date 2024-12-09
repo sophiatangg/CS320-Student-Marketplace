@@ -3,18 +3,28 @@
 }
 
 .overlap {
-	position: absolute;
 	width: 100%;
 	height: 100%;
+	position: absolute;
 	background-color: var(--bgColor);
 	z-index: 10;
 }
 
 .home {
+	max-width: calc(var(--filterListWidth) + var(--contentMaxWidth) + var(--browseContentGap));
 	min-height: calc(100vh - var(--headerHeight));
-	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
+	padding: 0;
+	margin: 0 auto;
 	position: relative;
 	display: flex;
+
+	@media screen and (max-width: 1800px) {
+		padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
+	}
+
+	@media screen and (max-height: 500px) {
+		min-height: 600px;
+	}
 }
 
 .container {
@@ -24,7 +34,7 @@
 	justify-content: space-between;
 
 	&:first-child {
-		margin: 100px 0 0 0;
+		margin: 100px 0;
 	}
 
 	@media screen and (max-width: 1000px) {

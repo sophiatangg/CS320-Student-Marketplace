@@ -1,75 +1,136 @@
 import CardFull from "@components/CardFull";
+import {
+	searchItemsWithImagesFromQuery,
+	selectAllItemsWithImages,
+	selectAllItemsWithImagesFromCategory,
+	selectAllItemsWithImagesFromUser,
+	selectAllWishlistedItemsWithImagesFromUser,
+} from "@database/items";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Grid.module.scss";
 import cns from "@utils/classNames";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const Grid = (props) => {
 	const { currentUser } = useAuth();
 
-	const { search } = useLocation();
-	const params = new URLSearchParams(search);
-	const categoryName = params.get("cat") || "";
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
+	const categoryName = params.get("cat") || "all";
+	const othersUserId = params.get("id") || "";
+	const currentPage = parseInt(params.get("page") || "1", 10);
+	const sortPropName = params.get("spn") || "date";
+	const sortPropType = params.get("spt") || "asc";
 
-	const { allItems, ownWishlistItems, shownItems } = useContextSelector("itemsStore");
-	const { gridDisplay, items: localStorageItems } = useContextSelector("globalStore");
+	const { allItems } = useContextSelector("itemsStore");
+	const { gridView, pagination } = useContextSelector("globalStore");
 	const { searchQuery } = useContextSelector("searchStore");
+
+	const { itemsPerPage } = pagination;
+	const offset = (currentPage - 1) * itemsPerPage;
 
 	const dispatch = useContextDispatch();
 
+	const [baseShownItems, setBaseShownItems] = useState([]); // Stores items based on category or search
+	const [sortedShownItems, setSortedShownItems] = useState([]); // Stores items after sorting
+
 	useEffect(() => {
-		let items;
-		if (!searchQuery) {
-			if (!categoryName || categoryName === "all") {
-				items = allItems;
-			} else if (categoryName === "my-items") {
-				items = allItems.filter((item) => {
-					return item.seller_id === currentUser.id;
-				});
-			} else if (categoryName === "wishlist") {
-				const matchedItems = allItems.filter((item) => {
-					return ownWishlistItems.some((wishlistItem) => {
-						return wishlistItem.item_id === item.id;
+		const updateBaseItems = async () => {
+			dispatch({ type: "SET_LOADING", payload: true });
+
+			try {
+				let items;
+				if (!searchQuery) {
+					if (!categoryName || categoryName === "all") {
+						const { data } = await selectAllItemsWithImages({
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
+						});
+
+						items = data;
+					} else if (categoryName === "my-items") {
+						const { data } = await selectAllItemsWithImagesFromUser({
+							userId: currentUser.id,
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
+						});
+
+						items = data ?? [];
+					} else if (categoryName === "wishlist") {
+						const { data } = await selectAllWishlistedItemsWithImagesFromUser({
+							userId: othersUserId ?? currentUser.id,
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
+						});
+
+						items = data ?? [];
+					} else {
+						const { data } = await selectAllItemsWithImagesFromCategory({
+							category: categoryName.toLowerCase(),
+							limit: itemsPerPage,
+							offset: offset,
+							sortPropName: sortPropName,
+							sortPropType: sortPropType,
+						});
+
+						items = data ?? [];
+					}
+				} else {
+					const { data } = await searchItemsWithImagesFromQuery({
+						searchQuery: searchQuery,
 					});
-				});
 
-				items = matchedItems;
-			} else {
-				items = allItems?.filter((item) => item.category.toLowerCase() === categoryName.toLowerCase());
+					items = data ?? [];
+				}
+
+				setBaseShownItems(items); // Update the filtered items
+			} catch (error) {
+				console.error("Error processing items in Grid:", error);
+			} finally {
+				dispatch({ type: "SET_LOADING", payload: false });
 			}
-		} else {
-			// this is for when a user is searching with a query
-			const foundItems = allItems?.filter((item, i) => {
-				// safe checking for items without names
-				// this should only happen in development and not during production
-				if (!item?.name) return false;
+		};
 
-				const name = item.name.toLowerCase().replace(/\s+/g, ""); // Safely access `name` and replace all spaces
-				const query = searchQuery.toLowerCase().replace(/\s+/g, ""); // Replace all spaces in query
+		updateBaseItems();
+	}, [allItems, categoryName, currentUser, currentPage, itemsPerPage, offset, othersUserId, searchQuery, sortPropName, sortPropType, dispatch]);
 
-				return name.includes(query);
-			});
+	useEffect(() => {
+		if (!baseShownItems) return;
 
-			items = foundItems;
-		}
-
+		setSortedShownItems(baseShownItems);
 		dispatch({
 			type: "SET_SHOWN_ITEMS",
-			payload: items,
+			payload: baseShownItems,
 		});
-	}, [allItems, categoryName, localStorageItems, searchQuery]);
+	}, [baseShownItems, dispatch]);
 
 	const renderPlaceHolder = () => {
 		let message = "";
 
-		if (categoryName === "all") {
-			message = "Empty Store";
-		} else if (categoryName === "my-items") {
-			message = "No Items";
-		} else if (categoryName === "wishlist") {
-			message = "Empty Wishlist";
+		if (!searchQuery) {
+			if (categoryName === "all") {
+				message = "Empty Store";
+			} else if (categoryName === "my-items") {
+				message = "No Items";
+			} else if (categoryName === "wishlist") {
+				if (othersUserId && othersUserId !== currentUser.id) {
+					message = "This user has no items in their wishlist";
+				} else {
+					message = "Empty wishlist";
+				}
+			} else {
+				message = `No results for ${categoryName}`;
+			}
+		} else {
+			message = `No results for ${searchQuery}`;
 		}
 
 		return (
@@ -83,15 +144,15 @@ const Grid = (props) => {
 		<>
 			<div
 				className={cns(styles["gridContainer"], {
-					[styles["withGrid"]]: gridDisplay && shownItems?.length,
-					[styles["noGrid"]]: !gridDisplay && shownItems?.length,
-					[styles["emptyGrid"]]: !shownItems?.length,
+					[styles["withGrid"]]: gridView && sortedShownItems?.length,
+					[styles["noGrid"]]: !gridView && sortedShownItems?.length,
+					[styles["emptyGrid"]]: !sortedShownItems?.length,
 				})}
 				id="gridContainer"
 			>
-				{!shownItems?.length && renderPlaceHolder()}
-				{shownItems?.map((item, i) => {
-					return <CardFull key={i} item={item} isFullWidth={gridDisplay} />;
+				{sortedShownItems.length === 0 && renderPlaceHolder()}
+				{sortedShownItems?.map((item, i) => {
+					return <CardFull key={i} item={item} isFullWidth={gridView} />;
 				})}
 			</div>
 		</>

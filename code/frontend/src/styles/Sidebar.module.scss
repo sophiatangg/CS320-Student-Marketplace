@@ -1,25 +1,125 @@
+@use "_variables" as v;
+
 .filters {
-	width: calc(var(--logoWidth) + 30px);
+	min-width: var(--filterListWidth);
+
+	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
+		width: 100%;
+	}
+
+	&.filtersCollapsed {
+		position: relative;
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&.filtersContentVisible {
+		.filterShowButton {
+			margin-bottom: 30px;
+		}
+
+		.filterList {
+			width: 100%;
+		}
+	}
+}
+
+.filterShowButton {
+	width: max-content;
+	padding: 15px 60px;
+	background-color: var(--umassColor);
+	border-radius: calc(var(--borderRadius) + 20px);
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+
+	span {
+		color: var(--colorPrimaryForeground);
+		font-family: "GT Bold";
+		font-size: 22px;
+		user-select: none;
+	}
+}
+
+.filterListAnimated {
+	position: relative;
+}
+
+.filterList {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+
+	&.filterListHidden {
+		position: relative;
+	}
+
+	&:not(:last-child) {
+		margin-bottom: 25px;
+	}
+}
+
+.filterListHeader {
+	width: 100%;
+	margin-bottom: 22px;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: flex-start;
+
+	&.filterListHeaderClickable {
+		cursor: pointer;
+	}
+
+	&:hover {
+		h2 {
+			color: var(--colorDarkForeground);
+		}
+
+		svg {
+			fill: var(--colorDarkForeground) !important;
+		}
+	}
 
 	h2 {
 		font-family: "GT Medium";
 		color: var(--colorPrimaryForeground);
 		font-size: 1.6em;
 		letter-spacing: 1px;
-		margin-bottom: 22px;
-	}
-
-	@media screen and (max-width: 600px) {
-		display: none;
+		transition: color 100ms linear;
 	}
 }
 
-.globalFilters {
-	margin-bottom: 24px;
+.filterListHeaderIcon {
+	--iconDimension: 18px;
+	width: var(--iconDimension);
+	height: var(--iconDimension);
+	margin: 0 25px 0 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 100ms linear;
+
+	&.contentVisible {
+		transform: rotate(90deg);
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+	}
 }
 
-.categoryFilters {
-	position: relative;
+.filterListHidden {
+	.filterListHeader {
+		margin: 0;
+	}
 }
 
 .filterDiv {
@@ -27,11 +127,22 @@
 	font-family: "GT Regular";
 	font-size: 1.2em;
 	margin-bottom: 10px;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 15px;
 	cursor: pointer;
 	user-select: none;
+	transition: opacity 100ms linear;
+
+	&.filterListDisabled {
+		opacity: 0.5;
+		user-select: none;
+		pointer-events: none;
+	}
+
+	&.hovered {
+		position: relative;
+	}
 
 	&.selected {
 		position: relative;
@@ -44,6 +155,12 @@
 	* {
 		pointer-events: none;
 	}
+}
+
+.filterDivSpacer {
+	height: 10px;
+	position: relative;
+	margin: 5px 0;
 }
 
 .filterBtn {

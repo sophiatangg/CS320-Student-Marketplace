@@ -114,7 +114,7 @@ const NavBar = (props) => {
 				onClick={handleHome}
 			>
 				<div className={styles["logoInner"]}>
-					<div className={styles["icon"]}>
+					<div className={cns(styles["icon"], styles["logoIcon"], {})}>
 						<PiStudentBold style={{ fill: "#fff" }} />
 					</div>
 					<h3>
@@ -166,19 +166,19 @@ const NavBar = (props) => {
 	};
 
 	return (
-		<>
-			<motion.div
-				key="navBar-component"
-				ref={componentRef}
-				className={cns(styles["navbar"], {
-					[styles["navBarNarrow"]]: isSmallScreen,
-				})}
-				id={props.component}
-				animate={"visible"}
-				initial={"visible"}
-				variants={navBarVariants}
-				transition={{ y: { type: "spring" }, duration: 0.01 }}
-			>
+		<motion.div
+			key="navBar-component"
+			ref={componentRef}
+			className={cns(styles["navbar"], {
+				[styles["navBarNarrow"]]: isSmallScreen,
+			})}
+			id={props.component}
+			animate={"visible"}
+			initial={"visible"}
+			variants={navBarVariants}
+			transition={{ y: { type: "spring" }, duration: 0.01 }}
+		>
+			<div className={styles["navBarInner"]}>
 				{!isSmallScreen ? (
 					<>
 						{renderNavLeft()}
@@ -194,8 +194,8 @@ const NavBar = (props) => {
 						{renderNavCenter()}
 					</>
 				)}
-			</motion.div>
-		</>
+			</div>
+		</motion.div>
 	);
 };
 

@@ -1,5 +1,6 @@
 import AddNewItemButton from "@components/AddNewItemButton";
 import Grid from "@components/Grid";
+import Pagination from "@components/Pagination";
 import Sidebar from "@components/Sidebar";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Browse.module.scss";
@@ -21,15 +22,14 @@ const animations = {
 const Browse = (props) => {
 	const { search } = useLocation();
 	const params = new URLSearchParams(search);
-	const categoryName = params.get("cat") || "";
+	const categoryName = params.get("cat") || "all";
 
-	const { gridDisplay } = useContextSelector("globalStore");
-	const { shownItems } = useContextSelector("itemsStore");
+	const { gridView } = useContextSelector("globalStore");
 	const dispatch = useContextDispatch();
 
 	const handleLayoutSwitch = (e, bool) => {
 		dispatch({
-			type: "SET_DISPLAY",
+			type: "SET_GRID_VIEW",
 			payload: bool,
 		});
 	};
@@ -51,17 +51,6 @@ const Browse = (props) => {
 		);
 	};
 
-	const renderCounter = () => {
-		return (
-			shownItems.length > 0 && (
-				<div className={styles["counterContainer"]}>
-					<span>{shownItems.length}</span>
-					<span>{shownItems.length > 1 ? "Items" : "Item"}</span>
-				</div>
-			)
-		);
-	};
-
 	const isNotDefaultItemsPage = !categoryName && categoryName === "all" && (categoryName === "wishlist" || categoryName === "my-items");
 
 	return (
@@ -75,17 +64,16 @@ const Browse = (props) => {
 								<div className={styles["left"]}>
 									{isNotDefaultItemsPage && renderPlaceHolder()}
 									{categoryName === "my-items" && <AddNewItemButton />}
-									{renderCounter()}
 								</div>
 								<div className={styles["displayStyle"]}>
 									<span>Display options:</span>
 									<button
 										className={cns(styles["displayBtn"], {
-											[styles["isActive"]]: gridDisplay,
+											[styles["isActive"]]: gridView,
 										})}
 										id="grid"
 										style={{
-											pointerEvents: gridDisplay ? "none" : "",
+											pointerEvents: gridView ? "none" : "",
 										}}
 										aria-label="Display grids"
 										onClick={(e) => {
@@ -94,16 +82,16 @@ const Browse = (props) => {
 									>
 										<TbLayoutGridFilled
 											className={cns(styles["displayItem"], {})}
-											style={{ width: 30, height: 30, fill: gridDisplay ? "#e5e5e5" : "#6f6f6f" }}
+											style={{ width: 30, height: 30, fill: gridView ? "#e5e5e5" : "#6f6f6f" }}
 										/>
 									</button>
 									<button
 										className={cns(styles["displayBtn"], {
-											[styles["isActive"]]: !gridDisplay,
+											[styles["isActive"]]: !gridView,
 										})}
 										id="columns"
 										style={{
-											pointerEvents: !gridDisplay ? "none" : "",
+											pointerEvents: !gridView ? "none" : "",
 										}}
 										aria-label="Display columns"
 										onClick={(e) => {
@@ -112,12 +100,13 @@ const Browse = (props) => {
 									>
 										<MdOutlineTableRows
 											className={styles["displayItem"]}
-											style={{ width: 30, height: 30, fill: gridDisplay ? "#6f6f6f" : "#e5e5e5" }}
+											style={{ width: 30, height: 30, fill: gridView ? "#6f6f6f" : "#e5e5e5" }}
 										/>
 									</button>
 								</div>
 							</div>
 							<Grid />
+							<Pagination />
 						</div>
 					</div>
 				</motion.div>

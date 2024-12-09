@@ -1,19 +1,18 @@
+import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/AccountButton.module.scss";
 import cns from "@utils/classNames";
 import { useEffect, useRef, useState } from "react";
 import { PiUserCircleFill } from "react-icons/pi";
-import { useLocation } from "react-router-dom";
 
 const AccountButton = (props) => {
 	const { userAvatar } = props;
 
+	const { currentUser } = useAuth();
+
 	const [isClicked, setIsClicked] = useState(false);
-	const [isHome, setIsHome] = useState(false);
 
 	const componentRef = useRef(null);
-
-	const { pathname } = useLocation();
 
 	const { accountInfoDisplayed } = useContextSelector("displayStore");
 	const dispatch = useContextDispatch();
@@ -21,10 +20,6 @@ const AccountButton = (props) => {
 	const handleClick = () => {
 		setIsClicked(!isClicked);
 	};
-
-	useEffect(() => {
-		setIsHome(pathname !== "/");
-	}, [pathname]);
 
 	useEffect(() => {
 		dispatch({
@@ -44,7 +39,7 @@ const AccountButton = (props) => {
 			<div
 				className={cns(styles["icon"], {
 					[styles["userSignedIn"]]: userAvatar !== "",
-					[styles["iconHome"]]: !isHome,
+					[styles["iconBig"]]: !currentUser,
 				})}
 			>
 				{userAvatar === "" ? (
@@ -63,7 +58,7 @@ const AccountButton = (props) => {
 					/>
 				)}
 			</div>
-			{isHome && (
+			{currentUser && (
 				<div className={styles["title"]}>
 					<span>You</span>
 				</div>

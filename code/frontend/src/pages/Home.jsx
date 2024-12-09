@@ -1,4 +1,4 @@
-import { useContextSelector } from "@providers/StoreProvider";
+import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/Home.module.scss";
 import cns from "@utils/classNames";
 import { PROJECT_NAME } from "@utils/main";
@@ -24,6 +24,7 @@ const Home = (props) => {
 	const [browsing, setBrowsing] = useState(false);
 
 	const { allItems } = useContextSelector("itemsStore");
+	const dispatch = useContextDispatch();
 
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
@@ -49,7 +50,12 @@ const Home = (props) => {
 
 	useEffect(() => {
 		document.title = `${PROJECT_NAME} — Home`;
-	}, []);
+
+		dispatch({
+			type: "SET_LOADING",
+			payload: false,
+		});
+	}, [dispatch]);
 
 	useEffect(() => {
 		setOverlap(false);

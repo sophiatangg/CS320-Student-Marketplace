@@ -1,0 +1,91 @@
+.paginationContainer {
+	width: 100%;
+	height: 90px;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.counterContainer {
+	position: relative;
+
+	span {
+		color: var(--colorPrimaryForeground);
+	}
+}
+
+.paginationInner {
+	width: 100%;
+	height: 50px;
+	background-color: var(--cardFullBackground);
+	border-radius: var(--borderRadius);
+	display: inline-flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.pageNumbers {
+	margin: 0 30px;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+}
+
+.navButton {
+	height: 40px;
+	font-family: "GT Bold";
+	border-radius: var(--borderRadius);
+	position: relative;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	cursor: pointer;
+	transition: background-color 100ms linear;
+
+	&.primary {
+		padding: 0 10px;
+
+		&:first-child {
+			margin-left: 5px;
+		}
+
+		&:last-child {
+			margin-right: 5px;
+		}
+
+		&:hover,
+		&.disabled {
+			background-color: var(--umassColor);
+		}
+	}
+
+	&.secondary {
+		padding: 0 15px;
+	}
+
+	&:hover {
+		background-color: var(--cardFullHoverBackground);
+	}
+
+	&.active {
+		background-color: var(--umassColor);
+		pointer-events: none !important;
+	}
+
+	&.disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	span {
+		color: var(--colorPrimaryForeground);
+		cursor: pointer;
+	}
+}

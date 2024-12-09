@@ -3,10 +3,6 @@
 .navbar {
 	width: 100%;
 	height: var(--headerHeight);
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	position: fixed;
 	inset: 0 auto auto 0;
 	backdrop-filter: blur(10px);
@@ -14,12 +10,6 @@
 
 	@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 		position: relative;
-	}
-
-	&.navBarNarrow {
-		flex-flow: column;
-		align-items: flex-start;
-		justify-content: flex-start;
 	}
 
 	&[id="home"] {
@@ -30,22 +20,21 @@
 		background-color: #{rgba(v.$bgColor, 0.7)};
 	}
 
-	> div {
-		flex: 1;
+	@media screen and (max-width: 1800px) {
+		padding: 0 calc(var(--sidebarSpaceOffset) - 20px);
 	}
 
 	.logo {
+		--logoWidth: calc(var(--filterListWidth) + var(--browseContentGap));
 		min-width: var(--logoWidth);
 		max-width: var(--logoWidth);
 		height: 40px;
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		gap: 10px;
+		gap: 20px;
 
 		&.atStore {
-			margin-right: var(--sidebarSpaceOffset);
-
 			@media screen and (max-width: #{v.$navBarTwoRowsWidth}) {
 				margin-right: 0;
 			}
@@ -62,9 +51,19 @@
 		gap: 15px;
 	}
 
+	.logoIcon {
+		position: relative;
+
+		svg {
+			width: 40px;
+			height: 40px;
+		}
+	}
+
 	h3 {
 		color: var(--colorPrimaryForeground);
 		font-family: "GT Bold";
+		font-size: 18px;
 		display: flex;
 		flex-flow: column;
 		cursor: pointer;
@@ -89,6 +88,26 @@
 	}
 }
 
+.navBarInner {
+	max-width: calc(var(--filterListWidth) + var(--contentMaxWidth) + var(--browseContentGap));
+	height: 100%;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+
+	@at-root .navBarNarrow & {
+		max-width: 100%;
+		flex-flow: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
+	> div {
+		flex: 1;
+	}
+}
+
 .navBarNarrowTop,
 .middle {
 	width: 100%;
@@ -108,7 +127,12 @@
 }
 
 .middle {
+	min-width: 180px;
 	height: 100%;
+
+	&:not(:last-child) {
+		margin-right: 15px;
+	}
 }
 
 .icon {
@@ -126,7 +150,6 @@
 .component {
 	min-width: max-content;
 	max-width: max-content;
-	margin-left: 15px;
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -138,5 +161,13 @@
 	&[id="browseStore"] {
 		font-size: 14px;
 		gap: 20px;
+	}
+
+	span {
+		&:not([class]) {
+			&:last-child {
+				user-select: none;
+			}
+		}
 	}
 }

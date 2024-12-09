@@ -214,6 +214,8 @@ const AddEditNewItemWindow = (props) => {
 
 			if (imageURLPath) {
 				uploadedImages.push(imageURLPath);
+			} else {
+				toast.error("Failed to upload image.");
 			}
 		}
 
@@ -338,7 +340,7 @@ const AddEditNewItemWindow = (props) => {
 
 	const renderInputElem = ({ id, label, placeholder, isBigInput, inputType, field, required }) => {
 		const selectableFields = {
-			category: ["Academic", "Apparel", "Appliance", "Misc", "Tech", "Other"],
+			category: ["Academic", "Apparel", "Appliance", "Misc", "Tech"],
 			condition: ["New", "Like New", "Used"],
 		};
 
