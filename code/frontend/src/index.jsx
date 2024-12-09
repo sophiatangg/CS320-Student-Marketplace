@@ -7,7 +7,6 @@ import "@media/fonts/walsheim/GTWalsheimPro-Regular.ttf";
 import { AuthProvider } from "@providers/AuthProvider";
 import { StoreProvider } from "@providers/StoreProvider";
 import "@styles/_.scss";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import { BrowserRouter } from "react-router-dom";
@@ -18,7 +17,7 @@ const elem = document.getElementById("root");
 const root = createRoot(elem);
 
 root.render(
-	<StrictMode>
+	<>
 		<StoreProvider>
 			<BrowserRouter>
 				<AuthProvider>
@@ -28,5 +27,5 @@ root.render(
 			</BrowserRouter>
 		</StoreProvider>
 		<DissolveFilter />
-	</StrictMode>,
+	</>,
 );

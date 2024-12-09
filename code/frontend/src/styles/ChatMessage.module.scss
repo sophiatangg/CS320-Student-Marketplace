@@ -4,31 +4,32 @@
 .chatMessage {
 	width: 100%;
 	flex: 1;
+	position: relative;
 	display: flex;
 	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	position: relative;
-	transition: height 100ms ease-in-out;
 	user-select: none;
 	overflow: hidden;
+
+	&.chatUnknown {
+		background-color: red;
+	}
 }
 
 .chatMessageContent {
 	width: 100%;
 	position: relative;
-	flex: 1;
 	display: flex;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .messageList {
 	width: 100%;
 	padding: 0 0 10px 0;
 	position: relative;
-	flex: 1;
 	display: flex;
 	flex-flow: column;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: flex-end;
 }
 
@@ -101,12 +102,12 @@
 }
 
 .messageContent {
-	padding: 5px 18px;
 	margin: 0 0 5px 0;
-	border-radius: calc(var(--borderRadius) + 10px);
 	position: relative;
-	display: inline-flex;
-	flex-flow: column;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	gap: 10px;
 
 	&.messageContentSingle {
 		position: relative;
@@ -116,69 +117,105 @@
 		position: relative;
 	}
 
-	&:not(.messageContentLast, .messageContentSingle) {
-		&:before,
-		&::after {
-			display: none;
-		}
-	}
-
 	&.messageContentLast {
 		position: relative;
 	}
 
-	&:before,
-	&:after {
-		content: "";
-		height: 15px;
-		position: absolute;
-		bottom: 0;
+	&:not(.messageContentLast, .messageContentSingle) {
+		.msg {
+			&:before,
+			&::after {
+				display: none;
+			}
+		}
 	}
 
 	@at-root .messageGroupSelf & {
-		color: var(--send-color);
-		background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
-		background-attachment: fixed;
-		align-self: flex-end;
-
-		&:before {
-			width: 20px;
-			background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
-			background-attachment: fixed;
-			border-bottom-left-radius: 16px 14px;
-			right: -8px;
+		.msg {
+			order: 2;
 		}
 
-		&:after {
-			width: 26px;
-			right: -26px;
-			background-color: var(--popOutBgColor);
-			border-bottom-left-radius: 10px;
+		.altTime {
+			text-align: end;
+			order: 1;
 		}
 	}
 
 	@at-root .messageGroupOther & {
-		background: var(--popOutBgColorAlt1);
-		color: black;
-		align-self: flex-start;
-
-		&:before {
-			width: 20px;
-			background-color: var(--popOutBgColorAlt1);
-			border-bottom-right-radius: 16px 14px;
-			left: -7px;
+		.msg {
+			order: 1;
 		}
 
-		&:after {
-			width: 26px;
-			background-color: var(--popOutBgColor);
-			border-bottom-right-radius: 10px;
-			left: -26px;
+		.altTime {
+			text-align: start;
+			order: 2;
 		}
 	}
 
-	span {
+	.msg {
+		max-width: 248px;
 		color: var(--colorPrimaryForeground);
+		padding: 8px 18px;
+		border-radius: calc(var(--borderRadius) + 10px);
+		position: relative;
+		display: inline-flex;
+		flex-flow: column;
+
+		&:before,
+		&:after {
+			content: "";
+			height: 16px;
+			position: absolute;
+			bottom: 0;
+			pointer-events: none;
+			user-select: none;
+		}
+
+		@at-root .messageGroupSelf & {
+			color: var(--send-color);
+			background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
+			background-attachment: fixed;
+			align-self: flex-end;
+
+			&:before {
+				width: 20px;
+				background: linear-gradient(to bottom, #{v.$umassColor} 0%, #{color.adjust(v.$umassColor, $lightness: 10%)} 100%);
+				background-attachment: fixed;
+				border-bottom-left-radius: 16px 14px;
+				right: -8px;
+			}
+
+			&:after {
+				width: 26px;
+				right: -26px;
+				background-color: var(--popOutBgColor);
+				border-bottom-left-radius: 10px;
+			}
+		}
+
+		@at-root .messageGroupOther & {
+			background: var(--colorGrayPrimary);
+
+			&:before {
+				width: 20px;
+				background-color: var(--colorGrayPrimary);
+				border-bottom-right-radius: 16px 14px;
+				left: -7px;
+			}
+
+			&:after {
+				width: 26px;
+				background-color: var(--popOutBgColor);
+				border-bottom-right-radius: 10px;
+				left: -26px;
+			}
+		}
+	}
+
+	.altTime {
+		position: relative;
+		user-select: none;
+		pointer-events: none;
 	}
 }
 

@@ -18,6 +18,11 @@ const ChatButton = () => {
 			type: "SET_CHAT_DISPLAYED",
 			payload: true,
 		});
+
+		dispatch({
+			type: "SET_ACTIVE_CHAT",
+			payload: null,
+		});
 	};
 
 	useEffect(() => {
