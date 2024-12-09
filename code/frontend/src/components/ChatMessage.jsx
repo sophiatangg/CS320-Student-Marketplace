@@ -3,14 +3,19 @@ import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import styles from "@styles/ChatMessage.module.scss";
 import cns from "@utils/classNames";
-import { useEffect, useState } from "react";
+import { toastProps } from "@utils/toastProps";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const ChatMessage = (props) => {
 	const { activeChat } = props;
 
-	const [currentChatWith, setCurrentChatWith] = useState(null);
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
+	const [hoveredMessage, setHoveredMessage] = useState(null);
+
+	const messageTextareaRef = useRef(null);
+	const messageListRef = useRef(null);
 
 	const { currentUser } = useAuth();
 
@@ -28,14 +33,6 @@ const ChatMessage = (props) => {
 					console.error("Error fetching messages");
 					return;
 				}
-
-				const currentChatter = await getUser(currentUser.id === activeChat.initiator_id ? activeChat.receiver_id : activeChat.initiator_id);
-				if (!currentChatter) {
-					setCurrentChatWith(null);
-					throw new Error("Error fetching chat receiver");
-				}
-
-				setCurrentChatWith(currentChatter);
 
 				// Map messages and fetch user data for each sender
 				const formattedMessages = await Promise.all(
@@ -64,7 +61,10 @@ const ChatMessage = (props) => {
 						isRead: newMessage.is_read,
 					};
 
-					setMessages((prevMessages) => [...prevMessages, formattedNewMessage]);
+					setMessages((prevMessages) => {
+						const exists = prevMessages.some((msg) => msg.id === formattedNewMessage.id);
+						return exists ? prevMessages : [...prevMessages, formattedNewMessage];
+					});
 				});
 			} catch (error) {
 				console.error("Error initializing chat:", error);
@@ -78,6 +78,17 @@ const ChatMessage = (props) => {
 		};
 	}, [activeChat, currentUser]);
 
+	useEffect(() => {
+		if (!messageTextareaRef.current || !messageListRef.current) return;
+
+		const messageTextareaDimension = messageTextareaRef.current.getBoundingClientRect();
+		const messageListElement = messageListRef.current;
+
+		if (messageListElement.style) {
+			messageListElement.style.height = `calc(100% - ${messageTextareaDimension.height}px)`;
+		}
+	}, [messageListRef, messageTextareaRef, newMessage]);
+
 	const handleSendMessage = async (e) => {
 		if (e.shiftKey && e.code === "Enter") return; // Prevent sending on Shift + Enter
 		if (e.code !== "Enter") return; // Allow only Enter key to send
@@ -85,24 +96,42 @@ const ChatMessage = (props) => {
 
 		try {
 			// Insert the message into the database
-			const newMessageData = await sendMessage({
+			const { data: newMessageData } = await sendMessage({
 				chatId: activeChat.id,
 				senderId: currentUser.id,
 				message: newMessage.trim(),
 			});
 
+			setNewMessage("");
+
+			if (!newMessageData) {
+				toast.error("Error sending a message", toastProps);
+				return;
+			}
+
 			// Update the chat's last message
 			await updateChat({
 				chatId: activeChat.id,
-				message: newMessage.trim(),
+				message: newMessageData.message.trim(),
 			});
+
+			const user = await getUser(newMessageData.sender_id); // Fetch user data
+			const newMessageDataObj = {
+				id: newMessageData.id,
+				user: user || {
+					id: newMessageData.sender_id,
+					name: "Unknown",
+				},
+				message: newMessageData.message,
+				timeSent: newMessageData.created_at,
+				isRead: newMessageData.is_read,
+			};
 
 			// Update local state
 			setMessages((prevMessages) => {
-				return [...prevMessages, newMessageData];
+				const exists = prevMessages.some((msg) => msg.id === newMessageDataObj.id);
+				return exists ? prevMessages : [...prevMessages, newMessageDataObj];
 			});
-
-			setNewMessage("");
 		} catch (error) {
 			console.error("Error sending message:", error);
 		}
@@ -110,7 +139,7 @@ const ChatMessage = (props) => {
 
 	const renderContent = () => {
 		return (
-			<div className={styles["chatMessageContent"]}>
+			<div ref={messageListRef} className={styles["chatMessageContent"]}>
 				<div className={styles["messageList"]}>{renderMessages()}</div>
 			</div>
 		);
@@ -132,7 +161,8 @@ const ChatMessage = (props) => {
 		// Render the grouped messages
 		return groupedMessages.map((group, groupIndex) => {
 			const isCurrentUser = group[0].user.id === currentUser.id;
-			const date = new Date(group[0].timeSent);
+			const groupMessageDate = new Date(group[0].timeSent);
+			const messengerName = group[0].name;
 
 			return (
 				<div
@@ -144,8 +174,13 @@ const ChatMessage = (props) => {
 					})}
 				>
 					<div className={styles["messageHeader"]}>
-						<strong>{group[0].user.name}</strong>
-						<span className={styles["timestamp"]}>{date.toLocaleDateString([], { month: "short", day: "numeric" })}</span>
+						<span className={styles["timestamp"]}>
+							{groupMessageDate.toLocaleDateString([], {
+								month: "long",
+								day: "2-digit",
+								year: "numeric",
+							})}
+						</span>
 					</div>
 					<div className={styles["messageContents"]}>
 						{group.map((msg, msgIndex) => {
@@ -153,6 +188,9 @@ const ChatMessage = (props) => {
 							const isOnlyMessage = group.length === 1;
 							const isFirstMessage = msgIndex === 0 && group.length > 1;
 							const isLastMessage = msgIndex === group.length - 1 && group.length > 1;
+
+							const isHovered = hoveredMessage === `${groupIndex}-${msgIndex}`;
+							const msgDate = new Date(msg.timeSent);
 
 							return (
 								<div
@@ -162,8 +200,18 @@ const ChatMessage = (props) => {
 										[styles["messageContentFirst"]]: isFirstMessage,
 										[styles["messageContentLast"]]: isLastMessage,
 									})}
+									onMouseEnter={() => setHoveredMessage(`${groupIndex}-${msgIndex}`)}
+									onMouseLeave={() => setHoveredMessage(null)}
 								>
-									<span>{msg.message}</span>
+									<span className={styles["msg"]}>{msg.message}</span>
+									{isHovered && (
+										<span className={cns(styles["timestamp"], styles["altTime"])}>
+											{msgDate.toLocaleTimeString([], {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
+										</span>
+									)}
 								</div>
 							);
 						})}
@@ -180,11 +228,12 @@ const ChatMessage = (props) => {
 			e.target.style.height = `${e.target.scrollHeight}px`;
 		};
 
-		const firstName = String(currentChatWith?.name || "Unknown").split(" ")[0];
+		const firstName = String(activeChat.user.name || "Unknown").split(" ")[0];
 
 		return (
 			<div className={styles["chatMessageInputArea"]}>
 				<textarea
+					ref={messageTextareaRef}
 					type="text"
 					value={newMessage}
 					onChange={(e) => {
@@ -200,7 +249,11 @@ const ChatMessage = (props) => {
 	};
 
 	return (
-		<div className={cns(styles["chatMessage"], {})}>
+		<div
+			className={cns(styles["chatMessage"], {
+				[styles["chatUnknown"]]: !activeChat,
+			})}
+		>
 			{renderContent()}
 			{renderInputArea()}
 		</div>

@@ -2,6 +2,7 @@ import CardMini from "@components/CardMini";
 import { initiateChatSession } from "@database/chats";
 import { updateItemByColumn } from "@database/items";
 import { fetchTradeRequestCounts, fetchTradeRequests, fetchTradeStatus, updateTradeByColumn, updateTradeStatus } from "@database/trade"; // Assuming fetchTradeRequests is here
+import { getUser } from "@database/users";
 import Window from "@popups/Window";
 import { useAuth } from "@providers/AuthProvider"; // Assuming you have an auth provider
 import { useContextDispatch } from "@providers/StoreProvider";
@@ -160,13 +161,16 @@ const TradeManageWindow = () => {
 		}
 
 		try {
-			const chatSession = await initiateChatSession({
-				initiatorId: currentUser.id,
-				receiverId: otherUserId,
-			});
+			const [chatSession, otherUser] = await Promise.all([
+				initiateChatSession({
+					initiatorId: currentUser.id,
+					receiverId: otherUserId,
+				}),
+				getUser(otherUserId),
+			]);
 
-			if (!chatSession) {
-				throw new Error("Failed to create or fetch chat session.");
+			if (!chatSession || !otherUser) {
+				throw new Error("Failed to create or fetch chat session or user.");
 			}
 
 			dispatch({
@@ -176,13 +180,16 @@ const TradeManageWindow = () => {
 
 			setTimeout(() => {
 				dispatch({
-					type: "SET_ACTIVE_CHAT",
-					payload: chatSession,
+					type: "SET_CHAT_DISPLAYED",
+					payload: true,
 				});
 
 				dispatch({
-					type: "SET_CHAT_DISPLAYED",
-					payload: true,
+					type: "SET_ACTIVE_CHAT",
+					payload: {
+						...chatSession,
+						user: otherUser, // Include user details directly
+					},
 				});
 			}, 10);
 		} catch (error) {

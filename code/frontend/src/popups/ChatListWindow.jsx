@@ -1,5 +1,6 @@
 import ChatMessage from "@components/ChatMessage";
 import { fetchChatsByUserId, initiateChatSession } from "@database/chats";
+import { getUser } from "@database/users";
 import { useAuth } from "@providers/AuthProvider";
 import { useContextDispatch, useContextSelector } from "@providers/StoreProvider";
 import styles from "@styles/ChatListWindow.module.scss";
@@ -60,17 +61,25 @@ const ChatListWindow = (props) => {
 				return;
 			}
 
-			const newChat = await initiateChatSession({
+			const newChatData = await initiateChatSession({
 				initiatorId,
 				receiverId,
 			});
 
-			if (newChat) {
-				setCurrentUserWith(chat.user);
+			if (newChatData) {
+				const otherUserId = currentUser.id === newChatData.initiator_id ? newChatData.receiver_id : newChatData.initiator_id;
+				const otherUser = await getUser(otherUserId);
+				if (!otherUser) {
+					console.error("Error fetching user.");
+					return;
+				}
 
 				dispatch({
 					type: "SET_ACTIVE_CHAT",
-					payload: newChat,
+					payload: {
+						...newChatData,
+						user: otherUser,
+					},
 				});
 			} else {
 				throw new Error("Unable to initialize chat session.");
@@ -81,13 +90,31 @@ const ChatListWindow = (props) => {
 	};
 
 	const handleRemoveActiveChat = () => {
-		setCurrentUserWith(null);
-
 		dispatch({
 			type: "SET_ACTIVE_CHAT",
 			payload: null,
 		});
 	};
+
+	useEffect(() => {
+		if (!activeChat) return;
+
+		if (activeChat.user) {
+			// If user details are already included, set them directly
+			setCurrentUserWith(activeChat.user);
+		} else {
+			// Otherwise, fetch them
+			const setOtherUser = async () => {
+				const otherUserId = currentUser.id === activeChat.initiator_id ? activeChat.receiver_id : activeChat.initiator_id;
+				const otherUser = await getUser(otherUserId);
+
+				if (!otherUser) return;
+				setCurrentUserWith(otherUser);
+			};
+
+			setOtherUser();
+		}
+	}, [activeChat, currentUser.id]);
 
 	useEffect(() => {
 		const loadChats = async () => {
@@ -200,7 +227,7 @@ const ChatListWindow = (props) => {
 							<div className={styles["chatContent"]}>
 								<span className={styles["chatName"]}>{chat.user?.name}</span>
 								<div className={styles["chatMessagePreview"]}>
-									<span>{chat.user?.lastMessage}</span>
+									<span>{chat.lastMessage}</span>
 								</div>
 							</div>
 							{/* {hoveredItemId === chat.id && renderButtons()} */}

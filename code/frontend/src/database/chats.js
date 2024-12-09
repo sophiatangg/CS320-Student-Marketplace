@@ -11,14 +11,16 @@ export const initiateChatSession = async ({ initiatorId, receiverId }) => {
 
 	try {
 		// Check if a chat session already exists
-		const { data: existingChats, error: fetchError } = await supabase
+		const selectionRes = await supabase
 			.from(CHAT_TABLE_NAME)
 			.select("*")
 			.or(`initiator_id.eq.${initiatorId},receiver_id.eq.${initiatorId}`)
 			.or(`initiator_id.eq.${receiverId},receiver_id.eq.${receiverId}`)
 			.single();
 
-		if (fetchError) {
+		const { data: existingChats, error: fetchError } = selectionRes;
+
+		if (fetchError && fetchError.code !== "PGRST116") {
 			// Error code PGRST116 means no match found
 			console.error("Error fetching existing chats:", fetchError);
 			throw new Error("Failed to fetch existing chats.");
@@ -30,14 +32,15 @@ export const initiateChatSession = async ({ initiatorId, receiverId }) => {
 		}
 
 		// Create a new chat session if none exists
-		const { data: newChat, error: insertError } = await supabase
+		const res = await supabase
 			.from(CHAT_TABLE_NAME)
 			.insert({
 				initiator_id: initiatorId,
 				receiver_id: receiverId,
 			})
-			.select()
-			.single();
+			.select();
+
+		const { data: newChat, error: insertError } = res;
 
 		if (insertError) {
 			console.error("Error creating new chat session:", insertError);
@@ -171,20 +174,22 @@ export const sendMessage = async ({ chatId, senderId, message }) => {
 	if (!senderId) return null;
 	if (!message || !message === "") return null;
 
-	const { data, error } = await supabase
+	const res = await supabase
 		.from(CHAT_MESSAGES_TABLE_NAME)
 		.insert({
 			chat_id: chatId,
 			sender_id: senderId,
 			message,
 		})
+		.select()
 		.single();
 
-	if (error) {
-		throw new Error(`Error inserting message: ${error.message}`);
+	if (res.error) {
+		console.error(`Error inserting message: ${error.message}`);
+		return res;
 	}
 
-	return data;
+	return res;
 };
 
 export const updateChat = async ({ chatId, message }) => {
