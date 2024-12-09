@@ -1,8 +1,8 @@
 import { supabase } from "../../frontend/src/database/supabaseClient.js";
 
-export const deleteItemInDatabase = async (oldItem) => {
+export const deleteItemInDatabase = async (oldItemId) => {
 	try {
-		const { data, error } = await supabase.from("Item").delete([oldItem]);
+		const { data, error } = await supabase.from("Item").delete().eq("id", oldItemId);
 		if (error) {
 			console.error("Error deleting item:", error);
 			alert(`Error deleting item: ${error.message}`);
