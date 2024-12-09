@@ -15,6 +15,7 @@ const ChatMessage = (props) => {
 	const [hoveredMessage, setHoveredMessage] = useState(null);
 
 	const messageTextareaRef = useRef(null);
+	const messageContentListRef = useRef(null);
 	const messageListRef = useRef(null);
 
 	const { currentUser } = useAuth();
@@ -79,15 +80,37 @@ const ChatMessage = (props) => {
 	}, [activeChat, currentUser]);
 
 	useEffect(() => {
-		if (!messageTextareaRef.current || !messageListRef.current) return;
+		if (!messageTextareaRef.current || !messageContentListRef.current) return;
 
 		const messageTextareaDimension = messageTextareaRef.current.getBoundingClientRect();
-		const messageListElement = messageListRef.current;
+		const messageListElement = messageContentListRef.current;
 
 		if (messageListElement.style) {
 			messageListElement.style.height = `calc(100% - ${messageTextareaDimension.height}px)`;
 		}
-	}, [messageListRef, messageTextareaRef, newMessage]);
+	}, [messageContentListRef, messageTextareaRef, newMessage]);
+
+	const handleAutoScrollDown = () => {
+		if (!messageListRef.current || !messageContentListRef.current) return;
+
+		const messageContentElement = messageContentListRef.current; // Parent
+		const messageListElement = messageListRef.current; // Child
+
+		// Check if the child overflows the parent
+		const isOverflowing = messageListElement.scrollHeight > messageContentElement.clientHeight;
+
+		if (isOverflowing) {
+			messageContentElement.scrollTop = messageContentElement.scrollHeight; // Scroll to the bottom
+		}
+	};
+
+	useEffect(() => {
+		handleAutoScrollDown();
+	}, [messages]);
+
+	useEffect(() => {
+		handleAutoScrollDown();
+	}, []);
 
 	const handleSendMessage = async (e) => {
 		if (e.shiftKey && e.code === "Enter") return; // Prevent sending on Shift + Enter
@@ -103,6 +126,7 @@ const ChatMessage = (props) => {
 			});
 
 			setNewMessage("");
+			handleAutoScrollDown();
 
 			if (!newMessageData) {
 				toast.error("Error sending a message", toastProps);
@@ -139,8 +163,10 @@ const ChatMessage = (props) => {
 
 	const renderContent = () => {
 		return (
-			<div ref={messageListRef} className={styles["chatMessageContent"]}>
-				<div className={styles["messageList"]}>{renderMessages()}</div>
+			<div ref={messageContentListRef} className={styles["chatMessageContent"]}>
+				<div ref={messageListRef} className={styles["messageList"]}>
+					{renderMessages()}
+				</div>
 			</div>
 		);
 	};

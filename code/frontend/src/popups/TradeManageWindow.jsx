@@ -560,7 +560,7 @@ const TradeManageWindow = () => {
 						footerMessage = `Trade received at`;
 
 						fromToLabel = `From `;
-						fromToName = request.trader?.name || "Unknown Trader";
+						fromToName = request.tradee?.name || "Unknown Trader";
 					}
 					break;
 				case "rejected":
